@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legado Kepler — Entrada 001</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Share+Tech+Mono&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f2ead8;
+    --paper-dark: #e8ddc8;
+    --paper-aged: #d4c9a8;
+    --ink: #2a2318;
+    --ink-faded: #5a5040;
+    --ink-light: #8a7a60;
+    --accent: #c47a2a;
+    --accent-light: #e8b870;
+    --teal: #3a7a6a;
+    --stamp-red: #8a2a1a;
+    --rule: #c4b898;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #2a2010;
+    font-family: 'Crimson Pro', Georgia, serif;
+    min-height: 100vh;
+    padding: 3rem 1.5rem;
+  }
+
+  /* ── NOTEBOOK WRAPPER ── */
+  .notebook {
+    max-width: 820px;
+    margin: 0 auto;
+    background: var(--paper);
+    box-shadow: 0 20px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,0,0,0.3);
+    position: relative;
+  }
+
+  /* Aged paper texture overlay */
+  .notebook::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0.8;
+  }
+
+  /* Spine shadow */
+  .notebook::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 40px;
+    background: linear-gradient(to right, rgba(0,0,0,0.12), transparent);
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  /* ── HEADER STAMP AREA ── */
+  .notebook-header {
+    background: var(--ink);
+    padding: 2rem 3rem 1.8rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .notebook-header::before {
+    content: 'LEGADO KEPLER';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 6rem;
+    color: rgba(255,255,255,0.03);
+    letter-spacing: 0.3em;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.2rem;
+  }
+
+  .series-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--accent-light);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    line-height: 1.8;
+  }
+
+  .entry-code {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: #5a5040;
+    letter-spacing: 0.15em;
+    text-align: right;
+    line-height: 1.8;
+  }
+
+  .main-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 300;
+    color: var(--paper);
+    letter-spacing: 0.1em;
+    line-height: 1;
+  }
+
+  .main-title span {
+    color: var(--accent);
+  }
+
+  .subtitle {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.58rem;
+    color: #4a4030;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+  }
+
+  /* ── MISSION STAMP ── */
+  .mission-bar {
+    background: var(--accent);
+    padding: 0.6rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .mission-bar span {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--ink);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* ── FIELD NOTES HEADER ── */
+  .field-header {
+    padding: 2.5rem 3rem 0;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2rem;
+    align-items: start;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 1.5rem;
+  }
+
+  .planet-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.1;
+  }
+
+  .planet-designation {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--teal);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-top: 0.3rem;
+  }
+
+  .field-stamp {
+    text-align: right;
+  }
+
+  .stamp-box {
+    display: inline-block;
+    border: 2px solid var(--stamp-red);
+    padding: 0.4rem 0.8rem;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--stamp-red);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    line-height: 1.6;
+    transform: rotate(2deg);
+  }
+
+  .field-meta {
+    display: flex;
+    gap: 2.5rem;
+    margin-top: 1rem;
+  }
+
+  .meta-field {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--ink-light);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    line-height: 1.8;
+  }
+
+  .meta-field strong {
+    display: block;
+    color: var(--ink-faded);
+    font-size: 0.65rem;
+  }
+
+  /* ── BODY ── */
+  .notebook-body {
+    padding: 2.5rem 3rem;
+  }
+
+  /* Ruled lines background */
+  .ruled-section {
+    background-image: repeating-linear-gradient(
+      transparent,
+      transparent 31px,
+      var(--rule) 31px,
+      var(--rule) 32px
+    );
+    background-position: 0 1.5rem;
+    padding: 0;
+  }
+
+  .entry-text {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.1rem;
+    line-height: 2rem;
+    color: var(--ink);
+    margin-bottom: 2rem;
+  }
+
+  .entry-text p {
+    margin-bottom: 2rem;
+  }
+
+  .entry-text p:first-child::first-letter {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 4.5rem;
+    font-weight: 600;
+    float: left;
+    line-height: 0.75;
+    margin: 0.1em 0.1em 0 0;
+    color: var(--accent);
+  }
+
+  /* ── IMAGE BLOCKS ── */
+  .image-block {
+    margin: 2.5rem -3rem;
+    position: relative;
+  }
+
+  .image-block img {
+    width: 100%;
+    display: block;
+    filter: sepia(15%) contrast(0.95);
+  }
+
+  .image-caption {
+    padding: 0.8rem 3rem;
+    background: var(--paper-dark);
+    border-top: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .caption-text {
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.85rem;
+    font-style: italic;
+    color: var(--ink-faded);
+    max-width: 70%;
+  }
+
+  .caption-ref {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.5rem;
+    color: var(--ink-light);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ── INLINE IMAGE (smaller, offset) ── */
+  .image-inline {
+    float: right;
+    width: 45%;
+    margin: 0 -1rem 1.5rem 2rem;
+    position: relative;
+  }
+
+  .image-inline img {
+    width: 100%;
+    display: block;
+    filter: sepia(10%) contrast(0.95);
+    border: 1px solid var(--rule);
+  }
+
+  .image-inline .caption-inline {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.5rem;
+    color: var(--ink-light);
+    letter-spacing: 0.08em;
+    padding: 0.4rem 0.5rem;
+    background: var(--paper-dark);
+    border: 1px solid var(--rule);
+    border-top: none;
+    line-height: 1.5;
+  }
+
+  /* ── FIELD NOTE BOX ── */
+  .field-note {
+    margin: 2rem 0;
+    padding: 1.2rem 1.5rem;
+    background: var(--paper-aged);
+    border-left: 3px solid var(--accent);
+    position: relative;
+  }
+
+  .field-note::before {
+    content: attr(data-label);
+    position: absolute;
+    top: -0.6rem;
+    left: 1rem;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.5rem;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    background: var(--paper-aged);
+    padding: 0 0.4rem;
+  }
+
+  .field-note p {
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.95rem;
+    font-style: italic;
+    color: var(--ink-faded);
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  /* ── TECHNICAL ASIDE ── */
+  .tech-aside {
+    margin: 2rem 0;
+    padding: 1rem 1.5rem;
+    border: 1px solid var(--rule);
+    background: var(--paper-dark);
+    display: grid;
+    grid-template-columns: 3px 1fr;
+    gap: 1.2rem;
+  }
+
+  .tech-aside-bar { background: var(--teal); }
+
+  .tech-aside-content {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--ink-faded);
+    letter-spacing: 0.05em;
+    line-height: 1.8;
+  }
+
+  .tech-aside-content strong {
+    color: var(--teal);
+    display: block;
+    margin-bottom: 0.3rem;
+    font-size: 0.58rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 2.5rem 0;
+    clear: both;
+  }
+
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  .divider-sym {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    color: var(--rule);
+  }
+
+  /* ── SIGNATURE BLOCK ── */
+  .signature-block {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .sig-left {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--ink-faded);
+    line-height: 1.8;
+  }
+
+  .sig-name {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--ink);
+    font-style: normal;
+  }
+
+  .sig-right {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--ink-light);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: right;
+    line-height: 1.8;
+  }
+
+  /* ── FOOTER ── */
+  .notebook-footer {
+    background: var(--ink);
+    padding: 1rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-series {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.55rem;
+    color: #3a3020;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .footer-page {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.9rem;
+    color: #3a3020;
+  }
+
+  /* ── MARGIN NOTES ── */
+  .margin-note {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--ink-light);
+    letter-spacing: 0.05em;
+    line-height: 1.7;
+    padding: 0.8rem 1rem;
+    border-left: 1px dashed var(--rule);
+    margin: 1rem 0;
+    float: right;
+    width: 160px;
+    margin-left: 2rem;
+    clear: right;
+  }
+
+  @media (max-width: 640px) {
+    body { padding: 0; }
+    .notebook-header, .notebook-body, .field-header { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .mission-bar { padding: 0.6rem 1.5rem; }
+    .image-block { margin: 2rem -1.5rem; }
+    .image-caption { padding: 0.8rem 1.5rem; }
+    .image-inline { float: none; width: 100%; margin: 1.5rem 0; }
+    .margin-note { float: none; width: 100%; margin: 1rem 0; }
+    .field-meta { flex-wrap: wrap; gap: 1rem; }
+    .main-title { font-size: 2.2rem; }
+    .signature-block { flex-direction: column; gap: 1.5rem; }
+  }
+
+  /* ══ SIGNAL NAV ══ */
+  .signal-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    background: var(--ink);
+    border-bottom: 1px solid #3a2e1a;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    height: 40px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .signal-nav__home {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    text-decoration: none;
+    color: var(--paper);
+  }
+  .signal-nav__logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+  }
+  .signal-nav__ed {
+    color: #3a2e1a;
+    font-size: 0.5rem;
+  }
+  .signal-nav__home:hover .signal-nav__logo { color: var(--accent); }
+  .signal-nav__trail {
+    color: #4a3a20;
+    font-size: 0.5rem;
+  }
+  .signal-nav__current { color: var(--accent-light); }
+  .signal-nav__arrows {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: #3a2e1a;
+  }
+  .signal-nav__arrows a {
+    color: #7a6a50;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .signal-nav__arrows a:hover { color: var(--accent); }
+  .signal-nav__disabled { opacity: 0.2; cursor: default; }
+  .signal-nav__sep { opacity: 0.3; }
+  body { padding-top: 40px; }
+  @media (max-width: 640px) {
+    .signal-nav__trail { display: none; }
+    .signal-nav { padding: 0 1rem; }
+  }
+
+</style>
+</head>
+<body>
+<!-- ══ SIGNAL NAV ══ -->
+<nav class="signal-nav">
+  <a class="signal-nav__home" href="../index.html">
+    <span class="signal-nav__logo">SIGNAL</span>
+    <span class="signal-nav__ed">Serie · Legado Kepler</span>
+  </a>
+  <div class="signal-nav__trail">
+    Legado Kepler · <span class="signal-nav__current">Entrada 001</span>
+  </div>
+  <div class="signal-nav__arrows">
+    <a href="../index.html">Índice</a>
+    <span class="signal-nav__sep">·</span>
+    <span class="signal-nav__disabled">← Anterior</span>
+    <span class="signal-nav__sep">·</span>
+    <a class="signal-nav__next" href="legado-kepler-entrada-002.html">Entrada 002 →</a>
+  </div>
+</nav>
+
+
+<div class="notebook">
+
+  <!-- ══ HEADER ══ -->
+  <div class="notebook-header">
+    <div class="header-top">
+      <div class="series-title">
+        Legado Kepler<br>
+        Diario de campo · Serie I
+      </div>
+      <div class="entry-code">
+        Entrada N° 001<br>
+        Clasificación: Abierta<br>
+        Archivo: LK-SNV-001
+      </div>
+    </div>
+    <div class="main-title">VIRIDIS<span>·</span>NOVA</div>
+    <div class="subtitle">Kepler-442b · Sistema Lira · Primera impresión en superficie</div>
+  </div>
+
+  <div class="mission-bar">
+    <span>S. Nikolas Ventura A. · Técnico Sr. Sistemas Vitales — Clase IV</span>
+    <span>Ciclo 7 · Año 312 de la Expansión</span>
+    <span>Misión: Mantenimiento ATMOS-A7 + Auditoría PMA</span>
+  </div>
+
+  <!-- ══ FIELD HEADER ══ -->
+  <div class="field-header">
+    <div>
+      <div class="planet-name">Viridis Nova</div>
+      <div class="planet-designation">KPL-442b · Zona de habitabilidad confirmada · Colonia Gen. III</div>
+      <div class="field-meta">
+        <div class="meta-field"><strong>Gravedad</strong>0.94g</div>
+        <div class="meta-field"><strong>Atmósfera</strong>Terraformada · 94% estable</div>
+        <div class="meta-field"><strong>Población</strong>~2.4M habitantes</div>
+        <div class="meta-field"><strong>Tiempo en planeta</strong>Día 1</div>
+      </div>
+    </div>
+    <div class="field-stamp">
+      <div class="stamp-box">
+        Registro<br>
+        de llegada<br>
+        PMA · A1<br>
+        verificado
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ BODY ══ -->
+  <div class="notebook-body">
+
+    <!-- ARRIVAL IMAGE -->
+    <div class="image-block">
+      <img src="images/image (13).jpg" alt="Puerto de migración planetaria — Viridis Nova">
+      <div class="image-caption">
+        <span class="caption-text">Terminal de llegadas, PMA — Autoridad de Migración Planetaria. Sector A1. El primer lugar que ve cualquiera que llega.</span>
+        <span class="caption-ref">Foto · SNV · Día 1 · 09:14h local</span>
+      </div>
+    </div>
+
+    <!-- FIRST ENTRY -->
+    <div class="entry-text ruled-section">
+      <p>
+        No importa cuántas veces hayas pasado por uno de estos terminales. El PMA siempre huele igual — a aire filtrado, a plástico caliente, a gente que viene de muy lejos y todavía no sabe bien dónde está. Hoy llegué a Viridis Nova después de cuarenta y dos días de tránsito desde Helios Station. El motor Alcubierre nos dejó en el punto de salida nominal a 0.3 UA del planeta y desde ahí el lanzadera tardó otras seis horas. Seis horas mirando ese verde desde la ventanilla.
+      </p>
+      <p>
+        Es una colonia de tercera generación. Los primeros llegaron hace ochenta años con los módulos de terraformación y la instrucción de no morir. Los de segunda generación construyeron las torres de control atmosférico. Los de hoy — los que nacieron aquí — ya no recuerdan que esto no siempre fue verde. Para ellos el aire siempre fue respirable. El sol siempre fue ese tono dorado. La luna siempre fue enorme en el cielo de la tarde.
+      </p>
+    </div>
+
+    <div class="field-note" data-label="Nota de campo · SNV">
+      <p>La luna de Viridis Nova no tiene nombre oficial en los registros de la UEC. Los colonos la llaman "La Vieja". Dicen que es lo primero que ves cuando naces aquí y lo último que ves cuando te vas. Yo la vi por primera vez desde la lanzadera y entendí el nombre inmediatamente.</p>
+    </div>
+
+    <!-- FIELDS IMAGE -->
+    <div class="image-block">
+      <img src="images/image (3).jpg" alt="Plataforma A5-01 — Vista de los campos continentales">
+      <div class="image-caption">
+        <span class="caption-text">Plataforma de observación A5-01. Los campos agrícolas continentales de la cuenca norte. La figura es un técnico de monitoreo de suelos. Desde aquí la geometría del trabajo de tres generaciones se ve completa.</span>
+        <span class="caption-ref">Foto · SNV · Día 1 · 16:42h local</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>
+        Me asignaron un módulo habitacional en el bloque técnico antes de que terminara el primer día. Tenía tiempo hasta la mañana siguiente, cuando empezaría la auditoría formal de los sistemas ATMOS-A7 — las torres de control atmosférico que son la razón por la que me llamaron. Así que hice lo que siempre hago en el primer día: caminé.
+      </p>
+    </div>
+
+    <div class="image-inline">
+      <img src="images/image (16).jpg" alt="Torre ATMOS-A7">
+      <div class="caption-inline">Torre ATMOS-A7 vista desde el perímetro exterior. Los ventiladores de base mueven el equivalente al volumen de aire de una ciudad mediana cada hora.</div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>
+        Llegué hasta la plataforma de observación A5-01 antes de que se pusiera el sol. Hay un técnico de suelos que viene ahí todos los días al terminar su turno. Me dijo que lleva once años haciendo lo mismo — que desde ahí se ve el trabajo completo, el patrón entero de los campos, y que necesita verlo para recordar por qué hace lo que hace. No le pregunté más. Entendí perfectamente.
+      </p>
+      <p>
+        Los campos de Viridis Nova son lo más cercano a infinito que he visto en un planeta colonizado. Kilómetros y kilómetros de geometría perfecta — cultivos adaptados de semillas terrestres mezclados con especies nativas que tomó cincuenta años aprender a domesticar. Desde la plataforma A5-01 la curvatura del planeta se nota. El horizonte se curva levemente y los campos se doblan con él. La primera generación llegó a un mundo de roca y polvo volcánico. Esto lo hicieron sus hijos y sus nietos.
+      </p>
+    </div>
+
+    <div class="divider"><span class="divider-sym">✦</span></div>
+
+    <!-- ENERGY NODE IMAGE -->
+    <div class="image-block">
+      <img src="images/image (17).jpg" alt="Nodo de energía E-07 — Matrix-4">
+      <div class="image-caption">
+        <span class="caption-text">Nodo de energía E-07 y Hub de distribución Matrix-4. El corazón del sistema de potencia de la cuenca norte. Las columnas de plasma azul son los condensadores de energía cinética de las cascadas.</span>
+        <span class="caption-ref">Foto · SNV · Día 2 · 07:31h local</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>
+        Al segundo día empecé el trabajo real. El nodo E-07 es uno de los cuatro hubs de distribución energética que alimentan los sistemas ATMOS. Mi trabajo aquí no es operar nada — es verificar que todo funcione dentro de parámetros, documentar lo que se desvía, y recomendar qué necesita atención antes del próximo ciclo de mantenimiento mayor. La UEC llama a esto "auditoría de sistemas vitales". Yo lo llamo "escuchar".
+      </p>
+      <p>
+        Cada sistema tiene un sonido cuando funciona bien. Un ritmo. Una temperatura en los paneles que tus manos aprenden a leer después de años. El Matrix-4 sonaba bien. Los condensadores de cascada — esas columnas de luz azul que la gente fotografía como si fueran arte — estaban dentro de rango. Pero hay una válvula de presión en el sector noreste del nodo E-07 que lleva demasiado tiempo con una micro-vibración fuera de patrón. No es una emergencia. Todavía. Pero la reporté.
+      </p>
+    </div>
+
+    <div class="tech-aside">
+      <div class="tech-aside-bar"></div>
+      <div class="tech-aside-content">
+        <strong>Registro técnico — Ref. SNV-001-MNT</strong>
+        Nodo E-07 / Hub Matrix-4 · Válvula de presión sector NE · Vibración fuera de patrón: +0.3Hz sobre nominal · No crítico · Recomendación: Sustitución preventiva en próximo ciclo M3 · Tiempo estimado antes de falla potencial: 14-18 meses · Prioridad: Media-Alta
+      </div>
+    </div>
+
+    <div class="divider"><span class="divider-sym">✦</span></div>
+
+    <!-- ATMOS TOWER IMAGE -->
+    <div class="image-block">
+      <img src="images/image (16).jpg" alt="Torres de control atmosférico — vista exterior">
+      <div class="image-caption">
+        <span class="caption-text">Red de torres ATMOS en la cuenca norte. La vegetación que crece sobre las estructuras no es accidental — fue diseñada como parte del sistema de filtración secundaria. Cada árbol en esa torre trabaja.</span>
+        <span class="caption-ref">Foto · SNV · Día 2 · 14:15h local</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>
+        Lo que más me impresiona de Viridis Nova no son las torres de control atmosférico en sí — es que después de ochenta años, la vegetación que las cubre ya no es decorativa. Es funcional. Los ingenieros de la segunda generación diseñaron las estructuras para que los sistemas de raíces actuaran como filtros secundarios de CO₂. Las plantas no crecieron sobre las torres. Fueron invitadas.
+      </p>
+      <p>
+        Es una filosofía de construcción que no encontré en mis primeras misiones. Los mundos más jóvenes todavía construyen como si el planeta fuera un problema que resolver. Viridis Nova lleva suficiente tiempo para haber aprendido que el planeta no es el problema. Nunca lo fue.
+      </p>
+    </div>
+
+    <div class="field-note" data-label="Observación personal · SNV">
+      <p>Hay un ingeniero de mantenimiento local, de apellido Okafor, que lleva treinta años en las torres ATMOS. Cuando le pregunté cómo sabía cuándo un sistema necesitaba atención antes de que los sensores lo detectaran, se quedó callado un momento y me dijo: "El planeta te avisa. Hay que aprender a escucharlo." No lo dijo en sentido poético. Lo dijo como procedimiento.</p>
+    </div>
+
+    <div class="divider"><span class="divider-sym">✦</span></div>
+
+    <!-- CITY OVERVIEW -->
+    <div class="image-block">
+      <img src="images/image (21).jpg" alt="Vista panorámica desde Domus Serenitas">
+      <div class="image-caption">
+        <span class="caption-text">Vista panorámica desde las terrazas del complejo Domus Serenitas. La nave 97-A en órbita baja es un transporte de carga de largo alcance. La luna en su fase casi completa. Al fondo, la ciudad central de la cuenca.</span>
+        <span class="caption-ref">Foto · SNV · Día 4 · 18:55h local</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>
+        El cuarto día me dieron acceso al complejo Domus Serenitas para verificar los sistemas de ventilación integrada. Es un edificio residencial de alta ocupación — más de doce mil personas viven ahí. Mientras esperaba que el técnico local me abriera el acceso al núcleo de servicios, salí a la terraza exterior.
+      </p>
+      <p>
+        Hay una nave de carga en órbita baja. El 97-A, según la señal de identificación. Probablemente esperando ventana de descenso para los módulos de suministro del trimestre. Desde la terraza se ve perfectamente — una línea blanca y lenta cruzando el cielo entre la luna y las nubes. La gente aquí ni la mira. Para ellos las naves en órbita son tan normales como los pájaros. Yo todavía las fotografío cada vez.
+      </p>
+    </div>
+
+    <div class="divider"><span class="divider-sym">✦</span></div>
+
+    <!-- CIVIC CENTER -->
+    <div class="image-block">
+      <img src="images/image (20).jpg" alt="Centro cívico — Civitas Centrum">
+      <div class="image-caption">
+        <span class="caption-text">Exterior del Civitas Centrum. El edificio más alto de la ciudad central fue diseñado como espacio público permanente — nunca puede ser privatizado por mandato de la carta fundacional de la colonia.</span>
+        <span class="caption-ref">Foto · SNV · Día 5 · 11:20h local</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>
+        El Civitas Centrum es lo que más habla del carácter de esta colonia. Un edificio de esta escala — con plataformas suspendidas, jardines interiores, conexiones a todos los sistemas de transporte público — que por carta fundacional pertenece a todos y no puede pertenecer a nadie. Cuando los primeros colonos llegaron y empezaron a planear la ciudad, pusieron esa cláusula en el primer documento que firmaron. Antes de las torres ATMOS. Antes de los campos. Antes de los hospitales. El espacio común primero.
+      </p>
+      <p>
+        Estuve ahí dos horas revisando los sistemas de climatización de los niveles superiores. Cuando terminé me senté en uno de los jardines del nivel 4 y observé. La gente que pasa por ahí — trabajadores, familias, estudiantes, gente mayor — lo usa como si fuera suyo. Porque lo es.
+      </p>
+    </div>
+
+    <div class="divider"><span class="divider-sym">✦</span></div>
+
+    <!-- MEMORIA OMNIA -->
+    <div class="image-block">
+      <img src="images/image (1).jpg" alt="Memoria Omnia — Bóveda de Memoria Planetaria">
+      <div class="image-caption">
+        <span class="caption-text">Memoria Omnia — Bóveda de Memoria Planetaria. Sector A-7: Registros históricos pre-civilización. Sector M-9: Colecciones de memoria cultural. El edificio más importante de Viridis Nova, según sus habitantes.</span>
+        <span class="caption-ref">Foto · SNV · Día 6 · 09:05h local</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>
+        El sexto día me pidieron que revisara los sistemas de refrigeración del Memoria Omnia — la Bóveda de Memoria Planetaria. Es el archivo de todo lo que ha pasado en Viridis Nova desde el día de llegada de la primera generación. Cada nacimiento, cada muerte, cada decisión de gobierno, cada imagen, cada voz grabada. Pero también — y esto es lo que lo hace diferente de otros archivos que he visitado — los recuerdos personales que los colonos eligieron donar. Hay gente que dejó grabada su memoria completa. Sus sueños. Sus miedos. Lo que sintieron la primera vez que vieron llover en un mundo que ellos mismos habían aprendido a mojar.
+      </p>
+      <p>
+        Los sistemas de refrigeración son críticos. Los servidores que guardan esa memoria generan calor suficiente para cocinar. Estuve cuatro horas en los núcleos técnicos verificando cada circuito. Cuando salí al exterior y vi el edificio desde el puente de acceso — con la vegetación creciendo por las grietas, las cascadas naturales cayendo por los lados, los vehículos de mantenimiento en la entrada — pensé que era el edificio más importante que había visitado en mis dieciséis años de misiones.
+      </p>
+      <p>
+        No porque guarde datos. Sino porque una civilización que construye un lugar así — antes de construir monumentos, antes de construir palacios de gobierno, antes de construir todo lo demás — es una civilización que decidió que lo que importa es recordar quiénes fueron mientras se convierten en quiénes son.
+      </p>
+    </div>
+
+    <div class="field-note" data-label="Nota final · Día 7 · Antes de dormir">
+      <p>Mañana empiezo la segunda semana. Quedan los sistemas de la torre de control atmosférico sur, la auditoría del puerto vertical, y los módulos residenciales del sector este. Pero esta noche, desde la ventana de mi módulo, puedo ver los campos en la oscuridad — iluminados apenas por el reflejo de La Vieja en el cielo — y pienso que si alguna vez tuviera que elegir un planeta para quedarme, este estaría en la lista corta.</p>
+    </div>
+
+    <!-- SIGNATURE -->
+    <div class="signature-block">
+      <div class="sig-left">
+        <div>Registrado por</div>
+        <div class="sig-name">S. Nikolas Ventura A.</div>
+        <div>Técnico Sr. de Sistemas Vitales — Clase IV</div>
+        <div>Rotación Interestelar · UEC · División de Colonias</div>
+      </div>
+      <div class="sig-right">
+        Entrada 001 de serie abierta<br>
+        Viridis Nova · KPL-442b<br>
+        Ciclo 7 · Año 312 EA<br>
+        Archivo personal · No clasificado<br>
+        "El cuaderno"
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ FOOTER ══ -->
+  <div class="notebook-footer">
+    <span class="footer-series">Legado Kepler · Diario de campo · Serie I</span>
+    <span class="footer-page">001</span>
+  </div>
+
+</div>
+
+</body>
+</html>

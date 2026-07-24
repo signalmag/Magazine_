@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legado Kepler — Entrada 002</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Share+Tech+Mono&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f2ead8;
+    --paper-dark: #e8ddc8;
+    --paper-aged: #d4c9a8;
+    --ink: #2a2318;
+    --ink-faded: #5a5040;
+    --ink-light: #8a7a60;
+    --accent: #c47a2a;
+    --accent-light: #e8b870;
+    --teal: #3a7a6a;
+    --stamp-red: #8a2a1a;
+    --rule: #c4b898;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #2a2010;
+    font-family: 'Crimson Pro', Georgia, serif;
+    min-height: 100vh;
+    padding: 3rem 1.5rem;
+  }
+
+  .notebook {
+    max-width: 820px;
+    margin: 0 auto;
+    background: var(--paper);
+    box-shadow: 0 20px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,0,0,0.3);
+    position: relative;
+  }
+
+  .notebook::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0.8;
+  }
+
+  .notebook::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    width: 40px;
+    background: linear-gradient(to right, rgba(0,0,0,0.12), transparent);
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .notebook-header {
+    background: var(--ink);
+    padding: 2rem 3rem 1.8rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .notebook-header::before {
+    content: 'LEGADO KEPLER';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 6rem;
+    color: rgba(255,255,255,0.03);
+    letter-spacing: 0.3em;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.2rem;
+  }
+
+  .series-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--accent-light);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    line-height: 1.8;
+  }
+
+  .entry-code {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: #5a5040;
+    letter-spacing: 0.15em;
+    text-align: right;
+    line-height: 1.8;
+  }
+
+  .main-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 300;
+    color: var(--paper);
+    letter-spacing: 0.1em;
+    line-height: 1;
+  }
+
+  .main-title span { color: var(--accent); }
+
+  .subtitle {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.58rem;
+    color: #4a4030;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-top: 0.5rem;
+  }
+
+  .mission-bar {
+    background: var(--accent);
+    padding: 0.6rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .mission-bar span {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--ink);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .field-header {
+    padding: 2.5rem 3rem 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 2rem;
+    align-items: start;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .planet-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.1;
+  }
+
+  .planet-designation {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--teal);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-top: 0.3rem;
+  }
+
+  .field-stamp { text-align: right; }
+
+  .stamp-box {
+    display: inline-block;
+    border: 2px solid var(--teal);
+    padding: 0.4rem 0.8rem;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--teal);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    line-height: 1.6;
+    transform: rotate(-1.5deg);
+  }
+
+  .field-meta {
+    display: flex;
+    gap: 2.5rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .meta-field {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--ink-light);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    line-height: 1.8;
+  }
+
+  .meta-field strong {
+    display: block;
+    color: var(--ink-faded);
+    font-size: 0.65rem;
+  }
+
+  .notebook-body { padding: 2.5rem 3rem; }
+
+  .ruled-section {
+    background-image: repeating-linear-gradient(
+      transparent, transparent 31px,
+      var(--rule) 31px, var(--rule) 32px
+    );
+    background-position: 0 1.5rem;
+  }
+
+  .entry-text {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.1rem;
+    line-height: 2rem;
+    color: var(--ink);
+    margin-bottom: 2rem;
+  }
+
+  .entry-text p { margin-bottom: 2rem; }
+
+  .entry-text p:first-child::first-letter {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 4.5rem;
+    font-weight: 600;
+    float: left;
+    line-height: 0.75;
+    margin: 0.1em 0.1em 0 0;
+    color: var(--accent);
+  }
+
+  .image-block {
+    margin: 2.5rem -3rem;
+    position: relative;
+  }
+
+  .image-block img {
+    width: 100%;
+    display: block;
+    filter: sepia(15%) contrast(0.95);
+  }
+
+  .image-caption {
+    padding: 0.8rem 3rem;
+    background: var(--paper-dark);
+    border-top: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+  }
+
+  .caption-text {
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.85rem;
+    font-style: italic;
+    color: var(--ink-faded);
+    max-width: 70%;
+  }
+
+  .caption-ref {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.5rem;
+    color: var(--ink-light);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .image-inline {
+    float: right;
+    width: 44%;
+    margin: 0 -0.5rem 1.5rem 2rem;
+  }
+
+  .image-inline img {
+    width: 100%;
+    display: block;
+    filter: sepia(10%) contrast(0.95);
+    border: 1px solid var(--rule);
+  }
+
+  .caption-inline {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.5rem;
+    color: var(--ink-light);
+    letter-spacing: 0.08em;
+    padding: 0.4rem 0.5rem;
+    background: var(--paper-dark);
+    border: 1px solid var(--rule);
+    border-top: none;
+    line-height: 1.5;
+  }
+
+  .field-note {
+    margin: 2rem 0;
+    padding: 1.2rem 1.5rem;
+    background: var(--paper-aged);
+    border-left: 3px solid var(--accent);
+    position: relative;
+  }
+
+  .field-note::before {
+    content: attr(data-label);
+    position: absolute;
+    top: -0.6rem; left: 1rem;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.5rem;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    background: var(--paper-aged);
+    padding: 0 0.4rem;
+  }
+
+  .field-note p {
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.95rem;
+    font-style: italic;
+    color: var(--ink-faded);
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  .tech-aside {
+    margin: 2rem 0;
+    padding: 1rem 1.5rem;
+    border: 1px solid var(--rule);
+    background: var(--paper-dark);
+    display: grid;
+    grid-template-columns: 3px 1fr;
+    gap: 1.2rem;
+  }
+
+  .tech-aside-bar { background: var(--teal); }
+
+  .tech-aside-content {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--ink-faded);
+    letter-spacing: 0.05em;
+    line-height: 1.8;
+  }
+
+  .tech-aside-content strong {
+    color: var(--teal);
+    display: block;
+    margin-bottom: 0.3rem;
+    font-size: 0.58rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* Sketch / blueprint block */
+  .blueprint-block {
+    margin: 2rem 0;
+    border: 1px solid var(--rule);
+    overflow: hidden;
+  }
+
+  .blueprint-label {
+    background: var(--ink);
+    padding: 0.5rem 1rem;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--accent-light);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .blueprint-block img {
+    width: 100%;
+    display: block;
+    filter: sepia(8%) contrast(0.95);
+  }
+
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 2.5rem 0;
+    clear: both;
+  }
+
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  .divider-sym {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    color: var(--rule);
+  }
+
+  .section-header {
+    margin: 3rem 0 1.5rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 2px solid var(--ink);
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+  }
+
+  .section-num {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .section-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+
+  .signature-block {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+
+  .sig-left {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 1.1rem;
+    color: var(--ink-faded);
+    line-height: 1.8;
+  }
+
+  .sig-name {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--ink);
+    font-style: normal;
+  }
+
+  .sig-right {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--ink-light);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: right;
+    line-height: 1.8;
+  }
+
+  .nav-entries {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem 3rem;
+    background: var(--paper-dark);
+    border-top: 1px solid var(--rule);
+  }
+
+  .nav-link {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--ink-light);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-link:hover { color: var(--accent); }
+
+  .notebook-footer {
+    background: var(--ink);
+    padding: 1rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-series {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.55rem;
+    color: #3a3020;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .footer-page {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.9rem;
+    color: #3a3020;
+  }
+
+  @media (max-width: 640px) {
+    body { padding: 0; }
+    .notebook-header, .notebook-body, .field-header { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .mission-bar, .nav-entries, .notebook-footer { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .image-block { margin: 2rem -1.5rem; }
+    .image-caption { padding: 0.8rem 1.5rem; }
+    .image-inline { float: none; width: 100%; margin: 1.5rem 0; }
+    .field-meta { flex-wrap: wrap; gap: 1rem; }
+    .signature-block { flex-direction: column; }
+    .main-title { font-size: 2.2rem; }
+  }
+
+  /* ══ SIGNAL NAV ══ */
+  .signal-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    background: var(--ink);
+    border-bottom: 1px solid #3a2e1a;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    height: 40px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .signal-nav__home {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    text-decoration: none;
+    color: var(--paper);
+  }
+  .signal-nav__logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+  }
+  .signal-nav__ed {
+    color: #3a2e1a;
+    font-size: 0.5rem;
+  }
+  .signal-nav__home:hover .signal-nav__logo { color: var(--accent); }
+  .signal-nav__trail {
+    color: #4a3a20;
+    font-size: 0.5rem;
+  }
+  .signal-nav__current { color: var(--accent-light); }
+  .signal-nav__arrows {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: #3a2e1a;
+  }
+  .signal-nav__arrows a {
+    color: #7a6a50;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .signal-nav__arrows a:hover { color: var(--accent); }
+  .signal-nav__disabled { opacity: 0.2; cursor: default; }
+  .signal-nav__sep { opacity: 0.3; }
+  body { padding-top: 40px; }
+  @media (max-width: 640px) {
+    .signal-nav__trail { display: none; }
+    .signal-nav { padding: 0 1rem; }
+  }
+
+</style>
+</head>
+<body>
+<!-- ══ SIGNAL NAV ══ -->
+<nav class="signal-nav">
+  <a class="signal-nav__home" href="../index.html">
+    <span class="signal-nav__logo">SIGNAL</span>
+    <span class="signal-nav__ed">Serie · Legado Kepler</span>
+  </a>
+  <div class="signal-nav__trail">
+    Legado Kepler · <span class="signal-nav__current">Entrada 002</span>
+  </div>
+  <div class="signal-nav__arrows">
+    <a href="../index.html">Índice</a>
+    <span class="signal-nav__sep">·</span>
+    <a class="signal-nav__prev" href="legado-kepler-entrada-001.html">← Entrada 001</a>
+    <span class="signal-nav__sep">·</span>
+    <a class="signal-nav__next" href="legado-kepler-entrada-003.html">Entrada 003 →</a>
+  </div>
+</nav>
+
+<div class="notebook">
+
+  <!-- HEADER -->
+  <div class="notebook-header">
+    <div class="header-top">
+      <div class="series-title">
+        Legado Kepler · Diario de campo · Serie I<br>
+        Viridis Nova — Segunda parte
+      </div>
+      <div class="entry-code">
+        Entrada N° 002<br>
+        Clasificación: Abierta<br>
+        Archivo: LK-SNV-002
+      </div>
+    </div>
+    <div class="main-title">LA CIUDAD<span> </span>POR<span> </span>DENTRO</div>
+    <div class="subtitle">Kepler-442b · Sistema Lira · Días 8 al 14 en superficie</div>
+  </div>
+
+  <div class="mission-bar">
+    <span>S. Nikolas Ventura A. · Técnico Sr. Sistemas Vitales — Clase IV</span>
+    <span>Ciclo 7 · Año 312 EA · Días 8–14</span>
+    <span>Auditoría: Módulos residenciales + Sistemas biológicos integrados</span>
+  </div>
+
+  <!-- FIELD HEADER -->
+  <div class="field-header">
+    <div>
+      <div class="planet-name">Viridis Nova — Segunda semana</div>
+      <div class="planet-designation">KPL-442b · Zona residencial central · Auditoría Clase B</div>
+      <div class="field-meta">
+        <div class="meta-field"><strong>Días en planeta</strong>8 — 14</div>
+        <div class="meta-field"><strong>Zonas auditadas</strong>Civitas · Domus · BotWork</div>
+        <div class="meta-field"><strong>Sistemas revisados</strong>14 de 17</div>
+        <div class="meta-field"><strong>Incidencias</strong>2 menores · 0 críticas</div>
+      </div>
+    </div>
+    <div class="field-stamp">
+      <div class="stamp-box">
+        Auditoría<br>
+        residencial<br>
+        en curso<br>
+        Clase B
+      </div>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div class="notebook-body">
+
+    <!-- SECTION 1: CIVITAS -->
+    <div class="section-header">
+      <span class="section-num">§ 01</span>
+      <span class="section-name">El espacio que pertenece a todos</span>
+    </div>
+
+    <div class="image-block">
+      <img src="images/image (5).jpg" alt="Interior del Civitas Centrum">
+      <div class="image-caption">
+        <span class="caption-text">Interior del Civitas Centrum — nivel de acceso público. Las plataformas suspendidas conectan todos los sectores de la ciudad sin pasar por propiedad privada. Diseño de la segunda generación de colonos.</span>
+        <span class="caption-ref">Foto · SNV · Día 8 · 10:47h</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>
+        La segunda semana empezó en el Civitas Centrum. Mi trabajo era técnico — revisar los sistemas de climatización de los niveles superiores, verificar los nodos de distribución de agua en los jardines interiores, documentar el estado de los paneles de ventilación biológica. Pero el Civitas no te deja ser solo técnico. Es demasiado grande. Demasiado vivo.
+      </p>
+      <p>
+        Desde el nivel inferior, mirando hacia arriba, la estructura parece imposible. Plataformas que flotan sostenidas por columnas que parecen demasiado delgadas para el peso que cargan — pero que funcionan porque el diseño distribuye la carga a través de toda la red, no en puntos individuales. Es el mismo principio que usan los árboles. Los ingenieros de la segunda generación lo sabían. Construyeron como si fueran botánicos.
+      </p>
+    </div>
+
+    <div class="field-note" data-label="Observación · Día 8">
+      <p>Hay un detalle que no aparece en ningún plano técnico que me dieron: las plantas que cuelgan de los niveles superiores no son ornamentales. Están conectadas a los sensores de calidad del aire. Cuando una zona del edificio empieza a acumular CO₂ por encima del umbral, las plantas en esa zona reciben más riego automáticamente. El edificio respira con sus habitantes. Llevo quince años auditando sistemas vitales y nunca había visto algo así.</p>
+    </div>
+
+    <div class="divider"><span class="divider-sym">✦</span></div>
+
+    <!-- SECTION 2: PLAZA VERDE -->
+    <div class="section-header">
+      <span class="section-num">§ 02</span>
+      <span class="section-name">Las plazas que nadie diseñó para ser plazas</span>
+    </div>
+
+    <div class="image-block">
+      <img src="images/image (19).jpg" alt="Plaza jardín interior">
+      <div class="image-caption">
+        <span class="caption-text">Plaza de nivel intermedio en el complejo Domus Humanitas. Lo que en los planos originales era un área de tránsito se convirtió en el centro social del edificio. Nadie lo planificó así — simplemente ocurrió.</span>
+        <span class="caption-ref">Foto · SNV · Día 9 · 14:22h</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>
+        El día 9 entré al complejo Domus Humanitas para revisar los sistemas de filtración de agua en los niveles medios. Mientras esperaba que el técnico local me abriera el acceso al núcleo de servicios del nivel 7, me quedé observando la plaza interior.
+      </p>
+      <p>
+        En los planos originales ese espacio era un área de circulación — un corredor ancho entre los módulos residenciales y los servicios comunes. Nadie lo diseñó como plaza. Pero en algún momento de la segunda o tercera generación, alguien puso una fuente. Después alguien plantó un árbol. Después alguien instaló una mesa. Y así, sin que ningún arquitecto lo decidiera, el corredor se volvió el centro de todo el edificio. La gente come ahí. Los niños juegan ahí. Los viejos se sientan a ver pasar el tiempo.
+      </p>
+      <p>
+        Hay una teoría en diseño urbano que dice que los mejores espacios públicos no se diseñan — se descubren. Que la gente siempre encuentra el lugar donde quiere estar, y que el trabajo del arquitecto es simplemente no estorbar. Viridis Nova lo entendió.
+      </p>
+    </div>
+
+    <div class="divider"><span class="divider-sym">✦</span></div>
+
+    <!-- SECTION 3: ATRIO CENTRAL -->
+    <div class="section-header">
+      <span class="section-num">§ 03</span>
+      <span class="section-name">El árbol en el centro de todo</span>
+    </div>
+
+    <div class="image-block">
+      <img src="images/image (12).jpg" alt="Atrio central con árbol">
+      <div class="image-caption">
+        <span class="caption-text">Atrio central del complejo cultural norte. El árbol del centro fue plantado por la primera generación de colonos como acto simbólico — la primera semilla traída de la Tierra que sobrevivió en suelo de Viridis Nova. Lleva ochenta años creciendo.</span>
+        <span class="caption-ref">Foto · SNV · Día 10 · 11:05h</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>
+        El árbol del atrio central tiene ochenta años. Lo trajo la primera generación en una cápsula de preservación criogénica — una semilla de roble de algún bosque de Europa que ya no existe como existía entonces. La plantaron el primer día que el suelo de Viridis Nova tuvo suficiente materia orgánica para sostener vida terrestre. No como experimento científico. Como promesa.
+      </p>
+      <p>
+        Hoy ese árbol tiene el techo más alto del complejo y sus raíces han crecido tanto que los ingenieros tuvieron que rediseñar parte de la cimentación del edificio para acomodarlas. Nadie consideró removerlo. La conversación, según me contaron, duró aproximadamente tres minutos antes de que el consejo de administración la cerrara. El árbol se queda. El edificio se adapta.
+      </p>
+    </div>
+
+    <div class="field-note" data-label="Nota personal · SNV">
+      <p>Hay algo que me incomoda de una manera que no sé bien cómo nombrar. Llevo años yendo de colonia en colonia, auditando sistemas, firmando reportes, y siguiendo al siguiente destino. Nunca he plantado nada. Nunca he dejado algo que creciera después de que me fui. Este árbol lleva ochenta años aquí y seguirá cuando los bisnietos de los que lo plantaron ya no estén. Hay una clase de permanencia en eso que no sé si envidiar o simplemente admirar desde lejos.</p>
+    </div>
+
+    <div class="divider"><span class="divider-sym">✦</span></div>
+
+    <!-- SECTION 4: BOTANICAL WORKSPACE -->
+    <div class="section-header">
+      <span class="section-num">§ 04</span>
+      <span class="section-name">Trabajar entre plantas no es metáfora</span>
+    </div>
+
+    <div class="blueprint-block">
+      <div class="blueprint-label">
+        <span>Documento técnico auditado · Botanical Workspace · Facility H06-27</span>
+        <span>Ref. SNV-002-DOC</span>
+      </div>
+      <img src="images/image (10).jpg" alt="Botanical Workspace — plano técnico">
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>
+        El día 11 me asignaron la auditoría del complejo de espacios de trabajo botánicos — los llamados BotWork en la nomenclatura local. Son espacios de trabajo integrados con sistemas biológicos activos: las plantas no están ahí para decorar sino para filtrar el aire, regular la humedad, generar oxígeno y reducir el ruido. Cada escritorio tiene un indicador de calidad ambiental que muestra en tiempo real la contribución del ecosistema inmediato.
+      </p>
+    </div>
+
+    <div class="image-inline">
+      <img src="images/image (9).jpg" alt="Torre Residencial Ecosistémica — corte">
+      <div class="caption-inline">Torre Residencial Ecosistémica — corte lateral. Cada nivel alberga un ecosistema distinto. Los sistemas naturales de agua conectan todos los pisos.</div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>
+        Lo que me impresionó no fue la tecnología — fue que funciona. Los trabajadores en estos espacios reportan niveles de concentración y bienestar consistentemente más altos que en módulos de trabajo convencionales. No es placebo. Los datos biométricos de los últimos diez años son inequívocos.
+      </p>
+      <p>
+        El documento técnico que me dieron para la auditoría incluye un plano de sección que muestra las cinco capas del sistema: estructural, ventilación, servicios, crecimiento, y trabajo. Cinco capas que se necesitan mutuamente. Si falla la capa de crecimiento, la de ventilación degrada. Si falla la de servicios, la de crecimiento muere. No hay redundancia porque el sistema completo es la redundancia.
+      </p>
+    </div>
+
+    <div class="tech-aside">
+      <div class="tech-aside-bar"></div>
+      <div class="tech-aside-content">
+        <strong>Registro técnico — Ref. SNV-002-MNT</strong>
+        BotWork Facility H06-27 · Sistema de riego integrado · Sensor de humedad B-27 Hudson Array · Calibración fuera de rango: +4% sobre nominal en sector norte · No crítico · Acción: Recalibración preventiva realizada en sitio · Tiempo de intervención: 40 min · Estado: Resuelto · Sin escalamiento requerido
+      </div>
+    </div>
+
+    <div class="divider"><span class="divider-sym">✦</span></div>
+
+    <!-- SECTION 5: RESIDENTIAL MODULES -->
+    <div class="section-header">
+      <span class="section-num">§ 05</span>
+      <span class="section-name">Los módulos que aprenden de sus habitantes</span>
+    </div>
+
+    <div class="image-block">
+      <img src="images/image (15).jpg" alt="Living Core System — plano técnico residencial">
+      <div class="image-caption">
+        <span class="caption-text">Living Core System — documentación técnica interna del módulo A-17. El sistema adapta la configuración espacial en tiempo real según los patrones de uso y biofeedback de los habitantes. Cada módulo aprende.</span>
+        <span class="caption-ref">Documento auditado · SNV · Día 12</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>
+        Los módulos residenciales de Viridis Nova son lo más lejos que he visto de la idea de "habitación" que traje conmigo de los primeros mundos que visité. No son espacios con funciones fijas — son sistemas que evolucionan con las personas que los habitan.
+      </p>
+      <p>
+        El Living Core System, como lo llaman aquí, tiene cinco capas de infraestructura expuesta y accesible: los paneles de pared son intercambiables, los bloques de servicio pueden ser reemplazados individualmente sin afectar el resto, las unidades de regulación ambiental están distribuidas en lugar de centralizadas. Y sobre todo eso, hay una capa de inteligencia que aprende los patrones del habitante — a qué hora duerme, cómo se mueve, qué temperatura prefiere por la mañana — y ajusta el entorno en consecuencia.
+      </p>
+    </div>
+
+    <div class="image-block">
+      <img src="images/image (14).jpg" alt="Living Core System LC-77 — interior habitado">
+      <div class="image-caption">
+        <span class="caption-text">Módulo LC-77, Variante A.12 — en uso. La habitante observa el exterior desde la terraza integrada. En pantalla: el sistema de overview muestra el estado de todos los subsistemas del módulo en tiempo real.</span>
+        <span class="caption-ref">Foto · SNV · Día 12 · 16:30h</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>
+        Durante la auditoría del módulo LC-77 conocí a su habitante — una investigadora de ecosistemas llamada Vera que lleva doce años viviendo en el mismo módulo. Me mostró cómo el sistema había ido reconfigurando el espacio a lo largo de los años: cuando llegó, el área de trabajo era pequeña y el área de descanso dominaba. Hoy es al revés. El módulo la conoce mejor que muchas personas que la conocen a ella.
+      </p>
+      <p>
+        Le pregunté si eso no le parecía inquietante. Se quedó pensando un momento y me dijo que al principio sí — que la primera vez que el módulo cambió algo sin que ella lo pidiera, se sintió observada. Pero que con el tiempo entendió que no era observación. Era escucha. Hay una diferencia.
+      </p>
+    </div>
+
+    <div class="field-note" data-label="Nota final de semana · Día 14">
+      <p>Mañana empiezo la tercera y última semana en Viridis Nova. Quedan tres sistemas por auditar — la Torre Ecosistémica sur, la oficina de monitoreo atmosférico del sector este, y el Puerto Vertical 7A-19, desde donde saldré en doce días. Mientras escribo esto, desde la ventana de mi módulo provisional puedo ver las luces de la ciudad distribuirse en capas — los jardines iluminados de los pisos medios, las terrazas de los niveles altos, y muy arriba, el destello lento de alguna nave en órbita. Probablemente la misma 97-A de la semana pasada. O quizás ya es otra. Desde aquí es imposible saberlo.</p>
+    </div>
+
+    <!-- SIGNATURE -->
+    <div class="signature-block">
+      <div class="sig-left">
+        <div>Registrado por</div>
+        <div class="sig-name">S. Nikolas Ventura A.</div>
+        <div>Técnico Sr. de Sistemas Vitales — Clase IV</div>
+        <div>Rotación Interestelar · UEC · División de Colonias</div>
+      </div>
+      <div class="sig-right">
+        Entrada 002 · Continuación de serie<br>
+        Viridis Nova · KPL-442b<br>
+        Ciclo 7 · Año 312 EA<br>
+        Días 8–14 en superficie<br>
+        "El cuaderno"
+      </div>
+    </div>
+
+  </div>
+
+  <!-- NAV -->
+  <div class="nav-entries">
+    <a href="legado-kepler-entrada-001.html" class="nav-link">← Entrada 001 · Primera semana</a>
+    <a href="legado-kepler-entrada-003.html" class="nav-link">Entrada 003 · Antes de partir →</a>
+  </div>
+
+  <div class="notebook-footer">
+    <span class="footer-series">Legado Kepler · Diario de campo · Serie I</span>
+    <span class="footer-page">002</span>
+  </div>
+
+</div>
+</body>
+</html>

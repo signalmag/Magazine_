@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Política de Privacidad — SIGNAL</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=JetBrains+Mono:wght@300;400;500&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:        #1a1814;
+    --bg2:        #222018;
+    --paper:      #f5f0e8;
+    --accent:     #c4873a;
+    --accent2:    #e8c88a;
+    --muted:      #7a7268;
+    --rule:       #2a2620;
+    --white:      #f0ece4;
+  }
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--ink);
+    color: var(--white);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.4;
+  }
+
+  header {
+    border-bottom: 1px solid var(--rule);
+    padding: 0 3rem;
+    position: sticky;
+    top: 0;
+    background: rgba(26,24,20,0.97);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 48px;
+  }
+  .header-tags { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; }
+  .header-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 900; letter-spacing: 0.05em; color: var(--white); text-decoration: none; }
+  .header-logo span { color: var(--accent); }
+  .header-site { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.1em; color: var(--muted); }
+
+  .page-hero {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 6rem 3rem 4rem;
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+  .page-label { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.25em; color: var(--accent); text-transform: uppercase; margin-bottom: 1.5rem; }
+  .page-title { font-family: 'Playfair Display', serif; font-weight: 900; font-size: clamp(2.5rem, 6vw, 5rem); line-height: 0.95; color: var(--white); letter-spacing: -0.02em; }
+  .page-title span { color: var(--accent); }
+  .page-date { font-family: 'JetBrains Mono', monospace; font-size: 0.55rem; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; text-align: right; }
+
+  /* LAYOUT */
+  .doc-wrap {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 5rem 3rem;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 5rem;
+    align-items: start;
+  }
+
+  /* TOC */
+  .toc {
+    position: sticky;
+    top: 80px;
+    border-left: 1px solid var(--rule);
+    padding-left: 1.5rem;
+  }
+  .toc-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+  }
+  .toc a {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-decoration: none;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+    transition: color 0.2s;
+    line-height: 1.5;
+  }
+  .toc a:hover { color: var(--accent); }
+
+  /* CONTENT */
+  .doc-body h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 1.2rem;
+    margin-top: 3.5rem;
+    padding-top: 3.5rem;
+    border-top: 1px solid var(--rule);
+    scroll-margin-top: 80px;
+  }
+  .doc-body h2:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+  .doc-body p {
+    font-size: 1.05rem;
+    color: #9a9080;
+    line-height: 1.85;
+    margin-bottom: 1.2rem;
+  }
+  .doc-body p strong { color: var(--accent2); font-weight: 400; }
+  .doc-body ul {
+    list-style: none;
+    margin: 1rem 0 1.5rem 0;
+  }
+  .doc-body ul li {
+    font-size: 1rem;
+    color: #9a9080;
+    line-height: 1.7;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--rule);
+    padding-left: 1.2rem;
+    position: relative;
+  }
+  .doc-body ul li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+  }
+
+  .highlight-box {
+    background: var(--bg2);
+    border-left: 2px solid var(--accent);
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+  }
+  .highlight-box p {
+    font-size: 0.95rem;
+    margin-bottom: 0;
+  }
+
+  /* FOOTER */
+  .site-footer { background: var(--ink); padding: 3rem; border-top: 1px solid #2a2418; }
+  .footer-inner { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem; }
+  .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 900; color: var(--paper); letter-spacing: -0.02em; }
+  .footer-logo span { color: var(--accent); }
+  .footer-links { display: flex; gap: 2rem; flex-wrap: wrap; }
+  .footer-links a { font-family: 'JetBrains Mono', monospace; font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase; color: #4a4438; text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--accent); }
+  .footer-copy { font-family: 'JetBrains Mono', monospace; font-size: 0.5rem; color: #2a2418; letter-spacing: 0.1em; text-transform: uppercase; }
+
+  @media (max-width: 768px) {
+    header { padding: 0 1.5rem; }
+    .header-tags, .header-site { display: none; }
+    .page-hero { padding: 4rem 1.5rem 3rem; }
+    .doc-wrap { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 1.5rem; }
+    .toc { position: static; }
+    .site-footer { padding: 2rem 1.5rem; }
+    .footer-inner { flex-direction: column; gap: 1rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-tags">IA GENERATIVA · ARTE DIGITAL · CULTURA VISUAL · FUTURO</div>
+  <a href="index.html" class="header-logo">S<span>I</span>GN<span>A</span>L<span>.</span></a>
+  <div class="header-site">SIGNALZINE.RF.GD</div>
+</header>
+
+<div class="page-hero">
+  <div>
+    <div class="page-label">DOCUMENTO LEGAL</div>
+    <h1 class="page-title">POLÍTICA DE<br><span>PRIVACIDAD</span></h1>
+  </div>
+  <div class="page-date">
+    Última actualización<br>Junio 2026
+  </div>
+</div>
+
+<div class="doc-wrap">
+
+  <nav class="toc">
+    <div class="toc-title">Contenido</div>
+    <a href="#info">Información que recopilamos</a>
+    <a href="#uso">Uso de la información</a>
+    <a href="#substack">Substack &amp; terceros</a>
+    <a href="#cookies">Cookies</a>
+    <a href="#derechos">Tus derechos</a>
+    <a href="#contacto">Contacto</a>
+  </nav>
+
+  <div class="doc-body">
+
+    <div class="highlight-box">
+      <p>En SIGNAL respetamos tu privacidad. Esta política explica qué información recopilamos, cómo la usamos y qué derechos tienes sobre ella. Si tienes preguntas, escríbenos a <strong>revista.signal@gmail.com</strong>.</p>
+    </div>
+
+    <h2 id="info">Información que recopilamos</h2>
+    <p>SIGNAL es una publicación de acceso libre. No requerimos registro para leer nuestros contenidos. Sin embargo, podemos recopilar información en los siguientes casos:</p>
+    <ul>
+      <li><strong>Suscripción:</strong> Si te suscribes a través de Substack, proporcionas tu dirección de correo electrónico. Este proceso lo gestiona directamente Substack.</li>
+      <li><strong>Formulario de contacto:</strong> Si nos escribes a través del formulario de contacto, recopilamos tu nombre, correo electrónico y el contenido de tu mensaje.</li>
+      <li><strong>Datos técnicos:</strong> Como cualquier sitio web, nuestro servidor puede registrar información técnica como tu dirección IP, tipo de navegador y páginas visitadas, de forma anónima y agregada.</li>
+    </ul>
+
+    <h2 id="uso">Uso de la información</h2>
+    <p>Utilizamos la información recopilada exclusivamente para:</p>
+    <ul>
+      <li>Responder a tus consultas y mensajes de contacto.</li>
+      <li>Enviarte notificaciones sobre nuevas ediciones de SIGNAL, si te has suscrito.</li>
+      <li>Mejorar el funcionamiento y contenido de la publicación.</li>
+      <li>Cumplir con obligaciones legales cuando sea necesario.</li>
+    </ul>
+    <p><strong>No vendemos, alquilamos ni compartimos tu información personal con terceros con fines comerciales.</strong></p>
+
+    <h2 id="substack">Substack y servicios de terceros</h2>
+    <p>Nuestro sistema de suscripciones opera a través de <strong>Substack</strong>. Al suscribirte, aceptas también la política de privacidad de Substack, disponible en su sitio web. SIGNAL no tiene acceso directo a los datos de pago ni almacena información de tarjetas de crédito.</p>
+    <p>Esta web puede incluir contenido embebido de plataformas de terceros (por ejemplo, el formulario de suscripción de Substack). Estos servicios pueden recopilar datos según sus propias políticas.</p>
+
+    <h2 id="cookies">Cookies</h2>
+    <p>SIGNAL no utiliza cookies de seguimiento ni publicidad. Es posible que el contenido embebido de Substack establezca sus propias cookies, sobre las cuales no tenemos control. Puedes configurar tu navegador para rechazar cookies en cualquier momento.</p>
+
+    <h2 id="derechos">Tus derechos</h2>
+    <p>Dependiendo de tu ubicación, puedes tener los siguientes derechos respecto a tus datos personales:</p>
+    <ul>
+      <li>Derecho de acceso: conocer qué datos tenemos sobre ti.</li>
+      <li>Derecho de rectificación: corregir información inexacta.</li>
+      <li>Derecho de supresión: solicitar que eliminemos tus datos.</li>
+      <li>Derecho a darte de baja de las comunicaciones en cualquier momento.</li>
+    </ul>
+    <p>Para ejercer cualquiera de estos derechos, contáctanos en <strong>revista.signal@gmail.com</strong>.</p>
+
+    <h2 id="contacto">Contacto sobre privacidad</h2>
+    <p>Si tienes preguntas, comentarios o solicitudes relacionadas con esta política de privacidad, puedes contactarnos en:</p>
+    <p><strong>revista.signal@gmail.com</strong></p>
+    <p>Nos comprometemos a responder en un plazo máximo de 30 días.</p>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-logo">S<span>I</span>GN<span>A</span>L</div>
+    <div class="footer-links">
+      <a href="https://www.instagram.com/signal.ai.mag/" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://substack.com/@signalmag" target="_blank" rel="noopener">Substack</a>
+      <a href="mailto:revista.signal@gmail.com">Email</a>
+      <a href="acerca-de.html">Acerca de</a>
+      <a href="contacto.html">Contacto</a>
+      <a href="privacidad.html">Privacidad</a>
+      <a href="terminos.html">Términos</a>
+    </div>
+    <div class="footer-copy">Signal · Arte generativo · Acceso libre</div>
+  </div>
+</footer>
+
+</body>
+</html>

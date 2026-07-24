@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legado Kepler — Entrada 006 · Las entrañas del ARK</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Share+Tech+Mono&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#f2ead8;--paper-dark:#e8ddc8;--paper-aged:#d4c9a8;--ink:#2a2318;--ink-faded:#5a5040;--ink-light:#8a7a60;--accent:#c47a2a;--accent-light:#e8b870;--teal:#3a7a6a;--stamp-red:#8a2a1a;--rule:#c4b898;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:#1a1208;font-family:'Crimson Pro',Georgia,serif;min-height:100vh;padding:3rem 1.5rem;padding-top:calc(3rem + 44px);}
+  .signal-nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--ink);border-bottom:2px solid var(--accent);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:44px;font-family:'Share Tech Mono',monospace;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;}
+  .signal-nav__home{display:flex;align-items:center;gap:.8rem;text-decoration:none;color:var(--paper);transition:opacity .2s;}
+  .signal-nav__home:hover{opacity:.8;}
+  .signal-nav__logo{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;letter-spacing:.15em;text-transform:none;color:var(--paper);}
+  .signal-nav__logo .ia{color:var(--accent);}
+  .signal-nav__ed{color:var(--accent);font-size:.55rem;border-left:1px solid #3a2e1a;padding-left:.8rem;}
+  .signal-nav__trail{color:#4a3a20;font-size:.55rem;flex:1;text-align:center;padding:0 1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .signal-nav__current{color:var(--accent-light);}
+  .signal-nav__arrows{display:flex;align-items:center;gap:.5rem;}
+  .signal-nav__arrows a{display:inline-flex;align-items:center;color:#f2ead8;background:#3a2e1a;border:1px solid #5a4a2a;text-decoration:none;padding:.3rem .7rem;font-size:.55rem;letter-spacing:.1em;transition:background .2s,border-color .2s,color .2s;white-space:nowrap;}
+  .signal-nav__arrows a:hover{background:var(--accent);border-color:var(--accent);color:var(--ink);}
+  .signal-nav__sep{color:#3a2e1a;padding:0 .2rem;}
+  .signal-nav__disabled{display:inline-flex;color:#3a2e1a;background:#1e1a10;border:1px solid #2a2010;padding:.3rem .7rem;font-size:.55rem;letter-spacing:.1em;opacity:.5;cursor:not-allowed;}
+  @media(max-width:640px){.signal-nav__trail{display:none;}.signal-nav{padding:0 1rem;}}
+  .notebook{max-width:820px;margin:0 auto;background:var(--paper);box-shadow:0 20px 80px rgba(0,0,0,.7),0 0 0 1px rgba(0,0,0,.4);position:relative;}
+  .notebook::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:10;opacity:.8;}
+  .notebook::after{content:'';position:absolute;top:0;left:0;bottom:0;width:40px;background:linear-gradient(to right,rgba(0,0,0,.14),transparent);pointer-events:none;z-index:5;}
+  .notebook-header{background:var(--ink);padding:2rem 3rem 1.8rem;position:relative;overflow:hidden;}
+  .notebook-header::before{content:'SISTEMAS VITALES';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Share Tech Mono',monospace;font-size:4rem;color:rgba(255,255,255,.02);letter-spacing:.3em;white-space:nowrap;pointer-events:none;}
+  .header-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.2rem;}
+  .series-title{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:var(--accent-light);letter-spacing:.3em;text-transform:uppercase;line-height:1.8;}
+  .entry-code{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:#5a5040;letter-spacing:.15em;text-align:right;line-height:1.8;}
+  .main-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2.5rem,5vw,4rem);font-weight:300;color:var(--paper);letter-spacing:.1em;line-height:1;}
+  .main-title span{color:var(--accent);}
+  .subtitle{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:#4a3a20;letter-spacing:.2em;text-transform:uppercase;margin-top:.8rem;}
+  .mission-bar{background:var(--paper-dark);border-bottom:1px solid var(--rule);padding:.7rem 3rem;display:flex;justify-content:space-between;font-family:'Share Tech Mono',monospace;font-size:.55rem;letter-spacing:.1em;color:var(--ink-faded);text-transform:uppercase;flex-wrap:wrap;gap:.5rem;}
+  .mission-bar .highlight{color:var(--accent);}
+  .field-header{padding:1.8rem 3rem;border-bottom:2px solid var(--rule);display:flex;justify-content:space-between;align-items:flex-start;gap:2rem;}
+  .vessel-name{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:600;color:var(--ink);letter-spacing:.05em;margin-bottom:.3rem;}
+  .vessel-designation{font-family:'Share Tech Mono',monospace;font-size:.58rem;color:var(--ink-light);letter-spacing:.15em;text-transform:uppercase;margin-bottom:1rem;}
+  .field-meta{display:flex;flex-wrap:wrap;gap:.8rem 2rem;}
+  .meta-field{font-family:'Share Tech Mono',monospace;font-size:.55rem;letter-spacing:.08em;color:var(--ink-faded);text-transform:uppercase;line-height:1.8;}
+  .meta-field strong{display:block;color:var(--ink-light);font-size:.5rem;letter-spacing:.15em;}
+  .field-stamp{flex-shrink:0;}
+  .stamp-box{border:2px solid var(--accent);padding:.6rem .8rem;font-family:'Share Tech Mono',monospace;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);text-align:center;line-height:1.7;}
+  .notebook-body{padding:2.5rem 3rem 3rem;position:relative;z-index:2;}
+  .section-header{display:flex;align-items:baseline;gap:1rem;margin:2.5rem 0 1.5rem;padding-bottom:.6rem;border-bottom:1px solid var(--rule);}
+  .section-num{font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--accent);letter-spacing:.2em;}
+  .section-name{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-style:italic;color:var(--ink-faded);}
+  .image-block{margin:2rem -3rem;position:relative;overflow:hidden;}
+  .image-block img{width:100%;display:block;filter:sepia(.1) contrast(1.02);}
+  .image-caption{background:var(--ink);padding:.8rem 3rem;display:flex;justify-content:space-between;align-items:flex-start;gap:2rem;flex-wrap:wrap;}
+  .caption-text{font-family:'Share Tech Mono',monospace;font-size:.55rem;color:#6a5a40;letter-spacing:.08em;line-height:1.8;flex:1;}
+  .caption-ref{font-family:'Share Tech Mono',monospace;font-size:.5rem;color:#3a2e1a;letter-spacing:.1em;white-space:nowrap;text-transform:uppercase;}
+  .image-inline{float:right;width:300px;margin:0 0 1.5rem 2rem;clear:right;}
+  .image-inline img{width:100%;display:block;filter:sepia(.1) contrast(1.02);border:1px solid var(--rule);}
+  .caption-inline{font-family:'Share Tech Mono',monospace;font-size:.52rem;color:var(--ink-light);letter-spacing:.06em;line-height:1.7;padding:.5rem;background:var(--paper-dark);border:1px solid var(--rule);border-top:none;}
+  .entry-text{margin:1.5rem 0;}
+  .entry-text p{font-size:1.05rem;color:var(--ink);line-height:1.82;margin-bottom:1.2rem;}
+  .entry-text p:first-child::first-letter{font-family:'Cormorant Garamond',serif;font-size:4.5rem;font-weight:600;float:left;line-height:.78;margin:.06em .1em 0 0;color:var(--accent);}
+  .ruled-section{background-image:repeating-linear-gradient(to bottom,transparent,transparent 1.81rem,rgba(196,184,152,.3) 1.81rem,rgba(196,184,152,.3) calc(1.81rem + 1px));padding:.2rem 0;}
+  .field-note{margin:1.8rem 0;padding:1rem 1.5rem;background:var(--paper-dark);border-left:3px solid var(--accent);position:relative;}
+  .field-note::before{content:attr(data-label);display:block;font-family:'Share Tech Mono',monospace;font-size:.5rem;color:var(--accent);letter-spacing:.15em;text-transform:uppercase;margin-bottom:.6rem;}
+  .field-note p{font-family:'Crimson Pro',Georgia,serif;font-size:.95rem;font-style:italic;color:var(--ink-faded);line-height:1.75;}
+  .tech-aside{margin:2rem 0;padding:1rem 1.5rem;border:1px solid var(--rule);background:var(--paper-dark);display:grid;grid-template-columns:3px 1fr;gap:1.2rem;}
+  .tech-aside-bar{background:var(--teal);}
+  .tech-aside-content{font-family:'Share Tech Mono',monospace;font-size:.62rem;color:var(--ink-faded);letter-spacing:.05em;line-height:1.8;}
+  .tech-aside-content strong{color:var(--teal);display:block;margin-bottom:.3rem;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;}
+  .divider{display:flex;align-items:center;gap:1rem;margin:2.5rem 0;clear:both;}
+  .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--rule);}
+  .divider-sym{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--rule);}
+  .margin-note{font-family:'Share Tech Mono',monospace;font-size:.55rem;color:var(--ink-light);letter-spacing:.05em;line-height:1.7;padding:.8rem 1rem;border-left:1px dashed var(--rule);margin:1rem 0;float:right;width:160px;margin-left:2rem;clear:right;}
+  .planet-close{margin:2.5rem 0;padding:1.5rem 2rem;background:var(--ink);border-left:3px solid var(--accent-light);}
+  .planet-close-label{font-family:'Share Tech Mono',monospace;font-size:.55rem;color:#4a3a20;letter-spacing:.2em;text-transform:uppercase;margin-bottom:1rem;}
+  .planet-close p{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-style:italic;color:#b8a888;line-height:1.8;margin-bottom:.8rem;}
+  .planet-close p:last-child{margin-bottom:0;}
+  .next-destination{margin:2rem 0;padding:1.2rem 1.5rem;background:var(--paper-dark);border:1px solid var(--rule);display:flex;justify-content:space-between;align-items:center;gap:2rem;}
+  .next-label{font-family:'Share Tech Mono',monospace;font-size:.55rem;color:var(--ink-light);letter-spacing:.15em;text-transform:uppercase;margin-bottom:.4rem;}
+  .next-name{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:600;color:var(--ink);}
+  .next-code{font-family:'Share Tech Mono',monospace;font-size:.55rem;color:var(--ink-faded);letter-spacing:.1em;}
+  .next-status{font-family:'Share Tech Mono',monospace;font-size:.55rem;color:var(--ink-light);letter-spacing:.1em;line-height:1.8;text-align:right;}
+  .signature-block{margin-top:3rem;padding-top:2rem;border-top:1px solid var(--rule);display:flex;justify-content:space-between;align-items:flex-end;}
+  .sig-left{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;color:var(--ink-faded);line-height:1.8;}
+  .sig-name{font-size:1.4rem;font-weight:600;color:var(--ink);font-style:normal;}
+  .sig-right{font-family:'Share Tech Mono',monospace;font-size:.55rem;color:var(--ink-light);letter-spacing:.1em;text-transform:uppercase;text-align:right;line-height:1.8;}
+  .nav-entries{background:var(--paper-dark);border-top:1px solid var(--rule);padding:1rem 3rem;display:flex;justify-content:space-between;align-items:center;}
+  .nav-link{font-family:'Share Tech Mono',monospace;font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light);text-decoration:none;transition:color .2s;}
+  .nav-link:hover{color:var(--accent);}
+  .notebook-footer{background:var(--ink);padding:1rem 3rem;display:flex;justify-content:space-between;align-items:center;}
+  .footer-series{font-family:'Share Tech Mono',monospace;font-size:.55rem;color:#3a3020;letter-spacing:.15em;text-transform:uppercase;}
+  .footer-page{font-family:'Cormorant Garamond',serif;font-size:.9rem;color:#3a3020;}
+  @media(max-width:640px){body{padding:0;padding-top:44px;}.notebook-header,.notebook-body,.field-header{padding-left:1.5rem;padding-right:1.5rem;}.mission-bar{padding:.6rem 1.5rem;}.image-block{margin:2rem -1.5rem;}.image-caption{padding:.8rem 1.5rem;}.image-inline{float:none;width:100%;margin:1.5rem 0;}.margin-note{float:none;width:100%;margin:1rem 0;}.field-meta{flex-wrap:wrap;gap:1rem;}.main-title{font-size:2.2rem;}.signature-block{flex-direction:column;gap:1.5rem;}.nav-entries{padding:1rem 1.5rem;flex-direction:column;gap:.8rem;}.next-destination{flex-direction:column;gap:1rem;}.next-status{text-align:left;}}
+</style>
+</head>
+<body>
+
+<nav class="signal-nav">
+  <a class="signal-nav__home" href="../index.html">
+    <span class="signal-nav__logo">S<span class="ia">I</span>GN<span class="ia">A</span>L<span style="color:var(--accent)">.</span></span>
+    <span class="signal-nav__ed">Serie · Legado Kepler</span>
+  </a>
+  <div class="signal-nav__trail">
+    Legado Kepler · <span class="signal-nav__current">Entrada 006 · Las entrañas del ARK</span>
+  </div>
+  <div class="signal-nav__arrows">
+    <a href="../index.html">Índice</a>
+    <span class="signal-nav__sep">·</span>
+    <a href="legado-kepler-02.html">← Entrada 005</a>
+    <span class="signal-nav__sep">·</span>
+    <span class="signal-nav__disabled">Continúa →</span>
+  </div>
+</nav>
+
+<div class="notebook">
+
+  <div class="notebook-header">
+    <div class="header-top">
+      <div class="series-title">Legado Kepler · Diario de campo · Serie II<br>ARK Horizon — Sistemas vitales</div>
+      <div class="entry-code">Entrada N° 006<br>Clasificación: Abierta<br>Archivo: LK-ARK-006</div>
+    </div>
+    <div class="main-title">LAS<span> </span>ENTRAÑAS</div>
+    <div class="subtitle">ARK Horizon · Sectores de ingeniería · Días 4–12 a bordo</div>
+  </div>
+
+  <div class="mission-bar">
+    <span>S. Nikolas Ventura A. · Técnico Sr. Sistemas Vitales — Clase IV</span>
+    <span class="highlight">Reconocimiento voluntario de sistemas · ARK Horizon</span>
+    <span>Sin mandato formal — Observación por iniciativa propia</span>
+  </div>
+
+  <div class="field-header">
+    <div>
+      <div class="vessel-name">Sectores de ingeniería</div>
+      <div class="vessel-designation">ARK Horizon · Propulsión · Potencia · Vida · Carga · Biósfera</div>
+      <div class="field-meta">
+        <div class="meta-field"><strong>Sectores visitados</strong>5 de 12</div>
+        <div class="meta-field"><strong>Días de reconocimiento</strong>4 al 12</div>
+        <div class="meta-field"><strong>Acceso utilizado</strong>Categoría Alfa</div>
+        <div class="meta-field"><strong>Incidencias</strong>0 · Solo observación</div>
+      </div>
+    </div>
+    <div class="field-stamp">
+      <div class="stamp-box">Acceso<br>técnico<br>Alfa<br>activo</div>
+    </div>
+  </div>
+
+  <div class="notebook-body">
+
+    <!-- § 01 CONTROL CENTRAL -->
+    <div class="section-header">
+      <span class="section-num">§ 01</span>
+      <span class="section-name">El puente de operaciones — donde la nave se piensa a sí misma</span>
+    </div>
+
+    <div class="image-block">
+      <img src="images/imagesB4 (1).jpg" alt="Puente de operaciones del ARK — sala de control central">
+      <div class="image-caption">
+        <span class="caption-text">Puente de operaciones — ARK Horizon. La pantalla trasera muestra el estado del sistema de destino en tiempo real. Las mesas de trabajo flotantes son los puestos de los operadores de turno. Hay tres niveles de galería. La esfera azul en la pantalla es el planeta de destino — todavía a semanas de distancia.</span>
+        <span class="caption-ref">Foto · SNV · Día 4 · 10:20h a bordo</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>El cuarto día usé el acceso Alfa para entrar al puente de operaciones. No es algo que cualquier pasajero o técnico de tránsito puede hacer — la sala de control central del ARK es área restringida, accesible solo para el equipo de navegación, los oficiales de cubierta y, aparentemente, los técnicos con puesto vitalicio de categoría Alfa. Entré con la tarjeta y una cierta incredulidad de que la tarjeta realmente funcionara. Funcionó.</p>
+      <p>El puente de operaciones del ARK no se parece a lo que muestran en los documentales institucionales de la UEC. En los documentales siempre hay luz azul, silencio tenso, gente mirando pantallas con expresión de urgencia. El puente real tiene luz cálida y ambiente de biblioteca universitaria en época de exámenes — gente concentrada pero tranquila, conversaciones en voz baja, el sonido de los sistemas de ventilación y el tecleo de terminales. La pantalla trasera — que desde afuera de la sala parece una simple pared de datos — desde adentro es una representación holográfica en tiempo real del espacio circundante, con la posición del ARK, las rutas de aproximación, y el sistema de destino brillando en azul a la distancia.</p>
+    </div>
+
+    <div class="field-note" data-label="Nota · SNV · Puente de operaciones · Día 4">
+      <p>Hablé durante veinte minutos con la oficial de navegación de turno — de apellido Sato, según su identificador. Le pregunté cuánto tiempo llevaba en el ARK. Me dijo que nueve años. Le pregunté si alguna vez se había cansado de la misma ruta. Me miró y me dijo que la ruta nunca es la misma — que el espacio cambia, que los sistemas de carga cambian, que la tripulación cambia, que ella misma cambia. Que lo que parece la misma ruta es en realidad una secuencia de viajes distintos con el mismo origen y destino aproximados. No pude rebatirlo. Sato lleva nueve años teniendo razón sobre eso.</p>
+    </div>
+
+    <div class="divider"><span class="divider-sym">✦</span></div>
+
+    <!-- § 02 CARGA -->
+    <div class="section-header">
+      <span class="section-num">§ 02</span>
+      <span class="section-name">Los sectores de carga — la razón de ser de todo lo demás</span>
+    </div>
+
+    <div class="image-block">
+      <img src="images/imagesB4 (2).jpg" alt="Sector de carga B-02 — vista general del Continental Cargo Vault">
+      <div class="image-caption">
+        <span class="caption-text">Sector B-02 · Continental Cargo Vault 7A. La perspectiva hace imposible ver el fondo del sector — se pierde en un punto de luz a más de dos kilómetros de distancia. Los módulos apilados contienen desde materias primas en bruto hasta equipamiento médico crítico para colonias de nueva fundación. La figura en primer plano soy yo, en el punto de acceso del nivel de supervisión.</span>
+        <span class="caption-ref">Foto · SNV · Día 5 · 09:15h a bordo</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>El quinto día bajé al sector de carga B-02. Es necesario bajarlo en dos etapas de transporte interno porque las escaleras de acceso no llegan — la distancia vertical entre el nivel habitacional y el nivel de carga es equivalente a un edificio de treinta pisos. El sector B-02 es el Continental Cargo Vault 7A, uno de los ocho sectores de carga activos del ARK, y cuando llegas al punto de supervisión del nivel inferior y miras hacia el fondo, la perspectiva te obliga a recalibrar lo que entiendes por grande.</p>
+      <p>Los módulos de carga están apilados en filas que se pierden en la distancia. Cada módulo es un contenedor estandarizado de la UEC — cinco metros por tres por dos, apilables hasta doce unidades — y contiene algo que alguna colonia en algún sistema necesita y que otro sistema puede dar. Materias primas en bruto. Componentes de fabricación. Equipamiento médico. Semillas certificadas. Archivos culturales en soporte físico. Agua potable en tanques sellados. El ARK no transporta una sola cosa: transporta el metabolismo de una docena de civilizaciones que dependen unas de otras para funcionar.</p>
+    </div>
+
+    <div class="image-block">
+      <img src="images/imagesB4 (3).jpg" alt="Sector C-03 — Continental Cargo Vault interior">
+      <div class="image-caption">
+        <span class="caption-text">Sector C-03 · Continental Cargo Vault · Storage Block 7A. Vista desde el punto de supervisión interior. Los módulos blancos apilados son contenedores de equipamiento técnico de precisión — requieren temperatura controlada y amortiguación activa contra vibraciones de propulsión. El operador en la consola de la derecha gestiona el inventario en tiempo real.</span>
+        <span class="caption-ref">Foto · SNV · Día 5 · 11:42h a bordo</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>Hay algo que cambia en tu manera de ver el ARK cuando has pasado tiempo en los sectores de carga. La nave deja de parecer un vehículo y empieza a parecer lo que es: un sistema de intercambio. Un organismo que toma de donde hay y lleva a donde falta, repetidamente, sin parar, a lo largo de rutas que conectan sistemas solares separados por años-luz de vacío.</p>
+      <p>La gente que vive en las colonias más jóvenes — las de primera o segunda generación, como eran los primeros de Viridis Nova — depende del ARK de una manera que los que nacieron en sistemas más establecidos ya no perciben. Para ellos el ARK es logística, es infraestructura, es algo que existe en el fondo de las noticias económicas. Para una colonia de primera generación, el ARK es la diferencia entre sobrevivir el invierno o no. No de manera figurada. De manera literal.</p>
+    </div>
+
+    <div class="tech-aside">
+      <div class="tech-aside-bar"></div>
+      <div class="tech-aside-content">
+        <strong>Datos de carga activa — ARK Horizon · Ciclo actual</strong>
+        Módulos activos: 847 · Módulos en tránsito de distribución: 312 · Módulos en espera de destino: 535 · Categorías principales: Materias primas (38%) · Equipamiento técnico (24%) · Suministros médicos (15%) · Alimentación procesada (12%) · Otros (11%) · Peso total de carga: 2.4 millones de toneladas métricas estándar · Destinos activos: 7 sistemas · Colonias beneficiarias: 23
+      </div>
+    </div>
+
+    <div class="divider"><span class="divider-sym">✦</span></div>
+
+    <!-- § 03 PROPULSIÓN -->
+    <div class="section-header">
+      <span class="section-num">§ 03</span>
+      <span class="section-name">El campo Warp — donde la física se vuelve infraestructura</span>
+    </div>
+
+    <div class="image-block">
+      <img src="images/imagesB4 (4).jpg" alt="Cámara de generación de campo Warp — W-01">
+      <div class="image-caption">
+        <span class="caption-text">Cámara de generación de campo Warp W-01 · Axis Prime · Corredor de compresión espacio-temporal. La luz visible en el canal central no es luz en el sentido convencional — es energía métrica liberada durante la compresión activa del espacio frente a la nave. La figura en primer plano es el oficial de turno de propulsión.</span>
+        <span class="caption-ref">Foto · SNV · Día 7 · 08:05h a bordo</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>El séptimo día accedí a la cámara de generación de campo Warp. No es un área que los técnicos de sistemas vitales visiten normalmente — mi especialidad está en los sistemas de soporte de vida, no en propulsión — pero el acceso Alfa no hace distinciones entre departamentos. La pasarela de supervisión del W-01 está abierta para mí con la misma tarjeta que abre la puerta de mi módulo. Es un detalle que todavía me resulta difícil de naturalizar.</p>
+      <p>La cámara de generación Warp tiene el tamaño de varios estadios apilados. El canal central —lo que en los esquemas técnicos se llama el Axis Prime— corre a lo largo de casi dos kilómetros de la nave y genera el campo que comprime el tejido del espacio-tiempo frente al ARK, permitiendo velocidades que en física newtoniana simple serían imposibles. La luz que emite durante la compresión activa no es luz normal — es energía métrica, un fenómeno que a nivel visual se parece a luz pero que a nivel físico es algo bastante más difícil de explicar sin ecuaciones.</p>
+    </div>
+
+    <div class="field-note" data-label="Nota técnica · SNV · W-01 · Día 7 · 08:45h">
+      <p>He trabajado cerca de sistemas Alcubierre durante doce años y todavía no me acostumbro del todo a la sensación de estar junto a uno en operación activa. No es incomodidad física — los sistemas de blindaje hacen su trabajo. Es algo más difuso: la consciencia de que la realidad está siendo manipulada a metros de donde estás parado, y que eso es simplemente el estado normal de una jornada de trabajo cualquiera a bordo del ARK.</p>
+    </div>
+
+    <div class="divider"><span class="divider-sym">✦</span></div>
+
+    <!-- § 04 NÚCLEO DE ENERGÍA -->
+    <div class="section-header">
+      <span class="section-num">§ 04</span>
+      <span class="section-name">El núcleo primario — la estrella que viaja con nosotros</span>
+    </div>
+
+    <div class="image-block">
+      <img src="images/imagesB4 (5).jpg" alt="Cámara de energía del núcleo primario — Sector 07">
+      <div class="image-caption">
+        <span class="caption-text">Cámara de energía del núcleo primario · Sector 07 · Power Generation Section. La esfera luminosa en el centro es el reactor de fusión compacta que alimenta todos los sistemas del ARK. La escala de la cámara hace que las figuras humanas en las pasarelas de supervisión sean prácticamente invisibles. En la parte inferior derecha, junto a la consola, estoy yo.</span>
+        <span class="caption-ref">Foto · SNV · Día 8 · 14:30h a bordo</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>El octavo día bajé al sector 07 para ver el núcleo primario de energía. Es la zona más restringida de la nave — incluso con acceso Alfa hay un protocolo de entrada que involucra verificación biométrica, traje de supervisión y acompañamiento de un oficial de planta. El oficial que me acompañó se llama Brennan. Es ingeniero de planta nuclear con veintitrés años en el ARK. Cuando le dije que era técnico de sistemas vitales, asintió como si eso explicara suficientemente por qué quería estar ahí.</p>
+      <p>La cámara del núcleo primario es la razón por la que la escala del ARK tiene sentido. La esfera de plasma contenido en el centro de la cámara — el reactor de fusión compacta que alimenta cada sistema de la nave — emite una luz que no es como ninguna otra luz que haya visto. Cálida y fría al mismo tiempo. Intensa sin ser hiriente. Las pasarelas de supervisión rodean la cámara en tres niveles y desde cada nivel la proporción entre los humanos y el núcleo te obliga a recalibrar algo fundamental sobre tu lugar en las cosas.</p>
+    </div>
+
+    <div class="field-note" data-label="Nota · SNV · Núcleo primario · Día 8 · 15:10h">
+      <p>Brennan me explicó que el núcleo ha funcionado de manera ininterrumpida durante once años. Que en ese tiempo ha habido dos paradas técnicas programadas de menos de cuatro horas cada una. Que la tolerancia de fallo del sistema está diseñada para que en el hipotético caso de una falla total del núcleo, los sistemas de emergencia mantengan la nave y su tripulación durante ciento ochenta días mientras se activa el protocolo de rescate. Me dijo todo esto con la misma calma con la que Sato me habló de las rutas. Después me señaló la salida. Nuestra visita había terminado.</p>
+    </div>
+
+    <div class="divider"><span class="divider-sym">✦</span></div>
+
+    <!-- § 05 DISTRIBUCIÓN -->
+    <div class="section-header">
+      <span class="section-num">§ 05</span>
+      <span class="section-name">Las arterias — lo que mantiene vivo a todo lo demás</span>
+    </div>
+
+    <div class="image-inline">
+      <img src="images/imagesB4 (8).jpg" alt="Bus de distribución de potencia E-07">
+      <div class="caption-inline">Bus de distribución de potencia E-07 — Main Distribution Trunk. Los cilindros dorados son los conductores de alta tensión que distribuyen la energía del núcleo a todos los sectores. A plena carga mueven suficiente energía para alimentar una ciudad mediana.</div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>Hay sistemas que son dramáticos y hay sistemas que son necesarios. El bus de distribución de potencia E-07 entra en la segunda categoría — no tiene la presencia visual del núcleo de fusión ni la extrañeza física del campo Warp, pero sin él ninguno de los dos funcionaría. Es el sistema nervioso de la nave: la red que lleva la energía del núcleo a cada sector, cada módulo, cada consola, cada luz.</p>
+      <p>Cuando estás en el sector E-07 y miras a lo largo de los conductores de alta tensión — esos cilindros dorados que se extienden en perspectiva hasta donde la vista alcanza — entiendes de otra manera lo que significa mantener una nave de esta escala. No son los sistemas grandes los que requieren más atención continua. Son los de distribución. Son las conexiones. Son los puntos donde la energía pasa de un sistema a otro y donde cualquier fallo menor puede convertirse en un fallo mayor si nadie lo detecta a tiempo.</p>
+    </div>
+
+    <div class="image-block">
+      <img src="images/imagesB4 (9).jpg" alt="Corredor de sistemas A3-17 — distribución integrada">
+      <div class="image-caption">
+        <span class="caption-text">Sección A3-17 — corredor de sistemas integrados. Izquierda: distribución de potencia (alta tensión) y backbone de datos. Derecha: gestión térmica (línea de refrigeración en teal) y reciclaje de residuos. El suelo tiene codificación de colores para las líneas de agua potable y servicios. Todo codificado, todo etiquetado, todo visible para quien sabe leerlo.</span>
+        <span class="caption-ref">Foto · SNV · Día 10 · 16:18h a bordo</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>El corredor A3-17 es donde la ingeniería del ARK se vuelve legible para alguien con mi entrenamiento. Aquí los sistemas que en otros sectores están ocultos detrás de paneles o enterrados en la estructura de la nave aparecen expuestos y etiquetados: la línea de potencia de alta tensión a la izquierda, el backbone de datos en el piso, la línea de refrigeración térmica a la derecha — ese tubo teal que corre por casi toda la longitud de la nave — y las líneas de agua potable codificadas en el suelo.</p>
+      <p>Hay un técnico de mantenimiento que patrulla este corredor en turnos de ocho horas. Se llama Okeke. Lo encontré revisando un panel de la línea térmica con una minuciosidad que me hizo detenerme a observar. Cuando terminó, me preguntó si era el nuevo técnico Alfa. Le dije que sí. Me dijo que el corredor A3-17 era su favorito — que desde aquí se puede escuchar la nave entera si sabes qué escuchar. No lo dijo en sentido poético. Lo dijo como procedimiento. Igual que Okafor en Viridis Nova.</p>
+    </div>
+
+    <div class="divider"><span class="divider-sym">✦</span></div>
+
+    <!-- § 06 BIÓSFERA -->
+    <div class="section-header">
+      <span class="section-num">§ 06</span>
+      <span class="section-name">El distrito biósfera — lo que hace que una nave sea un lugar</span>
+    </div>
+
+    <div class="image-block">
+      <img src="images/imagesB4 (10).jpg" alt="Distrito Biósfera 04 — water reclamation y cultivos integrados">
+      <div class="image-caption">
+        <span class="caption-text">Distrito Biósfera 04 — Water Reclamation Terrace · Atmospheric Processing Hall. Vista desde la estación de monitoreo ecológico. Las terrazas verdes son cultivos integrados de producción activa — no ornamentales. Los canales azules son el sistema de reclamación de agua. Los árboles en los pilares son parte del sistema de procesamiento atmosférico. El ARK no transporta comida: la produce.</span>
+        <span class="caption-ref">Foto · SNV · Día 12 · 11:55h a bordo</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>El duodécimo día llegué al distrito biósfera — el sector 04 del ARK — y entendí de golpe por qué esta nave puede operar de manera continua durante años sin necesidad de reabastecimiento de alimentos. El ARK no transporta comida para su tripulación. La cultiva. El sector 04 contiene hectáreas de cultivos integrados en terrazas superpuestas, sistemas de reclamación de agua en circuito cerrado, árboles que son parte activa del procesamiento atmosférico, y canales de irrigación que procesan y redistribuyen el agua simultáneamente.</p>
+      <p>Es la misma filosofía que encontré en Viridis Nova llevada a una escala diferente. Ahí los ingenieros de la segunda generación diseñaron edificios que respiraban con sus habitantes. Aquí los ingenieros del ARK diseñaron una nave que se alimenta a sí misma. No como redundancia de emergencia — como sistema primario. La biósfera del ARK produce suficiente para la tripulación activa con un 30% de excedente que se almacena para distribución en colonias de nueva fundación.</p>
+    </div>
+    
+<div class="field-note" data-label="Nota final · SNV · Biósfera · Día 12 · 17:30h"> <br>
+<p><img src="images/imagesB4 (13).jpg" alt="" width="100%" height="100%"/></p>
+      <p>Pasé tres horas en la estación de monitoreo ecológico del sector 04. El técnico de turno — una mujer de nombre Yuki, que lleva cuatro años en el ARK y estudia botánica de manera independiente en su tiempo libre — me explicó el sistema de balance entre los cultivos y los procesadores atmosféricos. Es un equilibrio que requiere ajustes constantes porque la composición del aire dentro de la nave cambia con los patrones de actividad de la tripulación, con la carga actual, con la fase del viaje. La biósfera responde a todo eso. Yuki lo gestiona con la misma calma con la que Mateo en Viridis Nova gestionaba los patrones de nube que todavía no terminaba de memorizar. Hay una clase de personas que encuentran paz en los sistemas complejos. El ARK las atrae.</p>
+    </div>
+
+    <div class="tech-aside">
+      <div class="tech-aside-bar"></div>
+      <div class="tech-aside-content">
+        <strong>Observaciones técnicas voluntarias — Ref. LK-ARK-006-OBS</strong>
+        Sectores visitados: Puente de operaciones · B-02 (Carga) · C-03 (Carga) · W-01 (Propulsión Warp) · Sector 07 (Núcleo primario) · E-07 (Distribución de potencia) · A3-17 (Sistemas integrados) · Sector 04 (Biósfera) · Estado general de sistemas observados: ÓPTIMO en todos los sectores · Observaciones de interés: Sistema de distribución de potencia E-07 muestra desgaste cosmético menor en sellos de panel — no crítico, recomendación informal de revisión en próximo ciclo · Sin intervenciones realizadas · Sin mandato formal · Observación por iniciativa propia
+      </div>
+    </div>
+
+    <!-- CIERRE DE SERIE -->
+    <div class="planet-close">
+      <div class="planet-close-label">Nota de cierre provisional · ARK Horizon · Día 12</div>
+      <p>Llevo doce días a bordo y todavía me quedan veintidós. En una nave de tránsito estándar, eso sería tiempo que simplemente pasa — que esperas que termine para llegar a donde vas. En el ARK Horizon no sé bien cómo llamarlo. No es espera. Es otra cosa.</p>
+      <p>He visto suficiente de la nave como para entender que no es un vehículo que transporta personas y carga entre sistemas. Es un sistema que se transporta a sí mismo — con sus cultivos, sus comunidades, su historia acumulada, su tripulación que lleva años aquí y que probablemente seguirá aquí cuando yo ya haya seguido adelante. Es más parecido a una colonia en movimiento que a una nave.</p>
+      <p>No sé todavía qué significa eso para el cuaderno. Lo que sí sé es que quedan veintidós días y que todavía no he visto el sistema de filtración de agua, los módulos de gestión de residuos, ni las cámaras de propulsión auxiliar. Y que Okeke me dijo que si vuelvo al corredor A3-17 en el turno de madrugada, la nave suena diferente. Que es cuando más claramente se escuchan los sistemas debajo de todo lo demás. Pienso ir.</p>
+    </div>
+
+    <div class="next-destination">
+      <div>
+        <div class="next-label">Próxima entrada · En preparación</div>
+        <div class="next-name">Días 13 — 34</div>
+        <div class="next-code">ARK Horizon · Tramo final del tránsito · Llegada al sistema Kepler-22</div>
+      </div>
+      <div class="next-status">
+        Días restantes de tránsito: 22<br>
+        Próxima entrada · Serie II<br>
+        — En preparación —
+      </div>
+    </div>
+
+    <div class="signature-block">
+      <div class="sig-left">
+        <div>Registrado por</div>
+        <div class="sig-name">S. Nikolas Ventura A.</div>
+        <div>Técnico Sr. de Sistemas Vitales — Clase IV</div>
+        <div>Rotación Interestelar · UEC · División de Colonias</div>
+      </div>
+      <div class="sig-right">
+        Entrada 006 · Serie II<br>
+        ARK Horizon · AH-07-PROV<br>
+        Ciclo 7 · Año 312 EA<br>
+        Día 12 a bordo<br>
+        "El cuaderno"
+      </div>
+    </div>
+
+  </div>
+
+  <div class="nav-entries">
+    <a class="nav-link" href="legado-kepler-02.html">← Entrada 005 · Mi lugar en la nave</a>
+    <span class="nav-link" style="opacity:.4;cursor:default;">Continúa en próxima entrega</span>
+  </div>
+
+  <div class="notebook-footer">
+    <span class="footer-series">Legado Kepler · Diario de campo · Serie II · ARK Horizon · Fin provisional</span>
+    <span class="footer-page">006</span>
+  </div>
+
+</div>
+</body>
+</html>

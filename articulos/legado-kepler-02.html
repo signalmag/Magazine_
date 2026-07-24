@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legado Kepler — Entrada 005 · Mi lugar en la nave</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Share+Tech+Mono&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#f2ead8;--paper-dark:#e8ddc8;--paper-aged:#d4c9a8;--ink:#2a2318;--ink-faded:#5a5040;--ink-light:#8a7a60;--accent:#c47a2a;--accent-light:#e8b870;--teal:#3a7a6a;--stamp-red:#8a2a1a;--rule:#c4b898;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:#1a1208;font-family:'Crimson Pro',Georgia,serif;min-height:100vh;padding:3rem 1.5rem;padding-top:calc(3rem + 44px);}
+  .signal-nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--ink);border-bottom:2px solid var(--accent);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:44px;font-family:'Share Tech Mono',monospace;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;}
+  .signal-nav__home{display:flex;align-items:center;gap:.8rem;text-decoration:none;color:var(--paper);transition:opacity .2s;}
+  .signal-nav__home:hover{opacity:.8;}
+  .signal-nav__logo{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;letter-spacing:.15em;text-transform:none;color:var(--paper);}
+  .signal-nav__logo .ia{color:var(--accent);}
+  .signal-nav__ed{color:var(--accent);font-size:.55rem;border-left:1px solid #3a2e1a;padding-left:.8rem;}
+  .signal-nav__trail{color:#4a3a20;font-size:.55rem;flex:1;text-align:center;padding:0 1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .signal-nav__current{color:var(--accent-light);}
+  .signal-nav__arrows{display:flex;align-items:center;gap:.5rem;}
+  .signal-nav__arrows a{display:inline-flex;align-items:center;color:#f2ead8;background:#3a2e1a;border:1px solid #5a4a2a;text-decoration:none;padding:.3rem .7rem;font-size:.55rem;letter-spacing:.1em;transition:background .2s,border-color .2s,color .2s;white-space:nowrap;}
+  .signal-nav__arrows a:hover{background:var(--accent);border-color:var(--accent);color:var(--ink);}
+  .signal-nav__sep{color:#3a2e1a;padding:0 .2rem;}
+  @media(max-width:640px){.signal-nav__trail{display:none;}.signal-nav{padding:0 1rem;}}
+  .notebook{max-width:820px;margin:0 auto;background:var(--paper);box-shadow:0 20px 80px rgba(0,0,0,.7),0 0 0 1px rgba(0,0,0,.4);position:relative;}
+  .notebook::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:10;opacity:.8;}
+  .notebook::after{content:'';position:absolute;top:0;left:0;bottom:0;width:40px;background:linear-gradient(to right,rgba(0,0,0,.14),transparent);pointer-events:none;z-index:5;}
+  .notebook-header{background:var(--ink);padding:2rem 3rem 1.8rem;position:relative;overflow:hidden;}
+  .notebook-header::before{content:'A3-042';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Share Tech Mono',monospace;font-size:8rem;color:rgba(255,255,255,.025);letter-spacing:.3em;white-space:nowrap;pointer-events:none;}
+  .header-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.2rem;}
+  .series-title{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:var(--accent-light);letter-spacing:.3em;text-transform:uppercase;line-height:1.8;}
+  .entry-code{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:#5a5040;letter-spacing:.15em;text-align:right;line-height:1.8;}
+  .main-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2.5rem,5vw,4rem);font-weight:300;color:var(--paper);letter-spacing:.1em;line-height:1;}
+  .main-title span{color:var(--accent);}
+  .subtitle{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:#4a3a20;letter-spacing:.2em;text-transform:uppercase;margin-top:.8rem;}
+  .mission-bar{background:var(--paper-dark);border-bottom:1px solid var(--rule);padding:.7rem 3rem;display:flex;justify-content:space-between;font-family:'Share Tech Mono',monospace;font-size:.55rem;letter-spacing:.1em;color:var(--ink-faded);text-transform:uppercase;flex-wrap:wrap;gap:.5rem;}
+  .mission-bar .highlight{color:var(--accent);}
+  .field-header{padding:1.8rem 3rem;border-bottom:2px solid var(--rule);display:flex;justify-content:space-between;align-items:flex-start;gap:2rem;}
+  .vessel-name{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:600;color:var(--ink);letter-spacing:.05em;margin-bottom:.3rem;}
+  .vessel-designation{font-family:'Share Tech Mono',monospace;font-size:.58rem;color:var(--ink-light);letter-spacing:.15em;text-transform:uppercase;margin-bottom:1rem;}
+  .field-meta{display:flex;flex-wrap:wrap;gap:.8rem 2rem;}
+  .meta-field{font-family:'Share Tech Mono',monospace;font-size:.55rem;letter-spacing:.08em;color:var(--ink-faded);text-transform:uppercase;line-height:1.8;}
+  .meta-field strong{display:block;color:var(--ink-light);font-size:.5rem;letter-spacing:.15em;}
+  .field-stamp{flex-shrink:0;}
+  .stamp-box{border:2px solid var(--accent);padding:.6rem .8rem;font-family:'Share Tech Mono',monospace;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);text-align:center;line-height:1.7;}
+  .notebook-body{padding:2.5rem 3rem 3rem;position:relative;z-index:2;}
+  .section-header{display:flex;align-items:baseline;gap:1rem;margin:2.5rem 0 1.5rem;padding-bottom:.6rem;border-bottom:1px solid var(--rule);}
+  .section-num{font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--accent);letter-spacing:.2em;}
+  .section-name{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-style:italic;color:var(--ink-faded);}
+  .image-block{margin:2rem -3rem;position:relative;overflow:hidden;}
+  .image-block img{width:100%;display:block;filter:sepia(.1) contrast(1.02);}
+  .image-caption{background:var(--ink);padding:.8rem 3rem;display:flex;justify-content:space-between;align-items:flex-start;gap:2rem;flex-wrap:wrap;}
+  .caption-text{font-family:'Share Tech Mono',monospace;font-size:.55rem;color:#6a5a40;letter-spacing:.08em;line-height:1.8;flex:1;}
+  .caption-ref{font-family:'Share Tech Mono',monospace;font-size:.5rem;color:#3a2e1a;letter-spacing:.1em;white-space:nowrap;text-transform:uppercase;}
+  .image-inline{float:right;width:300px;margin:0 0 1.5rem 2rem;clear:right;}
+  .image-inline img{width:100%;display:block;filter:sepia(.1) contrast(1.02);border:1px solid var(--rule);}
+  .caption-inline{font-family:'Share Tech Mono',monospace;font-size:.52rem;color:var(--ink-light);letter-spacing:.06em;line-height:1.7;padding:.5rem;background:var(--paper-dark);border:1px solid var(--rule);border-top:none;}
+  .entry-text{margin:1.5rem 0;}
+  .entry-text p{font-size:1.05rem;color:var(--ink);line-height:1.82;margin-bottom:1.2rem;}
+  .entry-text p:first-child::first-letter{font-family:'Cormorant Garamond',serif;font-size:4.5rem;font-weight:600;float:left;line-height:.78;margin:.06em .1em 0 0;color:var(--accent);}
+  .ruled-section{background-image:repeating-linear-gradient(to bottom,transparent,transparent 1.81rem,rgba(196,184,152,.3) 1.81rem,rgba(196,184,152,.3) calc(1.81rem + 1px));padding:.2rem 0;}
+  .field-note{margin:1.8rem 0;padding:1rem 1.5rem;background:var(--paper-dark);border-left:3px solid var(--accent);position:relative;}
+  .field-note::before{content:attr(data-label);display:block;font-family:'Share Tech Mono',monospace;font-size:.5rem;color:var(--accent);letter-spacing:.15em;text-transform:uppercase;margin-bottom:.6rem;}
+  .field-note p{font-family:'Crimson Pro',Georgia,serif;font-size:.95rem;font-style:italic;color:var(--ink-faded);line-height:1.75;}
+  .tech-aside{margin:2rem 0;padding:1rem 1.5rem;border:1px solid var(--rule);background:var(--paper-dark);display:grid;grid-template-columns:3px 1fr;gap:1.2rem;}
+  .tech-aside-bar{background:var(--teal);}
+  .tech-aside-content{font-family:'Share Tech Mono',monospace;font-size:.62rem;color:var(--ink-faded);letter-spacing:.05em;line-height:1.8;}
+  .tech-aside-content strong{color:var(--teal);display:block;margin-bottom:.3rem;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;}
+  .divider{display:flex;align-items:center;gap:1rem;margin:2.5rem 0;clear:both;}
+  .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--rule);}
+  .divider-sym{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--rule);}
+  .margin-note{font-family:'Share Tech Mono',monospace;font-size:.55rem;color:var(--ink-light);letter-spacing:.05em;line-height:1.7;padding:.8rem 1rem;border-left:1px dashed var(--rule);margin:1rem 0;float:right;width:160px;margin-left:2rem;clear:right;}
+  .signature-block{margin-top:3rem;padding-top:2rem;border-top:1px solid var(--rule);display:flex;justify-content:space-between;align-items:flex-end;}
+  .sig-left{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;color:var(--ink-faded);line-height:1.8;}
+  .sig-name{font-size:1.4rem;font-weight:600;color:var(--ink);font-style:normal;}
+  .sig-right{font-family:'Share Tech Mono',monospace;font-size:.55rem;color:var(--ink-light);letter-spacing:.1em;text-transform:uppercase;text-align:right;line-height:1.8;}
+  .nav-entries{background:var(--paper-dark);border-top:1px solid var(--rule);padding:1rem 3rem;display:flex;justify-content:space-between;align-items:center;}
+  .nav-link{font-family:'Share Tech Mono',monospace;font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light);text-decoration:none;transition:color .2s;}
+  .nav-link:hover{color:var(--accent);}
+  .notebook-footer{background:var(--ink);padding:1rem 3rem;display:flex;justify-content:space-between;align-items:center;}
+  .footer-series{font-family:'Share Tech Mono',monospace;font-size:.55rem;color:#3a3020;letter-spacing:.15em;text-transform:uppercase;}
+  .footer-page{font-family:'Cormorant Garamond',serif;font-size:.9rem;color:#3a3020;}
+  @media(max-width:640px){body{padding:0;padding-top:44px;}.notebook-header,.notebook-body,.field-header{padding-left:1.5rem;padding-right:1.5rem;}.mission-bar{padding:.6rem 1.5rem;}.image-block{margin:2rem -1.5rem;}.image-caption{padding:.8rem 1.5rem;}.image-inline{float:none;width:100%;margin:1.5rem 0;}.margin-note{float:none;width:100%;margin:1rem 0;}.field-meta{flex-wrap:wrap;gap:1rem;}.main-title{font-size:2.2rem;}.signature-block{flex-direction:column;gap:1.5rem;}.nav-entries{padding:1rem 1.5rem;flex-direction:column;gap:.8rem;}}
+</style>
+</head>
+<body>
+
+<nav class="signal-nav">
+  <a class="signal-nav__home" href="../index.html">
+    <span class="signal-nav__logo">S<span class="ia">I</span>GN<span class="ia">A</span>L<span style="color:var(--accent)">.</span></span>
+    <span class="signal-nav__ed">Serie · Legado Kepler</span>
+  </a>
+  <div class="signal-nav__trail">
+    Legado Kepler · <span class="signal-nav__current">Entrada 005 · Mi lugar en la nave</span>
+  </div>
+  <div class="signal-nav__arrows">
+    <a href="../index.html">Índice</a>
+    <span class="signal-nav__sep">·</span>
+    <a href="legado-kepler-01.html">← Entrada 004</a>
+    <span class="signal-nav__sep">·</span>
+    <a href="legado-kepler-03.html">Entrada 006 →</a>
+  </div>
+</nav>
+
+<div class="notebook">
+
+  <div class="notebook-header">
+    <div class="header-top">
+      <div class="series-title">Legado Kepler · Diario de campo · Serie II<br>ARK Horizon — Módulo A3-042</div>
+      <div class="entry-code">Entrada N° 005<br>Clasificación: Abierta<br>Archivo: LK-ARK-005</div>
+    </div>
+    <div class="main-title">MI<span> </span>LUGAR<span> </span>EN<span> </span>LA<span> </span>NAVE</div>
+    <div class="subtitle">ARK Horizon · Sector A3 · Módulo 042 · Días 1–3 a bordo</div>
+  </div>
+
+  <div class="mission-bar">
+    <span>S. Nikolas Ventura A. · Técnico Sr. Sistemas Vitales — Clase IV</span>
+    <span class="highlight">Puesto vitalicio Alfa · Sector A3-042 · ARK Horizon</span>
+    <span>Primer reconocimiento del espacio asignado</span>
+  </div>
+
+  <div class="field-header">
+    <div>
+      <div class="vessel-name">Sector A3 · Módulo 042</div>
+      <div class="vessel-designation">Distrito residencial · ARK Horizon · Acceso categoría Alfa</div>
+      <div class="field-meta">
+        <div class="meta-field"><strong>Módulo</strong>A3-042 · Hab Unit</div>
+        <div class="meta-field"><strong>Área de trabajo</strong>Sector 07 · Nivel técnico</div>
+        <div class="meta-field"><strong>Tipo de acceso</strong>Alfa vitalicio</div>
+        <div class="meta-field"><strong>Día de entrada</strong>1 a bordo</div>
+      </div>
+    </div>
+    <div class="field-stamp">
+      <div class="stamp-box">Módulo<br>A3-042<br>Ocupado<br>SNV</div>
+    </div>
+  </div>
+
+  <div class="notebook-body">
+
+    <div class="section-header">
+      <span class="section-num">§ 01</span>
+      <span class="section-name">El pasillo que lleva a casa</span>
+    </div>
+
+    <div class="image-block">
+      <img src="images/imagesB1 (7).jpg" alt="Corredor del sector A3 — distrito residencial">
+      <div class="image-caption">
+        <span class="caption-text">Corredor del sector A3, distrito residencial. Las puertas azul grisáceo marcan los módulos hab. En la vitrina a la derecha de la puerta de cada módulo, los ocupantes van dejando cosas: fotos, plantas, libros. El ARK permite esa acumulación de vida. En algunas naves de la flota no está permitido. Aquí sí.</span>
+        <span class="caption-ref">Foto · SNV · Día 1 · 09:48h a bordo</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>El técnico de embarque me acompañó hasta el módulo A3-042 y me entregó la tarjeta de acceso sin mucha ceremonia. Me dijo que el sector A3 era el más tranquilo del distrito residencial — alejado de los corredores de tránsito mayor, cerca de los sistemas de soporte de vida pero no tan cerca como para escuchar los compresores durante la noche. Me dijo que yo era afortunado. Lo dijo sin ironía.</p>
+      <p>El corredor del sector A3 tiene esa textura que tienen los espacios que llevan mucho tiempo habitados — no sucios, no deteriorados, sino marcados. Las vitrinas junto a las puertas de cada módulo están llenas de cosas pequeñas que la gente fue acumulando a lo largo de rotaciones. Fotos impresas en papel. Plantas en macetas de impresora local. Un libro real, de papel, con el lomo roto de tanto abrirlo. Una taza de café que evidentemente alguien dejó ahí sin intención de que fuera permanente y que lleva meses siendo permanente.</p>
+    </div>
+
+    <div class="field-note" data-label="Observación · SNV · Día 1 · Corredor A3">
+      <p>Hay un aviso pegado con cinta adhesiva en la vitrina del módulo 041 — el vecino del lado. Dice: "Good shift! See you at dinner – M." La letra es apresurada. El papel tiene dobleces de haber estado en un bolsillo antes de llegar aquí. Alguien lo escribió rápido, lo dejó para que lo encontraran, y ya no está. El ARK lleva meses moviéndose. Ese papel lleva meses ahí. Me pregunto si M y la persona del módulo 041 todavía cenan juntos.</p>
+    </div>
+
+    <div class="image-block">
+      <img src="images/imagesB1 (6).jpg" alt="Puerta del módulo A3-042 — acceso biométrico">
+      <div class="image-caption">
+        <span class="caption-text">Puerta del módulo A3-042. El panel de acceso muestra "WELCOME HOME, ELIOT K." — el ocupante anterior. El sistema tardó unos minutos en actualizar mi registro. En ese intervalo, el módulo seguía perteneciendo a alguien que ya no estaba.</span>
+        <span class="caption-ref">Foto · SNV · Día 1 · 10:02h a bordo</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>Cuando puse la tarjeta en el lector, el panel tardó unos segundos en actualizarse. Durante esos segundos seguía mostrando el nombre del ocupante anterior — Eliot K., con el título de Systems Engineer y el mensaje "WELCOME HOME" en la pantalla táctil. Luego el sistema procesó mi credencial y el panel cambió a mi nombre. Mi foto. Mi cargo.</p>
+      <p>No sé nada de Eliot K. No sé si terminó su rotación, si lo reasignaron, si pidió cambio de sector. Pero durante esos segundos su nombre estuvo en la puerta de mi módulo y sentí que estaba entrando al lugar de alguien más. Que el espacio todavía le pertenecía a él de alguna manera que la burocracia de la UEC todavía no había terminado de borrar.</p>
+    </div>
+
+    <div class="divider"><span class="divider-sym">✦</span></div>
+
+    <div class="section-header">
+      <span class="section-num">§ 02</span>
+      <span class="section-name">El módulo — aprender a leer un espacio nuevo</span>
+    </div>
+
+    <div class="image-block">
+      <img src="images/imagesB1 (5).jpg" alt="Interior del módulo A3-042 — vista general">
+      <div class="image-caption">
+        <span class="caption-text">Interior de un módulo estandar del area de la tripulación de las cubiertas inferiores&nbsp; — vista completa desde la entrada. La cama con su ropa de cama naranja. El escritorio de trabajo con doble pantalla. Los estantes con los sistemas de cabina a la derecha. El suelo de baldosa clara con el tapete. Lo que en los planos se llama "módulo habitacional tipo B" se convierte, con el tiempo, en un lugar donde alguien vive.</span>
+        <span class="caption-ref">Foto · SNV · Día 1 · 10:15h a bordo</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>El módulo es más grande de lo que esperaba. No grande en términos absolutos — sigue siendo una habitación diseñada para contener lo esencial y nada más — pero grande en comparación con los módulos de tránsito estándar a los que estoy acostumbrado. La cama tiene forma de nicho con iluminación propia. El escritorio tiene dos pantallas y espacio físico suficiente para trabajar con documentación impresa. Los estantes tienen el espacio suficiente para algunas pertenencias escenciales.</p>
+      <p>El sistema de cabina en la pared derecha monitorea en tiempo real la temperatura, humedad, calidad del aire y consumo de energía del módulo. Los números son exactamente lo que uno esperaría — todo dentro de parámetros, todo en verde. Hay algo tranquilizador en eso. Después de tantos años auditando esos mismos sistemas en colonias y estaciones, encontrar los números correctos en el espacio donde vas a dormir produce una paz específica que no sé bien cómo describir. Es la satisfacción del trabajo bien hecho en algo que no hiciste tú.</p>
+    </div>
+
+    <div class="margin-note">Temperatura: 22.3°C<br>Humedad: 45%<br>Calidad del aire: ÓPTIMA<br>Consumo: NOMINAL<br>— Sistema de cabina A3-042</div>
+
+    <div class="field-note" data-label="Primera noche · SNV · 23:42h">
+      <p>No puedo dormir todavía. No porque haya algo mal — el módulo es silencioso, la temperatura es perfecta, la oscuridad es completa cuando cierras los ojos. Sino porque estoy acostumbrado a los módulos de tránsito donde el ruido de fondo te envuelve y la incomodidad te agota lo suficiente como para caer dormido sin pensarlo. Aquí hay que aprender a dormir de otra manera. Hay que decidir dormirse en lugar de rendirse al sueño. Es un ajuste pequeño pero real.</p>
+    </div>
+
+    <div class="divider"><span class="divider-sym">✦</span></div>
+
+    <div class="section-header">
+      <span class="section-num">§ 03</span>
+      <span class="section-name">El almacenaje — la historia de lo que llevamos</span>
+    </div>
+
+    <div class="image-block">
+      <img src="images/imagesB2 (2).jpg" alt="Sistema de almacenaje — módulo A3-042">
+      <div class="image-caption">
+        <span class="caption-text">Sistema de almacenaje modular del módulo A3-042 — siete secciones diferenciadas: ropa, equipamiento técnico, documentos, herramientas, efectos personales, archivo de viaje, muelle de equipos. El sistema de inventario marca 98% de capacidad disponible. Tengo muy pocas cosas para un espacio tan bien organizado.</span>
+        <span class="caption-ref">Foto · SNV · Día 2 · 11:08h a bordo</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>El segundo día exploré el sistema de almacenaje. Siete módulos diferenciados con etiquetas que alguien catalogó con cuidado: Wardrobe, Technical Equipment, Docs, Tools, Medical, Personal, MTC. Cada sección con su sistema de inventario propio, su iluminación interna, sus anclajes para objetos en caso de pérdida de gravedad artificial.</p>
+      <p>Lo primero que pensé fue que tenía muy pocas cosas. En dieciséis años de rotación interestelar aprendí a viajar con lo mínimo — dos cambios de ropa de trabajo, el equipamiento técnico básico, el cuaderno, unos pocos libros en formato físico que son los únicos que no cambio por digitales. Todo eso ocupa aproximadamente un cuarto de las secciones disponibles. El 98% de capacidad disponible que marca el sistema de inventario me produce una sensación extraña — no de vacío sino de posibilidad. Como si el espacio estuviera esperando algo que todavía no sé que necesito traer.</p>
+    </div>
+
+    <div class="divider"><span class="divider-sym">✦</span></div>
+
+    <div class="section-header">
+      <span class="section-num">§ 04</span>
+      <span class="section-name">El área de trabajo — donde el tránsito se vuelve trabajo real</span>
+    </div>
+
+    <div class="image-block">
+      <img src="images/imagesB2 (3).jpg" alt="Área de trabajo exclusiva — Sector 07, nivel técnico">
+      <div class="image-caption">
+        <span class="caption-text">Área de trabajo exclusiva asignada — Sector 07, nivel técnico. Vista de las tres pantallas de diagnóstico de ingeniería, el panel de distribución de potencia y la mesa de trabajo. La ventana da directamente al exterior — una vista del espacio que no viene con los módulos de tránsito estándar.</span>
+        <span class="caption-ref">Foto · SNV · Día 2 · 14:22h a bordo</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>El área de trabajo en el sector 07 fue lo que más me sorprendió. En los módulos de tránsito estándar, el espacio de trabajo compartido es una mesa en un corredor con conexión de red si tienes suerte. El espacio del sector 07 es otra categoría completamente distinta.</p>
+      <p>Tres pantallas de diagnóstico, acceso completo a los sistemas de ingeniería del ARK, una mesa de trabajo con superficie suficiente para planos físicos, y una ventana. Una ventana real que da al exterior. En treinta y cuatro días de tránsito, ese rectángulo de espacio es lo más cercano a un horizonte que voy a tener. Lo primero que hice fue acercar la silla y quedarme mirando un momento. Después abrí las pantallas y empecé a revisar los sistemas.</p>
+    </div>
+
+    <div class="field-note" data-label="Nota técnica · SNV · Día 2 · 15:10h">
+      <p>El acceso a los sistemas de diagnóstico del ARK que viene con el puesto Alfa es más completo de lo que esperaba. Puedo ver en tiempo real el estado de todos los sistemas vitales de la nave — no como auditor externo con acceso limitado, sino con el mismo nivel de vista que tiene el equipo de ingeniería de a bordo. No es mi trabajo intervenir en esos sistemas. Pero poder verlos todos funcionar al mismo tiempo, como un organismo completo, es exactamente el tipo de cosa que hace que valga la pena este oficio.</p>
+    </div>
+
+    <div class="image-block">
+      <img src="images/imagesB2 (6).jpg" alt="Área de trabajo — panel de sistemas de la nave">
+      <div class="image-caption">
+        <span class="caption-text">Panel de sistemas del área de trabajo — Sector 07. Las tres pantallas muestran: diagnóstico general de ingeniería, estado de distribución de potencia, y navegación. Más de setenta parámetros activos visibles simultáneamente. Todos en verde. Una nave que funciona bien es una nave silenciosa.</span>
+        <span class="caption-ref">Foto · SNV · Día 2 · 14:55h a bordo</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>Pasé la tarde del segundo día simplemente mirando los sistemas. No tomando notas todavía, no documentando nada formalmente. Solo observando el ritmo de la nave desde este punto de vista privilegiado. Los parámetros de potencia fluctúan en intervalos regulares que corresponden a los ciclos de las cámaras de propulsión. Los sistemas de soporte de vida tienen una variación casi imperceptible que refleja los patrones de actividad de los ocho mil cuatrocientos habitantes de la nave. El ARK respira, en su propia manera mecánica y masiva.</p>
+      <p>En una nave de esta escala, la diferencia entre un sistema que funciona y uno que está a punto de fallar a veces se mide en fracciones de parámetro que un ojo sin entrenamiento no detectaría. Por eso existen los técnicos de sistemas vitales. No para operar las máquinas — eso lo hacen solas, con una eficiencia que ningún operador humano podría igualar. Sino para escucharlas. Para saber cuándo el silencio es correcto y cuándo el silencio es una advertencia.</p>
+    </div>
+
+    <div class="tech-aside">
+      <div class="tech-aside-bar"></div>
+      <div class="tech-aside-content">
+        <strong>Estado de sistemas — ARK Horizon · Día 2 · 15:00h</strong>
+        Propulsión: NOMINAL · Sistemas de soporte de vida: ÓPTIMO · Distribución de potencia: BALANCEADA · Sistemas de navegación: EN CURSO · Temperatura de casco: DENTRO DE PARÁMETROS · Carga activa: 847 módulos confirmados · Tripulación activa: 8,412 · Temperatura interna promedio: 22.1°C · Observación SNV: Sin anomalías detectadas. La nave funciona bien. Muy bien.
+      </div>
+    </div>
+
+    <div class="divider"><span class="divider-sym">✦</span></div>
+
+    <div class="section-header">
+      <span class="section-num">§ 05</span>
+      <span class="section-name">El comedor común — donde una nave se convierte en comunidad</span>
+    </div>
+
+    <div class="image-block">
+      <img src="images/imagesB1 (8).jpg" alt="Comedor central del ARK Horizon">
+      <div class="image-caption">
+        <span class="caption-text">Comedor central — ARK Horizon. El nivel superior tiene balcones con vista al atrio. La vegetación cuelga de todas las alturas. El cartel grande dice "GOOD FOOD / GOOD PEOPLE / GOOD DAYS". En el ARK no es marketing. Es política.</span>
+        <span class="caption-ref">Foto · SNV · Día 3 · 12:30h a bordo</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>El tercer día fui al comedor central a la hora de almuerzo. No porque tuviera hambre especialmente — sino porque en cualquier nave grande, el comedor es el lugar donde entiendes cómo funciona realmente la comunidad. Cómo se distribuye la gente en el espacio. Quién se sienta con quién. Qué idiomas se hablan al mismo tiempo. Qué tipo de silencio hay entre turnos.</p>
+      <p>El ARK tiene un comedor que no esperaba. No el típico espacio industrial con mesas de aluminio y luz fluorescente uniforme. Hay árboles en el interior. Hay balcones. Hay gente que come sola leyendo y gente que come en grupos de diez y hay niños — lo que siempre me sorprende en las naves de logística mayor, aunque debería haber dejado de sorprenderme — corriendo entre las mesas con esa indiferencia que tienen los niños hacia los sistemas que los mantienen vivos.</p>
+    </div>
+
+    <div class="field-note" data-label="Observación · SNV · Comedor central · Día 3">
+      <p>El cartel grande del comedor dice "ARK HORIZON — COMMUNITY FIRST". En la mayoría de las naves institucionales ese tipo de lema es decoración. En el ARK no lo parece. Lo parece menos todavía cuando ves que al lado del cartel hay una pizarra de anuncios llena de avisos escritos a mano — intercambios de turno, grupos de lectura, clases de idiomas, una reunión de padres de familia sobre el currículo del ciclo escolar. Una nave de cuatro kilómetros de largo con reuniones de padres de familia. Hay algo en eso que te obliga a repensar qué es exactamente lo que mueve este tipo de naves a través del espacio.</p>
+    </div>
+
+    <div class="signature-block">
+      <div class="sig-left">
+        <div>Registrado por</div>
+        <div class="sig-name">S. Nikolas Ventura A.</div>
+        <div>Técnico Sr. de Sistemas Vitales — Clase IV</div>
+        <div>Rotación Interestelar · UEC · División de Colonias</div>
+      </div>
+      <div class="sig-right">
+        Entrada 005 · Serie II<br>
+        ARK Horizon · AH-07-PROV<br>
+        Ciclo 7 · Año 312 EA<br>
+        Días 1–3 a bordo<br>
+        "El cuaderno"
+      </div>
+    </div>
+
+  </div>
+
+  <div class="nav-entries">
+    <a class="nav-link" href="legado-kepler-01.html">← Entrada 004 · El ARK Horizon</a>
+    <a class="nav-link" href="legado-kepler-03.html">Entrada 006 · Las entrañas →</a>
+  </div>
+
+  <div class="notebook-footer">
+    <span class="footer-series">Legado Kepler · Diario de campo · Serie II · ARK Horizon</span>
+    <span class="footer-page">005</span>
+  </div>
+
+</div>
+</body>
+</html>

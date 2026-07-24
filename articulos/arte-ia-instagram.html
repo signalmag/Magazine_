@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGNAL — Arte con IA en Instagram</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=JetBrains+Mono:wght@300;400;500&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+  :root {
+    --ink: #1a1814;
+    --paper: #f5f0e8;
+    --paper-dark: #ede7d9;
+    --accent: #c4873a;
+    --accent-light: #e8c88a;
+    --teal: #4a8a7c;
+    --muted: #7a7268;
+    --rule: #c8bfb0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.7;
+    padding-top: 40px;
+  }
+
+  /* ══ SIGNAL NAV ══ */
+  .signal-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    background: var(--ink);
+    border-bottom: 1px solid #2a2620;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    height: 40px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .signal-nav__home {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    text-decoration: none;
+    color: var(--paper);
+  }
+  .signal-nav__logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.9rem;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    text-transform: none;
+  }
+  .signal-nav__ed {
+    color: #4a4438;
+    font-size: 0.55rem;
+  }
+  .signal-nav__home:hover .signal-nav__logo { color: var(--accent); }
+  .signal-nav__trail { color: #5a5450; font-size: 0.55rem; }
+  .signal-nav__current { color: var(--accent); }
+  .signal-nav__arrows {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: #4a4438;
+  }
+  .signal-nav__arrows a {
+    color: #8a8278;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .signal-nav__arrows a:hover { color: var(--accent); }
+  .signal-nav__disabled { opacity: 0.25; cursor: default; }
+  .signal-nav__sep { opacity: 0.3; }
+  @media (max-width: 680px) {
+    .signal-nav__trail { display: none; }
+    .signal-nav { padding: 0 1rem; }
+  }
+
+  /* ── COVER ── */
+  .cover {
+    min-height: calc(100vh - 40px);
+    background: var(--ink);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover-noise {
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  .cover-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 2.5rem 3rem 1.2rem;
+    border-bottom: 1px solid #3a3630;
+  }
+
+  .masthead {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    color: #6a6258;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    line-height: 1.8;
+  }
+
+  .cover-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 5rem;
+    font-weight: 900;
+    color: var(--paper);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    text-align: center;
+    padding: 3rem 3rem 0;
+  }
+  .cover-logo span { color: var(--accent); }
+
+  .cover-tagline {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: #5a5450;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    text-align: center;
+    margin-top: 0.5rem;
+  }
+
+  .cover-main {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 2rem 3rem 3rem;
+    position: relative;
+  }
+
+  .cover-issue {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--accent);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .cover-headline {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 700;
+    color: var(--paper);
+    line-height: 1.15;
+    max-width: 700px;
+  }
+  .cover-headline em {
+    color: var(--accent-light);
+    font-style: italic;
+  }
+
+  .cover-subhead {
+    margin-top: 1.2rem;
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.1rem;
+    color: #8a8278;
+    max-width: 520px;
+    line-height: 1.6;
+  }
+
+  .cover-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 3rem;
+    border-top: 1px solid #2a2620;
+  }
+
+  .cover-index {
+    display: flex;
+    gap: 2.5rem;
+  }
+
+  .cover-index-item {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    color: #5a5450;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .cover-index-item strong {
+    display: block;
+    color: #9a9288;
+    font-size: 0.65rem;
+    margin-bottom: 0.2rem;
+  }
+
+  /* ── SOCIAL BAR ── */
+  .social-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #2a2620;
+    flex-wrap: wrap;
+  }
+  .social-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid #3a3630;
+    color: #9a9288;
+    transition: all 0.2s ease;
+  }
+  .social-link svg { width: 12px; height: 12px; fill: currentColor; }
+  .social-link:hover { border-color: var(--accent); color: var(--accent); }
+
+  .instagram {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 1px 4px;
+    border-radius: 20px;
+    text-decoration: none;
+    color: #fff;
+    font-weight: 600;
+    background: linear-gradient(45deg,#f09433,#e1306c,#833ab4);
+  }
+  .instagram:hover { opacity: .9; }
+
+  /* ── LAYOUT ── */
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 5rem 3rem;
+  }
+
+  /* ── INDEX PAGE ── */
+  .index-page {
+    background: var(--paper-dark);
+    border-top: 4px solid var(--ink);
+  }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  .index-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+  }
+
+  .index-item {
+    background: var(--paper-dark);
+    padding: 2rem 2.5rem;
+    position: relative;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: background 0.2s ease, transform 0.15s ease;
+  }
+  .index-item:hover { background: #e0d8c8; transform: translateY(-2px); }
+
+  .index-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: var(--rule);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+  .index-item:hover .index-num { color: var(--accent); }
+
+  .index-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+  }
+
+  .index-desc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    line-height: 1.6;
+  }
+
+  /* ── ARTICLE ── */
+  .article-header {
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 3rem;
+    margin-bottom: 3rem;
+  }
+
+  .article-category {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--teal);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+
+  h1.article-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+  h1.article-title em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .article-deck {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.25rem;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--muted);
+    line-height: 1.6;
+    max-width: 600px;
+    border-left: 3px solid var(--accent);
+    padding-left: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .article-meta {
+    display: flex;
+    gap: 2rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .meta-item strong {
+    display: block;
+    color: var(--ink);
+    margin-bottom: 0.2rem;
+  }
+
+  /* ── BODY TEXT ── */
+  .body-text p {
+    margin-bottom: 1.5rem;
+    font-size: 1.05rem;
+    color: #2a2420;
+  }
+
+  .body-text p:first-child::first-letter {
+    font-family: 'Playfair Display', serif;
+    font-size: 4.5rem;
+    font-weight: 900;
+    float: left;
+    line-height: 0.8;
+    margin: 0.1em 0.12em 0 0;
+    color: var(--accent);
+  }
+
+  h2.section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin: 3rem 0 1rem;
+    line-height: 1.2;
+  }
+
+  h3.subsection {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin: 2.5rem 0 0.8rem;
+  }
+
+  /* ── PULLQUOTE ── */
+  .pullquote {
+    margin: 3rem 0;
+    padding: 2rem 3rem;
+    background: var(--ink);
+    color: var(--paper);
+    position: relative;
+  }
+  .pullquote::before {
+    content: '\201C';
+    font-family: 'Playfair Display', serif;
+    font-size: 8rem;
+    color: var(--accent);
+    position: absolute;
+    top: -1rem;
+    left: 1.5rem;
+    line-height: 1;
+    opacity: 0.4;
+  }
+  .pullquote p {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-style: italic;
+    line-height: 1.5;
+    color: #f0ebe0;
+    position: relative;
+    z-index: 1;
+  }
+  .pullquote cite {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--accent-light);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 1rem;
+    font-style: normal;
+  }
+
+  /* ── FACT BOX ── */
+  .fact-box {
+    background: var(--paper-dark);
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--teal);
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+  }
+  .fact-box-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--teal);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+  }
+  .fact-box p {
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    color: #3a3430;
+  }
+  .fact-box p:last-child { margin-bottom: 0; }
+
+  /* ── PROFILE CARD ── */
+  .profile-card {
+    display: grid;
+    grid-template-columns: 3px 1fr;
+    gap: 2rem;
+    background: var(--paper-dark);
+    padding: 2rem;
+    margin: 2.5rem 0;
+    border: 1px solid var(--rule);
+  }
+  .profile-stripe { background: var(--accent); }
+  .profile-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+  .profile-handle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--teal);
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+  }
+  .profile-stats {
+    display: flex;
+    gap: 2rem;
+    margin: 1rem 0;
+    padding: 1rem 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    flex-wrap: wrap;
+  }
+  .stat {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .stat strong {
+    display: block;
+    font-size: 1.1rem;
+    color: var(--ink);
+    font-family: 'Playfair Display', serif;
+    margin-bottom: 0.2rem;
+  }
+  .profile-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .tool-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--paper);
+    background: var(--ink);
+    padding: 0.25rem 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 3rem 0;
+    color: var(--rule);
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+  .divider span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ── CONCLUSION ── */
+  .conclusion {
+    border-top: 4px solid var(--ink);
+    padding-top: 3rem;
+    margin-top: 4rem;
+  }
+
+  /* ── FOOTER ── */
+  .mag-footer {
+    background: var(--ink);
+    color: #5a5450;
+    padding: 2rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .mag-footer .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--paper);
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .mag-footer-social { display: flex; gap: 1rem; align-items: center; }
+  .mag-footer-social a {
+    color: #7a7268;
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .mag-footer-social a:hover { color: var(--accent); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .cover-logo { animation: fadeUp 0.8s ease forwards; }
+  .cover-headline { animation: fadeUp 0.8s 0.2s ease forwards; opacity: 0; }
+  .cover-subhead { animation: fadeUp 0.8s 0.4s ease forwards; opacity: 0; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 680px) {
+    .cover-header { padding: 1.5rem; }
+    .cover-logo { font-size: 3.5rem; padding: 2rem 1.5rem 0; }
+    .cover-main { padding: 1.5rem; }
+    .cover-index { display: none; }
+    .page { padding: 3rem 1.5rem; }
+    .index-grid { grid-template-columns: 1fr; }
+    .profile-stats { flex-wrap: wrap; gap: 1rem; }
+    .article-meta { flex-wrap: wrap; gap: 1rem; }
+    .pullquote { padding: 2rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ SIGNAL NAV ══ -->
+<nav class="signal-nav">
+  <a class="signal-nav__home" href="../index.html">
+    <span class="signal-nav__logo">SIGNAL<span style="color:var(--accent)">.</span></span>
+    <span class="signal-nav__ed">Reseña</span>
+  </a>
+  <div class="signal-nav__trail">
+    <span class="signal-nav__current">Arte con IA en Instagram</span>
+  </div>
+  <div class="signal-nav__arrows">
+    <a href="../index.html" style="border-color:#4a8a7c;color:#4a8a7c;" onmouseover="this.style.background='#4a8a7c';this.style.color='#fff'" onmouseout="this.style.background='#2e2924';this.style.color='#4a8a7c'">Índice</a>
+    <span class="signal-nav__sep">·</span>
+    <span class="signal-nav__disabled">← Anterior</span>
+    <span class="signal-nav__sep">·</span>
+    <a href="willtoulan.html">Siguiente →</a>
+  </div>
+</nav>
+
+<!-- ══ COVER ══ -->
+<section class="cover">
+<div class="cover-noise"></div>
+<header class="cover-header">
+  <div class="masthead">Revista de Arte e Inteligencia Artificial<br>2026<br>Arte · Proceso · Comunidad</div>
+  <div class="masthead" style="text-align:right;">Distribución digital<br>Instagram · Substack<br>Acceso libre</div>
+</header>
+
+<div class="cover-logo">S<span>I</span>GN<span>A</span>L
+  <div class="cover-tagline">Arte generativo · Proceso · Comunidad</div>
+</div>
+
+<div class="cover-main">
+  <div class="cover-issue">
+    Por: Gerardo Ventura
+    <a href="https://instagram.com/gfvc1978" target="_blank" class="instagram" rel="noopener">
+      <i class="fa-brands fa-instagram"></i> @gfvc1978
+    </a>
+  </div>
+  <div class="cover-issue">Reseña de cuentas</div>
+  <h1 class="cover-headline">Arte con IA<br>en Instagram:<br><em>tres cuentas</em><br>
+    pioneras&nbsp;</h1>
+  <p class="cover-subhead">Una mirada fan a @lofiartloft, @lofipromt y @official_anime_artist_ — tres estilos distintos, un mismo fenómeno de las redes.&nbsp; &nbsp;</p>
+
+  <div class="social-bar">
+    <a href="https://www.instagram.com/signal.ai.mag/" target="_blank" rel="noopener" class="social-link">
+      <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.209-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      @signal.ai.mag
+    </a>
+    <a href="https://signalzine.rf.gd/" target="_blank" rel="noopener" class="social-link">
+      <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm-1 17.93V16h2v1.93A8.01 8.01 0 0 1 4.07 13H6v-2H4.07A8.01 8.01 0 0 1 11 4.07V6h2V4.07A8.01 8.01 0 0 1 19.93 11H18v2h1.93A8.01 8.01 0 0 1 13 19.93z"/></svg>
+      signalzine.rf.gd
+    </a>
+    <a href="https://substack.com/@signalmag" target="_blank" rel="noopener" class="social-link">
+      <svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:currentColor"><path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11 22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z"/></svg>
+      Substack
+    </a>
+    <a href="mailto:revista.signal@gmail.com" class="social-link">
+      <svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+      revista.signal@gmail.com
+    </a>
+  </div>
+</div>
+
+<footer class="cover-footer">
+  <div class="cover-index">
+    <div class="cover-index-item"><strong>01</strong>Lofi Art Loft</div>
+    <div class="cover-index-item"><strong>02</strong>Lofi Promt</div>
+    <div class="cover-index-item"><strong>03</strong>Official Anime Artist</div>
+    <div class="cover-index-item"><strong>04</strong>Conclusión</div>
+  </div>
+  <div class="masthead" style="color:#3a3630;">signal.mag / no.01</div>
+</footer>
+</section>
+
+<!-- ══ INDEX ══ -->
+<section class="index-page">
+<div class="page">
+  <div class="section-label">Contenido — Reseña</div>
+  <div class="index-grid">
+    <a href="#seccion-intro" class="index-item">
+      <div class="index-num">00</div>
+      <div class="index-title">Introducción</div>
+      <div class="index-desc">Por qué Instagram se convirtió en el epicentro del AI art — y qué hace especiales a estas tres cuentas</div>
+    </a>
+    <a href="#seccion-01" class="index-item">
+      <div class="index-num">01</div>
+      <div class="index-title">Lofi Art Loft</div>
+      <div class="index-desc">Melancolía dulce, coherencia visual, y una estética lofi que se reconoce antes de leer el nombre</div>
+    </a>
+    <a href="#seccion-02" class="index-item">
+      <div class="index-num">02</div>
+      <div class="index-title">Lofi Promt</div>
+      <div class="index-desc">El prompt como pincel: pequeñas eternidades cotidianas capturadas en píxeles de calidad acuarelada</div>
+    </a>
+    <a href="#seccion-03" class="index-item">
+      <div class="index-num">03</div>
+      <div class="index-title">Official Anime Artist</div>
+      <div class="index-desc">Anime de alta fidelidad generado con IA: una ventana al futuro del género desde el presente</div>
+    </a>
+  </div>
+</div>
+</section>
+
+<!-- ══ ARTICLE ══ -->
+<article>
+<div class="page">
+
+  <!-- Article Header -->
+  <header class="article-header">
+    <div class="article-category">Reseña — Cuentas destacadas de AI Art</div>
+    <h1 class="article-title">Arte con IA en Instagram:<br>una mirada fan a <em>tres cuentas</em><br>que están cambiando el juego</h1>
+    <p class="article-deck">Tres estilos, tres comunidades, un mismo fenómeno. Una postal de un momento histórico en la escena del arte generativo en Instagram — 2025/2026.</p>
+    <div class="article-meta">
+      <div class="meta-item"><strong>Tipo</strong>Reseña editorial</div>
+      <div class="meta-item"><strong>Cuentas</strong>@lofiartloft · @lofipromt · @official_anime_artist_</div>
+      <div class="meta-item"><strong>Periodo</strong>2025 – 2026</div>
+      <div class="meta-item"><strong>Autor</strong>Gerardo Ventura</div>
+    </div>
+  </header>
+
+  <!-- Intro -->
+  <section id="seccion-intro" class="body-text">
+    <p>El arte generado por inteligencia artificial ya no es una novedad curiosa: es una escena vibrante, en plena ebullición, con sus propios referentes, estilos y comunidades. Instagram se ha convertido en uno de sus epicentros, y entre cientos —quizás miles— de cuentas que publican imágenes creadas con IA, hay algunas que destacan no solo por la calidad de su trabajo, sino por la coherencia de su visión artística y el impacto que tienen en quienes las siguen.</p>
+    <p>Esta reseña se enfoca en tres de ellas: @lofiartloft, @lofipromt y @official_anime_artist_. No pretende ser una lista exhaustiva ni un ranking definitivo. Es simplemente la mirada de alguien que las sigue con entusiasmo y cree que representan, cada una a su manera, una tendencia más amplia: la democratización de la imagen artística gracias a la IA.</p>
+
+    <div class="pullquote">
+      <p>Tres cuentas, tres estilos, un mismo fenómeno. Y detrás de ellas, miles de creadores explorando los límites de lo que una máquina puede soñar cuando un humano le da las palabras justas.</p>
+    </div>
+  </section>
+
+  <div class="divider"><span>§ 01</span></div>
+
+  <!-- Sección 01: Lofi Art Loft -->
+  <section id="seccion-01">
+    <h2 class="section-title">🎨 Lofi Art Loft</h2>
+    <h3 class="subsection">§ 01 — Coherencia visual en el universo lofi+IA</h3>
+
+    <div class="profile-card">
+      <div class="profile-stripe"></div>
+      <div>
+        <div class="profile-name">Lofi Art Loft</div>
+        <div class="profile-handle">@lofiartloft</div>
+        <div class="profile-stats">
+          <div class="stat"><strong>~2022</strong>Activa desde</div>
+          <div class="stat"><strong>Alta</strong>Constancia</div>
+          <div class="stat"><strong>Comunidad</strong>Interacciones</div>
+        </div>
+        <div class="profile-tools">
+          <span class="tool-tag">Midjourney</span>
+          <span class="tool-tag">Estética Lofi</span>
+          <span class="tool-tag">Anime Años 90</span>
+          <span class="tool-tag">Chill-hop Visual</span>
+        </div>
+      </div>
+    </div>
+<!-- Instagram embed -->
+<div style="margin: 2rem 0; display:flex; flex-direction:column; align-items:center;">
+  <div style="font-family:'JetBrains Mono',monospace; font-size:0.58rem; color:var(--teal); letter-spacing:0.2em; text-transform:uppercase; margin-bottom:0.8rem; align-self:flex-start;">Muestra de obra reciente</div>
+  <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/DHk5HS-qjWP/" data-instgrm-version="14" style="background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15);margin:0;max-width:540px;min-width:326px;padding:0;width:99.375%;width:-webkit-calc(100% - 2px);width:calc(100% - 2px);">
+  </blockquote>
+</div>
+<script async src="//www.instagram.com/embed.js"></script>
+    <div class="body-text">
+      <p>Entrar a @lofiartloft es como abrir una ventana a las 2 de la mañana y ver caer la lluvia. Hay algo profundamente reconfortante en su feed: colores cálidos, atmósferas íntimas, personajes que estudian solos bajo la luz de una lámpara o pasean por calles mojadas mientras el mundo duerme. Todo tiene esa textura suave y granulada que asociamos con la estética lofi.</p>
+      <p>Lo que diferencia a esta cuenta de las miles que publican arte lofi generado con IA es su <strong>coherencia visual</strong>. No se trata de imágenes random con filtros retro: hay una curaduría clara, una paleta de colores reconocible y una intención emocional detrás de cada pieza. Ves una imagen de @lofiartloft y sabes que es suya antes de leer el nombre.</p>
+      <p>Su comunidad lo agradece con interacciones constantes: comentarios de personas que dicen "esto es exactamente cómo me siento hoy" o "mi fondo de pantalla favorito". Eso es arte que funciona, que conecta. Y en el universo de la IA generativa, donde la sobre-producción es el mayor riesgo, @lofiartloft ha encontrado el equilibrio entre cantidad y calidad.</p>
+    </div>
+
+    <div class="fact-box">
+      <div class="fact-box-label">Estilo artístico — Resumen</div>
+      <p>Estética lofi en su máxima expresión: melancolía dulce, soledad acogedora. Las imágenes evocan anime japonés de los años 90 mezclado con la sensibilidad chill-hop moderna.</p>
+      <p>Personajes femeninos, introspectivos, rodeados de libros, plantas y lluvia. Colores dominantes: naranjas cálidos, azules nocturnos y amarillos de lámpara.</p>
+    </div>
+
+    <div class="pullquote">
+      <p>Si el lofi music es música para estudiar y relajarse, @lofiartloft es el arte que acompaña esa música. Ambos comparten la misma alma.</p>
+    </div>
+  </section>
+
+  <div class="divider"><span>§ 02</span></div>
+
+  <!-- Sección 02: Lofi Promt -->
+  <section id="seccion-02">
+    <h2 class="section-title">💜 Lofi Promt</h2>
+    <h3 class="subsection">§ 02 — Cuando el prompt es el pincel</h3>
+
+    <div class="profile-card">
+      <div class="profile-stripe"></div>
+      <div>
+        <div class="profile-name">Lofi Promt</div>
+        <div class="profile-handle">@lofipromt</div>
+        <div class="profile-stats">
+          <div class="stat"><strong>~2022</strong>Activa desde</div>
+          <div class="stat"><strong>Regular</strong>Constancia</div>
+          <div class="stat"><strong>Referente</strong>Comunidad</div>
+        </div>
+        <div class="profile-tools">
+          <span class="tool-tag">Prompt Engineering</span>
+          <span class="tool-tag">Estética Acuarelada</span>
+          <span class="tool-tag">Arte Íntimo</span>
+          <span class="tool-tag">Cotidiano Poético</span>
+        </div>
+      </div>
+    </div>
+<!-- Instagram embed -->
+<div style="margin: 2rem 0; display:flex; flex-direction:column; align-items:center;">
+  <div style="font-family:'JetBrains Mono',monospace; font-size:0.58rem; color:var(--teal); letter-spacing:0.2em; text-transform:uppercase; margin-bottom:0.8rem; align-self:flex-start;">Muestra de obra reciente</div>
+  <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/DUk9tAYCNPZ/" data-instgrm-version="14" style="background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15);margin:0;max-width:540px;min-width:326px;padding:0;width:99.375%;width:-webkit-calc(100% - 2px);width:calc(100% - 2px);">
+  </blockquote>
+</div>
+<script async src="//www.instagram.com/embed.js"></script>
+
+    <div class="body-text">
+      <p>El nombre lo dice todo: @lofipromt vive en la intersección entre el prompt engineering y la estética lofi. Pero lo que podría sonar técnico y frío resulta ser todo lo contrario: esta cuenta tiene un corazón caliente y una identidad visual que atrapa desde el primer scroll.</p>
+      <p>Lo fascinante de @lofipromt es que no solo comparte imágenes bonitas: hay una <strong>conciencia del proceso</strong>. El arte lofi generado con IA tiene mucho de intuición: encontrar las palabras exactas que le dicen a la máquina "quiero esa luz de atardecer filtrada por cortinas de encaje" o "esa sensación de domingo lluvioso con café frío". @lofipromt parece haber dominado ese idioma.</p>
+      <p>Su feed es una colección de momentos cotidianos elevados a algo poético. No hay grandilocuencia, no hay efectos espectaculares ni mundos de fantasía épica. Hay una chica en un tren, un cuarto desordenado con luces de navidad fuera de temporada, una tarde de verano que ya casi termina. <em>Pequeñas eternidades capturadas en píxeles.</em></p>
+    </div>
+
+    <div class="fact-box">
+      <div class="fact-box-label">Estilo artístico — Resumen</div>
+      <p>Si @lofiartloft es el sueño nocturno, @lofipromt es el momento entre dormido y despierto: difuso, suave, cargado de emoción sin dramatismo.</p>
+      <p>Las imágenes tienen una calidad casi acuarelada, con bordes que se disuelven y colores que se sangran entre sí. El resultado es íntimo, casi como ver el cuaderno de bocetos de alguien que sueña con mundos en pastel.</p>
+    </div>
+
+    <div class="pullquote">
+      <p>@lofipromt entiende que en el arte lofi IA, el prompt es el pincel. Y sabe cómo usarlo.</p>
+    </div>
+  </section>
+
+  <div class="divider"><span>§ 03</span></div>
+
+  <!-- Sección 03: Official Anime Artist -->
+  <section id="seccion-03">
+    <h2 class="section-title">⚡ Official Anime Artist</h2>
+    <h3 class="subsection">§ 03 — Una ventana al futuro del anime</h3>
+
+    <div class="profile-card">
+      <div class="profile-stripe"></div>
+      <div>
+        <div class="profile-name">Official Anime Artist</div>
+        <div class="profile-handle">@official_anime_artist_</div>
+        <div class="profile-stats">
+          <div class="stat"><strong>Alta</strong>Frecuencia</div>
+          <div class="stat"><strong>Masiva</strong>Comunidad</div>
+          <div class="stat"><strong>Referente</strong>Anime AI Art</div>
+        </div>
+        <div class="profile-tools">
+          <span class="tool-tag">Nijijourney</span>
+          <span class="tool-tag">NovelAI</span>
+          <span class="tool-tag">Stable Diffusion</span>
+          <span class="tool-tag">Shonen · Seinen · Slice of Life</span>
+        </div>
+      </div>
+    </div>
+	  <!-- Instagram embed -->
+<div style="margin: 2rem 0; display:flex; flex-direction:column; align-items:center;">
+  <div style="font-family:'JetBrains Mono',monospace; font-size:0.58rem; color:var(--teal); letter-spacing:0.2em; text-transform:uppercase; margin-bottom:0.8rem; align-self:flex-start;">Muestra de obra reciente</div>
+  <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/DXy1I3KBbvi/" data-instgrm-version="14" style="background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15);margin:0;max-width:540px;min-width:326px;padding:0;width:99.375%;width:-webkit-calc(100% - 2px);width:calc(100% - 2px);">
+  </blockquote>
+</div>
+<script async src="//www.instagram.com/embed.js"></script>
+
+    <div class="body-text">
+      <p>Si las dos cuentas anteriores viven en la suavidad y la introspección, @official_anime_artist_ llega con la energía de un opening de anime en una pantalla de cine: intensa, vívida, imposible de ignorar. Esta cuenta es para los que crecieron viendo Dragon Ball, Naruto, Sword Art Online y que ahora descubren que la IA puede crear personajes con esa misma chispa visual, pero completamente originales.</p>
+      <p>Lo que más impacta de esta cuenta es la <strong>versatilidad dentro de la coherencia</strong>. Hay personajes que parecen salidos de un shonen de acción, otros con la delicadeza de un slice of life, algunos con la atmósfera oscura de un seinen. Pero todos comparten un ADN visual reconocible: proporciones anime, ojos expresivos, fondos detallados, un sentido de la composición que sabe exactamente dónde poner la mirada.</p>
+      <p>Para la comunidad anime en Instagram, esta cuenta es casi una ventana al futuro: ¿cómo se verá el anime cuando los estudios adopten masivamente la IA como herramienta de producción? @official_anime_artist_ ofrece una respuesta visual anticipada, y la respuesta es que puede ser hermoso.</p>
+    </div>
+
+    <div class="fact-box">
+      <div class="fact-box-label">Estilo artístico — Resumen</div>
+      <p>Anime de alta fidelidad generado con IA: colores saturados, líneas limpias, expresividad máxima. No es el anime "de fondo" que usan otras cuentas: aquí el anime <em>es</em> el tema.</p>
+      <p>Las imágenes tienen presencia, dramatismo y esa cualidad de póster que hace que quieras imprimirla y colgarla en tu cuarto.</p>
+    </div>
+
+    <div class="pullquote">
+      <p>@official_anime_artist_ no imita el anime: lo continúa, lo expande, lo reimagina con herramientas que los fundadores del género ni podían soñar.</p>
+    </div>
+  </section>
+
+  <div class="divider"><span>Conclusión</span></div>
+
+  <!-- Conclusión -->
+  <section class="conclusion">
+    <h3 class="subsection">§ Cierre — Tres cuentas, un fenómeno</h3>
+    <h2 class="section-title">Lo que dicen estas cuentas del momento en que vivimos</h2>
+
+    <div class="body-text">
+      <p>Estas tres cuentas no son una excepción. Son la punta visible de un iceberg enorme. Por cada @lofiartloft hay decenas de cuentas que intentan capturar esa misma magia nocturna. Por cada @lofipromt hay creadores que experimentan con prompts buscando la imagen perfecta. Por cada @official_anime_artist_ hay fans del anime que descubren en la IA una herramienta para dar vida a sus personajes favoritos.</p>
+      <p>Lo que hace especiales a estas tres es que han superado la fase de "esto es curioso" y han construido algo más sólido: una identidad, una comunidad y una constancia que los convierte en referentes. En un internet saturado de contenido generado automáticamente, ellas demuestran que la IA en manos de alguien con visión artística puede producir algo genuinamente emocionante.</p>
+      <p>Hay algo profundamente revelador en que las tres comparten un denominador común: la nostalgia y la emoción. El lofi, el anime, los ambientes acogedores. No es casualidad. La IA como herramienta artística parece resonar con fuerza especial cuando se usa para evocar sentimientos que ya conocemos — la tranquilidad de una noche de estudio, la emoción de un combate épico, la melancolía dulce de un atardecer.</p>
+    </div>
+
+    <div class="pullquote">
+      <p>Seguir a estas cuentas es, en cierta forma, ser testigo de cómo la creatividad humana encuentra nuevos lenguajes. El pincel fue una tecnología. La cámara fue una tecnología. El prompt es la tecnología de hoy.</p>
+    </div>
+
+    <div class="body-text">
+      <p>¿Son artistas? La pregunta sigue en debate. Pero si el arte es lo que nos hace sentir algo, entonces la respuesta es sí. Y lo interesante es que son solo el comienzo: la escena del AI art en Instagram está creciendo a una velocidad vertiginosa, y los próximos referentes probablemente ya están publicando su primera imagen en este momento.</p>
+      <p>Esta reseña es apenas una postal de un momento histórico. Porque esto —lo que está pasando con el arte y la IA— apenas está empezando.</p>
+    </div>
+
+    <div class="fact-box">
+      <div class="fact-box-label">Las tres cuentas — Links directos</div>
+      <p>🎨 <strong>@lofiartloft</strong> — instagram.com/lofiartloft</p>
+      <p>💜 <strong>@lofipromt</strong> — instagram.com/lofipromt</p>
+      <p>⚡ <strong>@official_anime_artist_</strong> — instagram.com/official_anime_artist_</p>
+    </div>
+  </section>
+
+</div>
+</article>
+
+<!-- ══ FOOTER ══ -->
+<footer class="mag-footer">
+  <div class="logo">SIGNAL<span style="color:var(--accent)">.</span></div>
+  <div>Arte generativo e inteligencia artificial</div>
+  <div class="mag-footer-social">
+    <a href="https://www.instagram.com/signal.ai.mag/" target="_blank" rel="noopener">Instagram</a>
+    <span style="color:#3a3630">·</span>
+    <a href="https://substack.com/@signalmag" target="_blank" rel="noopener">Substack</a>
+    <span style="color:#3a3630">·</span>
+    <a href="https://signalzine.rf.gd/" target="_blank" rel="noopener">Web</a>
+    <span style="color:#3a3630">·</span>
+    <a href="mailto:revista.signal@gmail.com">Email</a>
+  </div>
+</footer>
+
+</body>
+</html>

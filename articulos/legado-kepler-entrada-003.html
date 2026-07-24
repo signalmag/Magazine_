@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legado Kepler — Entrada 003</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Share+Tech+Mono&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f2ead8; --paper-dark: #e8ddc8; --paper-aged: #d4c9a8;
+    --ink: #2a2318; --ink-faded: #5a5040; --ink-light: #8a7a60;
+    --accent: #c47a2a; --accent-light: #e8b870; --teal: #3a7a6a;
+    --stamp-red: #8a2a1a; --rule: #c4b898;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #2a2010; font-family: 'Crimson Pro', Georgia, serif; min-height: 100vh; padding: 3rem 1.5rem; }
+  .notebook { max-width: 820px; margin: 0 auto; background: var(--paper); box-shadow: 0 20px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,0,0,0.3); position: relative; }
+  .notebook::before { content: ''; position: absolute; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E"); pointer-events: none; z-index: 10; opacity: 0.8; }
+  .notebook::after { content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 40px; background: linear-gradient(to right, rgba(0,0,0,0.12), transparent); pointer-events: none; z-index: 5; }
+  .notebook-header { background: var(--ink); padding: 2rem 3rem 1.8rem; position: relative; overflow: hidden; }
+  .notebook-header::before { content: 'LEGADO KEPLER'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Share Tech Mono', monospace; font-size: 6rem; color: rgba(255,255,255,0.03); letter-spacing: 0.3em; white-space: nowrap; pointer-events: none; }
+  .header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.2rem; }
+  .series-title { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; color: var(--accent-light); letter-spacing: 0.3em; text-transform: uppercase; line-height: 1.8; }
+  .entry-code { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; color: #5a5040; letter-spacing: 0.15em; text-align: right; line-height: 1.8; }
+  .main-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 300; color: var(--paper); letter-spacing: 0.1em; line-height: 1; }
+  .main-title span { color: var(--accent); }
+  .subtitle { font-family: 'Share Tech Mono', monospace; font-size: 0.58rem; color: #4a4030; letter-spacing: 0.2em; text-transform: uppercase; margin-top: 0.5rem; }
+  .mission-bar { background: var(--ink); border-top: 2px solid var(--accent); padding: 0.6rem 3rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; }
+  .mission-bar span { font-family: 'Share Tech Mono', monospace; font-size: 0.58rem; color: #5a5040; letter-spacing: 0.15em; text-transform: uppercase; }
+  .mission-bar .highlight { color: var(--accent-light); }
+  .field-header { padding: 2.5rem 3rem 1.5rem; display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: start; border-bottom: 1px solid var(--rule); }
+  .planet-name { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 600; color: var(--ink); line-height: 1.1; }
+  .planet-designation { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; color: var(--teal); letter-spacing: 0.2em; text-transform: uppercase; margin-top: 0.3rem; }
+  .field-stamp { text-align: right; }
+  .stamp-box { display: inline-block; border: 2px solid var(--stamp-red); padding: 0.4rem 0.8rem; font-family: 'Share Tech Mono', monospace; font-size: 0.55rem; color: var(--stamp-red); letter-spacing: 0.1em; text-transform: uppercase; line-height: 1.6; transform: rotate(1.5deg); }
+  .field-meta { display: flex; gap: 2.5rem; margin-top: 1rem; flex-wrap: wrap; }
+  .meta-field { font-family: 'Share Tech Mono', monospace; font-size: 0.55rem; color: var(--ink-light); letter-spacing: 0.1em; text-transform: uppercase; line-height: 1.8; }
+  .meta-field strong { display: block; color: var(--ink-faded); font-size: 0.65rem; }
+  .notebook-body { padding: 2.5rem 3rem; }
+  .ruled-section { background-image: repeating-linear-gradient(transparent, transparent 31px, var(--rule) 31px, var(--rule) 32px); background-position: 0 1.5rem; }
+  .entry-text { font-family: 'Crimson Pro', serif; font-size: 1.1rem; line-height: 2rem; color: var(--ink); margin-bottom: 2rem; }
+  .entry-text p { margin-bottom: 2rem; }
+  .entry-text p:first-child::first-letter { font-family: 'Cormorant Garamond', serif; font-size: 4.5rem; font-weight: 600; float: left; line-height: 0.75; margin: 0.1em 0.1em 0 0; color: var(--accent); }
+  .image-block { margin: 2.5rem -3rem; position: relative; }
+  .image-block img { width: 100%; display: block; filter: sepia(15%) contrast(0.95); }
+  .image-caption { padding: 0.8rem 3rem; background: var(--paper-dark); border-top: 1px solid var(--rule); display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+  .caption-text { font-family: 'Crimson Pro', serif; font-size: 0.85rem; font-style: italic; color: var(--ink-faded); max-width: 70%; }
+  .caption-ref { font-family: 'Share Tech Mono', monospace; font-size: 0.5rem; color: var(--ink-light); letter-spacing: 0.1em; text-transform: uppercase; white-space: nowrap; }
+  .image-inline { float: right; width: 44%; margin: 0 -0.5rem 1.5rem 2rem; }
+  .image-inline img { width: 100%; display: block; filter: sepia(10%) contrast(0.95); border: 1px solid var(--rule); }
+  .caption-inline { font-family: 'Share Tech Mono', monospace; font-size: 0.5rem; color: var(--ink-light); letter-spacing: 0.08em; padding: 0.4rem 0.5rem; background: var(--paper-dark); border: 1px solid var(--rule); border-top: none; line-height: 1.5; }
+  .field-note { margin: 2rem 0; padding: 1.2rem 1.5rem; background: var(--paper-aged); border-left: 3px solid var(--accent); position: relative; }
+  .field-note::before { content: attr(data-label); position: absolute; top: -0.6rem; left: 1rem; font-family: 'Share Tech Mono', monospace; font-size: 0.5rem; color: var(--accent); letter-spacing: 0.2em; text-transform: uppercase; background: var(--paper-aged); padding: 0 0.4rem; }
+  .field-note p { font-family: 'Crimson Pro', serif; font-size: 0.95rem; font-style: italic; color: var(--ink-faded); line-height: 1.7; margin: 0; }
+  .tech-aside { margin: 2rem 0; padding: 1rem 1.5rem; border: 1px solid var(--rule); background: var(--paper-dark); display: grid; grid-template-columns: 3px 1fr; gap: 1.2rem; }
+  .tech-aside-bar { background: var(--teal); }
+  .tech-aside-content { font-family: 'Share Tech Mono', monospace; font-size: 0.62rem; color: var(--ink-faded); letter-spacing: 0.05em; line-height: 1.8; }
+  .tech-aside-content strong { color: var(--teal); display: block; margin-bottom: 0.3rem; font-size: 0.58rem; letter-spacing: 0.15em; text-transform: uppercase; }
+  .section-header { margin: 3rem 0 1.5rem; padding-bottom: 0.8rem; border-bottom: 2px solid var(--ink); display: flex; align-items: baseline; gap: 1rem; }
+  .section-num { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; color: var(--accent); letter-spacing: 0.2em; text-transform: uppercase; }
+  .section-name { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; color: var(--ink); line-height: 1.2; }
+  .divider { display: flex; align-items: center; gap: 1rem; margin: 2.5rem 0; clear: both; }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
+  .divider-sym { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: var(--rule); }
+  .planet-close { margin: 3rem 0 0; padding: 2.5rem 3rem; background: var(--ink); position: relative; overflow: hidden; }
+  .planet-close::before { content: 'VIRIDIS NOVA'; position: absolute; bottom: -1rem; right: 2rem; font-family: 'Cormorant Garamond', serif; font-size: 5rem; font-weight: 900; color: rgba(255,255,255,0.04); letter-spacing: -0.02em; pointer-events: none; }
+  .planet-close-label { font-family: 'Share Tech Mono', monospace; font-size: 0.55rem; color: var(--accent); letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 1.2rem; }
+  .planet-close p { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-style: italic; color: #c8bfb0; line-height: 1.7; position: relative; z-index: 1; }
+  .planet-close p + p { margin-top: 1rem; }
+  .planet-close-sig { margin-top: 1.5rem; font-family: 'Share Tech Mono', monospace; font-size: 0.55rem; color: #5a5040; letter-spacing: 0.1em; text-transform: uppercase; border-top: 1px solid #3a3020; padding-top: 1rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; }
+  .signature-block { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1.5rem; }
+  .sig-left { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.1rem; color: var(--ink-faded); line-height: 1.8; }
+  .sig-name { font-size: 1.4rem; font-weight: 600; color: var(--ink); font-style: normal; }
+  .sig-right { font-family: 'Share Tech Mono', monospace; font-size: 0.55rem; color: var(--ink-light); letter-spacing: 0.1em; text-transform: uppercase; text-align: right; line-height: 1.8; }
+  .next-destination { margin: 2rem 0 0; padding: 1.5rem 2rem; background: var(--paper-dark); border: 1px solid var(--rule); border-left: 4px solid var(--accent); display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .next-label { font-family: 'Share Tech Mono', monospace; font-size: 0.55rem; color: var(--ink-light); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.4rem; }
+  .next-name { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 600; color: var(--ink); }
+  .next-code { font-family: 'Share Tech Mono', monospace; font-size: 0.58rem; color: var(--teal); letter-spacing: 0.1em; text-transform: uppercase; }
+  .next-status { font-family: 'Share Tech Mono', monospace; font-size: 0.58rem; color: var(--ink-light); letter-spacing: 0.1em; text-transform: uppercase; text-align: right; line-height: 1.8; }
+  .nav-entries { display: flex; justify-content: space-between; padding: 1rem 3rem; background: var(--paper-dark); border-top: 1px solid var(--rule); }
+  .nav-link { font-family: 'Share Tech Mono', monospace; font-size: 0.55rem; color: var(--ink-light); letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; transition: color 0.2s; }
+  .nav-link:hover { color: var(--accent); }
+  .notebook-footer { background: var(--ink); padding: 1rem 3rem; display: flex; justify-content: space-between; align-items: center; }
+  .footer-series { font-family: 'Share Tech Mono', monospace; font-size: 0.55rem; color: #3a3020; letter-spacing: 0.15em; text-transform: uppercase; }
+  .footer-page { font-family: 'Cormorant Garamond', serif; font-size: 0.9rem; color: #3a3020; }
+  @media (max-width: 640px) {
+    body { padding: 0; }
+    .notebook-header, .notebook-body, .field-header, .planet-close { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .mission-bar, .nav-entries, .notebook-footer { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .image-block { margin: 2rem -1.5rem; }
+    .image-caption { padding: 0.8rem 1.5rem; }
+    .image-inline { float: none; width: 100%; margin: 1.5rem 0; }
+    .main-title { font-size: 2.2rem; }
+  }
+
+  /* ══ SIGNAL NAV ══ */
+  .signal-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    background: var(--ink);
+    border-bottom: 1px solid #3a2e1a;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    height: 40px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .signal-nav__home {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    text-decoration: none;
+    color: var(--paper);
+  }
+  .signal-nav__logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+  }
+  .signal-nav__ed {
+    color: #3a2e1a;
+    font-size: 0.5rem;
+  }
+  .signal-nav__home:hover .signal-nav__logo { color: var(--accent); }
+  .signal-nav__trail {
+    color: #4a3a20;
+    font-size: 0.5rem;
+  }
+  .signal-nav__current { color: var(--accent-light); }
+  .signal-nav__arrows {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: #3a2e1a;
+  }
+  .signal-nav__arrows a {
+    color: #7a6a50;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .signal-nav__arrows a:hover { color: var(--accent); }
+  .signal-nav__disabled { opacity: 0.2; cursor: default; }
+  .signal-nav__sep { opacity: 0.3; }
+  body { padding-top: 40px; }
+  @media (max-width: 640px) {
+    .signal-nav__trail { display: none; }
+    .signal-nav { padding: 0 1rem; }
+  }
+
+</style>
+</head>
+<body>
+<!-- ══ SIGNAL NAV ══ -->
+<nav class="signal-nav">
+  <a class="signal-nav__home" href="../index.html">
+    <span class="signal-nav__logo">SIGNAL</span>
+    <span class="signal-nav__ed">Serie · Legado Kepler</span>
+  </a>
+  <div class="signal-nav__trail">
+    Legado Kepler · <span class="signal-nav__current">Entrada 003</span>
+  </div>
+  <div class="signal-nav__arrows">
+    <a href="../index.html">Índice</a>
+    <span class="signal-nav__sep">·</span>
+    <a class="signal-nav__prev" href="legado-kepler-entrada-002.html">← Entrada 002</a>
+    <span class="signal-nav__sep">·</span>
+    <a class="signal-nav__next" href="legado-kepler-01.html">Entrada 004 →</a>
+  </div>
+</nav>
+
+<div class="notebook">
+
+  <div class="notebook-header">
+    <div class="header-top">
+      <div class="series-title">Legado Kepler · Diario de campo · Serie I<br>Viridis Nova — Tercera parte · Cierre</div>
+      <div class="entry-code">Entrada N° 003<br>Clasificación: Abierta<br>Archivo: LK-SNV-003</div>
+    </div>
+    <div class="main-title">ANTES<span> </span>DE<span> </span>PARTIR</div>
+    <div class="subtitle">Kepler-442b · Sistema Lira · Días 15 al 21 — Cierre de misión</div>
+  </div>
+
+  <div class="mission-bar">
+    <span>S. Nikolas Ventura A. · Técnico Sr. Sistemas Vitales — Clase IV</span>
+    <span class="highlight">Cierre de misión · Viridis Nova</span>
+    <span>Salida: Puerto Vertical 7A-19 · Día 21</span>
+  </div>
+
+  <div class="field-header">
+    <div>
+      <div class="planet-name">Viridis Nova — Semana final</div>
+      <div class="planet-designation">KPL-442b · Cierre de auditoría · Preparación de salida</div>
+      <div class="field-meta">
+        <div class="meta-field"><strong>Días en planeta</strong>15 — 21</div>
+        <div class="meta-field"><strong>Auditoría</strong>Completada · 17/17</div>
+        <div class="meta-field"><strong>Incidencias totales</strong>3 menores · 0 críticas</div>
+        <div class="meta-field"><strong>Estado de misión</strong>Cerrada</div>
+      </div>
+    </div>
+    <div class="field-stamp">
+      <div class="stamp-box">Misión<br>completada<br>KPL-442b<br>Día 21</div>
+    </div>
+  </div>
+
+  <div class="notebook-body">
+
+    <div class="section-header">
+      <span class="section-num">§ 01</span>
+      <span class="section-name">El lugar donde escribo</span>
+    </div>
+
+    <div class="image-block">
+      <img src="images/image (8).jpg" alt="Oficina de monitoreo atmosférico">
+      <div class="image-caption">
+        <span class="caption-text">Oficina de monitoreo atmosférico — sector este, nivel 07. La pantalla muestra el estado en tiempo real de los ecosistemas de la cuenca norte. La luna visible al fondo en fase casi completa. Última auditoría técnica de la misión.</span>
+        <span class="caption-ref">Foto · SNV · Día 15 · 09:18h</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>
+        La última semana empezó en la oficina de monitoreo atmosférico del sector este. Es el puesto de trabajo más quieto que he visitado en Viridis Nova — un técnico solo frente a una pantalla enorme que muestra el estado de todo el sistema de atmósfera de la cuenca norte, con los campos geométricos extendiéndose hasta el horizonte por la ventana abierta y La Vieja colgando en el cielo de la mañana como siempre.
+      </p>
+      <p>
+        El técnico que trabaja ahí se llama Mateo. Lleva ocho años en ese puesto. Le pregunté si no se aburría — el mismo paisaje, la misma pantalla, la misma luna todos los días. Me miró como si la pregunta no tuviera mucho sentido y me dijo que el paisaje nunca era el mismo. Que los campos cambian de color según la temporada de cultivo, que las nubes nunca forman el mismo patrón, que la luna tiene ciclos que todavía no terminó de memorizar del todo después de ocho años. Me quedé en silencio un momento y después anoté la pantalla de sus sistemas en el registro técnico. Todo dentro de parámetros.
+      </p>
+    </div>
+
+    <div class="field-note" data-label="Nota · Día 15 · Tarde">
+      <p>Me quedé en esa oficina más tiempo del que necesitaba. Terminé la auditoría en cuarenta minutos pero estuve ahí casi dos horas. Mateo no me preguntó por qué. Simplemente siguió haciendo su trabajo. A veces la compañía más honesta es la que no necesita explicación.</p>
+    </div>
+
+    <div class="divider"><span class="divider-sym">✦</span></div>
+
+    <div class="section-header">
+      <span class="section-num">§ 02</span>
+      <span class="section-name">La última noche sobre las nubes</span>
+    </div>
+
+    <div class="image-block">
+      <img src="images/image (18).jpg" alt="Habitación sobre las nubes">
+      <div class="image-caption">
+        <span class="caption-text">Módulo de tránsito nivel alto — última semana de misión. Vista directa sobre la capa de nubes permanente. Las torres de monitoreo atmosférico emergen al fondo. La luna en cuarto creciente sobre el horizonte.</span>
+        <span class="caption-ref">Foto · SNV · Día 19 · 06:42h · Antes del amanecer</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>
+        En la tercera semana me cambiaron a un módulo de tránsito en los niveles altos — los que están por encima de la capa de nubes permanente. Es donde alojan a los técnicos visitantes que están por partir. Una forma amable de ir desconectándote del planeta antes de que te vayas.
+      </p>
+      <p>
+        Desde ahí la ciudad desaparece bajo las nubes. Solo se ven las torres de monitoreo atmosférico emergiendo como faros, y de noche las luces de las plataformas de tránsito orbital parpadeando en el horizonte. Es un paisaje completamente distinto al de los niveles bajos — más silencioso, más abstracto, más parecido al espacio que a un planeta habitado.
+      </p>
+      <p>
+        Dormí mal esos días. No por incomodidad — el módulo es perfectamente funcional. Sino porque me quedaba despierto mirando por la ventana sin razón particular. Una forma de guardar algo antes de que se fuera, supongo. O antes de que me fuera yo.
+      </p>
+    </div>
+
+    <div class="field-note" data-label="Madrugada · Día 19 · 03:15h local">
+      <p>La luna llena sobre las nubes a esta hora tiene un color que no tengo palabra para describir. No es blanco. No es plata. Es algo entre los dos que solo existe cuando no hay atmósfera baja que lo distorsione. Tomé la foto pero la foto no lo tiene. Las fotos casi nunca tienen lo que importa. Por eso escribo.</p>
+    </div>
+
+    <div class="divider"><span class="divider-sym">✦</span></div>
+
+    <div class="section-header">
+      <span class="section-num">§ 03</span>
+      <span class="section-name">La ciudad que flota entre mundos</span>
+    </div>
+
+    <div class="image-inline">
+      <img src="images/image (6).jpg" alt="Plataformas flotantes de tránsito orbital">
+      <div class="caption-inline">Plataformas de tránsito orbital — zona A5/A2. La vegetación en cubierta regula la temperatura de los paneles de energía solar. Nada aquí es solo decorativo.</div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>
+        El día 18 tuve acceso a las plataformas de tránsito orbital para verificar los sistemas de presurización de emergencia. Las plataformas son estructuras enormes que flotan sobre la capa de nubes, conectadas a la superficie por cables de transporte y a la órbita baja por lanzaderas regulares.
+      </p>
+      <p>
+        Lo que me sorprendió fue la vegetación. Cada plataforma tiene palmeras en cubierta, plantas trepadoras por los bordes, pequeños jardines en los patios de espera. El técnico de turno me explicó que la vegetación regula la temperatura de los paneles de energía solar, reduce el efecto de isla de calor en la estructura, y proporciona oxígeno de respaldo en caso de fallo de sistemas primarios.
+      </p>
+      <p>
+        En Viridis Nova todo lo que parece decorativo tiene una función. Después de tres semanas aquí, debería haberlo esperado.
+      </p>
+    </div>
+
+    <div class="divider"><span class="divider-sym">✦</span></div>
+
+    <div class="section-header">
+      <span class="section-num">§ 04</span>
+      <span class="section-name">El Puerto Vertical — donde los mundos se despiden</span>
+    </div>
+
+    <div class="image-block">
+      <img src="images/image (2).jpg" alt="Puerto Vertical 7A-19">
+      <div class="image-caption">
+        <span class="caption-text">Puerto Vertical 7A-19 — fachada principal. Cada bahía numerada corresponde a una clase de nave. Las plantas en los bordes de las plataformas llegaron solas hace décadas. Nadie las plantó. Ya nadie las quita.</span>
+        <span class="caption-ref">Foto · SNV · Día 21 · 07:55h · Dos horas antes de la salida</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>
+        El Puerto Vertical 7A-19 es el punto de salida de todos los que dejan Viridis Nova. No es un lugar triste — tiene demasiado movimiento para ser triste. Gente que llega, gente que parte, técnicos de mantenimiento cruzando en todas direcciones, naves entrando y saliendo de las bahías con esa cadencia regular que tienen los puertos cuando funcionan bien.
+      </p>
+      <p>
+        Llegué dos horas antes de mi ventana de salida. Me senté en una de las terrazas de espera y saqué el cuaderno. Quería escribir algo significativo sobre Viridis Nova — una conclusión, una síntesis, algo que capturara las tres semanas en una idea. No encontré esa idea. Solo encontré imágenes sueltas: el técnico de suelos que va a la plataforma A5-01 todos los días a ver el trabajo completo. El árbol de ochenta años que obligó a rediseñar un edificio. Vera y la diferencia entre ser observado y ser escuchado. Mateo y los patrones de nube que todavía no terminó de memorizar. La luna de madrugada con el color que no tiene nombre.
+      </p>
+      <p>
+        No hay síntesis. Hay personas y hay lugares y hay el tiempo que pasó entre ellos. Eso es todo lo que el cuaderno puede guardar.
+      </p>
+    </div>
+
+    <div class="tech-aside">
+      <div class="tech-aside-bar"></div>
+      <div class="tech-aside-content">
+        <strong>Cierre de misión — Ref. SNV-003-CLOSE</strong>
+        Planeta: Viridis Nova · KPL-442b · Duración: 21 días · Sistemas auditados: 17/17 · Incidencias: 3 menores (1 resuelta en sitio, 2 derivadas a mantenimiento local) · Críticas: 0 · Estado general: ÓPTIMO · Revisión mayor recomendada: Ciclo M3 en 14–18 meses · Próxima misión: Pendiente confirmación UEC · Salida: Puerto Vertical 7A-19 · Bahía 09 · 10:15h local
+      </div>
+    </div>
+
+    <div class="planet-close">
+      <div class="planet-close-label">Nota de cierre · Viridis Nova · KPL-442b</div>
+      <p>Hay planetas que visitas y hay planetas que te visitan a ti. Quiero decir que hay lugares que simplemente pasas — haces el trabajo, firmas el reporte, subes a la nave — y hay lugares que se quedan contigo de una forma que no elegiste y que tampoco puedes explicar del todo.</p>
+      <p>Viridis Nova es del segundo tipo. No porque sea espectacular — aunque lo es. Sino porque en algún momento de las tres semanas dejé de ver sistemas y empecé a ver decisiones. Cada árbol en cada edificio es una decisión. Cada plaza que nadie diseñó para ser plaza es una decisión. Cada módulo que aprende de su habitante es una decisión. Y todas esas decisiones apuntan en la misma dirección: que el planeta no es el problema. Que nunca lo fue.</p>
+      <p>Me voy con diecisiete sistemas auditados, tres incidencias menores, y un cuaderno con más páginas escritas de las que había escrito en cualquier misión anterior. No sé si eso dice algo sobre Viridis Nova o sobre mí. Probablemente las dos cosas.</p>
+      <div class="planet-close-sig">
+        <span>S. Nikolas Ventura A. · Día 21 · Puerto Vertical 7A-19</span>
+        <span>Fin de estancia · Viridis Nova · KPL-442b</span>
+      </div>
+    </div>
+
+    <div class="next-destination">
+      <div>
+        <div class="next-label">Próxima misión asignada</div>
+        <div class="next-name">Destino pendiente</div>
+        <div class="next-code">Confirmación UEC · En tránsito</div>
+      </div>
+      <div class="next-status">
+        Tiempo de tránsito estimado<br>
+        34 días estándar<br>
+        Próxima entrada · Serie II<br>
+        — En preparación —
+      </div>
+    </div>
+
+    <div class="signature-block">
+      <div class="sig-left">
+        <div>Registrado por</div>
+        <div class="sig-name">S. Nikolas Ventura A.</div>
+        <div>Técnico Sr. de Sistemas Vitales — Clase IV</div>
+        <div>Rotación Interestelar · UEC · División de Colonias</div>
+      </div>
+      <div class="sig-right">
+        Entrada 003 · Cierre de serie I<br>
+        Viridis Nova · KPL-442b<br>
+        Ciclo 7 · Año 312 EA<br>
+        Día 21 en superficie<br>
+        "El cuaderno"
+      </div>
+    </div>
+
+  </div>
+
+  <div class="nav-entries">
+    <a href="legado-kepler-entrada-002.html" class="nav-link">← Entrada 002 · La ciudad por dentro</a>
+    <a href="legado-kepler-01.html" class="nav-link">Entrada 004 · A bordo del ARK →</a>
+  </div>
+
+  <div class="notebook-footer">
+    <span class="footer-series">Legado Kepler · Diario de campo · Serie I · Fin</span>
+    <span class="footer-page">003</span>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGNAL — 50 Elementos Visuales para Prompts de IA · Parte I</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=Playfair+Display:wght@900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+  :root {
+    --ink: #1c1b19;
+    --paper: #f4f1ea;
+    --panel: #fffdf8;
+    --muted: #6f6a5c;
+    --line: #d9d2c0;
+    --orange: #ff5a1f;
+    --orange-dark: #c9430f;
+
+    --cat-comp: #6b4fa0;    --cat-comp-bg: #f1ecf9;
+    --cat-cam: #1d6fa5;     --cat-cam-bg: #eaf3f9;
+    --cat-luz: #b8791a;     --cat-luz-bg: #faf1e0;
+    --cat-color: #c23a72;   --cat-color-bg: #fbeaf1;
+    --cat-mat: #a35a35;     --cat-mat-bg: #f7ede4;
+    --cat-est: #1f8a76;     --cat-est-bg: #e7f5f1;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', Arial, sans-serif;
+    font-size: 16.5px;
+    line-height: 1.65;
+    padding-top: 44px;
+  }
+  a { color: inherit; }
+
+  /* ══ GRID PAPER TEXTURE ══ */
+  .grid-bg {
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 34px 34px;
+    background-position: -1px -1px;
+  }
+
+  /* ══ NAV ══ */
+  .signal-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: var(--ink); border-bottom: 2px solid var(--orange);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem; height: 44px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .signal-nav__home { display: flex; align-items: center; gap: 0.8rem; text-decoration: none; color: var(--paper); }
+  .signal-nav__logo { font-family: 'Playfair Display', serif; font-size: 0.9rem; font-weight: 900; letter-spacing: 0; text-transform: none; }
+  .signal-nav__ed { color: var(--orange); font-size: 0.55rem; border-left: 1px solid #444; padding-left: 0.8rem; }
+  .signal-nav__trail { color: #8a8578; font-size: 0.55rem; }
+  .signal-nav__current { color: var(--orange); }
+  .signal-nav__arrows { display: flex; align-items: center; gap: 0.6rem; }
+  .signal-nav__arrows a { display: inline-flex; align-items: center; color: var(--paper); background: #2b2a26; border: 1px solid #444; text-decoration: none; padding: 0.3rem 0.7rem; font-size: 0.55rem; letter-spacing: 0.08em; transition: all 0.2s; white-space: nowrap; }
+  .signal-nav__arrows a:hover { background: var(--orange); border-color: var(--orange); color: #fff; }
+  .signal-nav__sep { color: #4a483f; padding: 0 0.2rem; }
+  @media (max-width: 680px) { .signal-nav__trail { display: none; } .signal-nav { padding: 0 1rem; } }
+
+  /* ══ HERO ══ */
+  .hero {
+    background: var(--ink);
+    color: var(--paper);
+    position: relative;
+    overflow: hidden;
+    padding: 0;
+  }
+  .hero-inner { position: relative; z-index: 2; max-width: 1000px; margin: 0 auto; padding: 5.5rem 3rem 4rem; }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(255,90,31,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,90,31,0.08) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .hero-reticle {
+    position: absolute; width: 130px; height: 130px; border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 50%; top: -40px; right: 8%;
+  }
+  .hero-reticle::before, .hero-reticle::after {
+    content: ''; position: absolute; background: rgba(255,255,255,0.14);
+  }
+  .hero-reticle::before { width: 100%; height: 1px; top: 50%; left: 0; }
+  .hero-reticle::after { height: 100%; width: 1px; left: 50%; top: 0; }
+  .hero-kicker { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--orange); margin-bottom: 1.4rem; display: flex; align-items: center; gap: 0.8rem; }
+  .hero-kicker::after { content: ''; flex: 1; max-width: 120px; height: 1px; background: #444; }
+  .hero-title { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.08; letter-spacing: -0.01em; max-width: 820px; }
+  .hero-title .part { color: var(--orange); }
+  .hero-deck { font-family: 'IBM Plex Sans', sans-serif; font-size: 1.05rem; color: #cfc9b8; max-width: 620px; margin-top: 1.4rem; line-height: 1.7; }
+  .hero-meta-row { display: flex; gap: 2.2rem; flex-wrap: wrap; margin-top: 2.4rem; padding-top: 1.6rem; border-top: 1px solid #3a392f; }
+  .hero-meta { font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem; letter-spacing: 0.08em; text-transform: uppercase; color: #8a8578; }
+  .hero-meta strong { display: block; color: var(--paper); font-size: 0.62rem; margin-bottom: 0.2rem; }
+
+  .social-bar { display: flex; align-items: center; gap: 1rem; margin-top: 2rem; flex-wrap: wrap; }
+  .social-link { display: inline-flex; align-items: center; gap: 0.5rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.56rem; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; padding: 0.4rem 0.8rem; border: 1px solid #444; color: #cfc9b8; border-radius: 30px; transition: all 0.2s; }
+  .social-link svg { width: 12px; height: 12px; fill: currentColor; }
+  .social-link:hover { border-color: var(--orange); color: var(--orange); }
+  .instagram { display: inline-flex; align-items: center; gap: 2px; padding: 1px 4px; border-radius: 20px; text-decoration: none; color: #fff; font-weight: 600; font-size: 0.56rem; background: linear-gradient(45deg,#f09433,#e1306c,#833ab4); }
+
+  /* ══ CATEGORY INDEX STRIP ══ */
+  .cat-index { background: var(--panel); border-bottom: 1px solid var(--line); }
+  .cat-index-inner { max-width: 1000px; margin: 0 auto; padding: 2.4rem 3rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .cat-chip { background: var(--panel); padding: 1.5rem 1.6rem; text-decoration: none; color: inherit; display: block; transition: background 0.2s; }
+  .cat-chip:hover { background: var(--paper); }
+  .cat-chip-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.6rem; }
+  .cat-chip-swatch { width: 10px; height: 10px; border-radius: 50%; }
+  .cat-chip-count { font-family: 'IBM Plex Mono', monospace; font-size: 0.56rem; color: var(--muted); letter-spacing: 0.05em; }
+  .cat-chip-name { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 1rem; margin-bottom: 0.3rem; }
+  .cat-chip-range { font-family: 'IBM Plex Mono', monospace; font-size: 0.55rem; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; }
+
+  .page { max-width: 1000px; margin: 0 auto; padding: 4.5rem 3rem; }
+
+  /* ══ INTRO TEXT ══ */
+  .intro-text p { margin-bottom: 1.4em; font-size: 1.02rem; }
+  .intro-text p:last-child { margin-bottom: 0; }
+  .intro-text strong { color: var(--ink); }
+  .intro-callout {
+    background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--orange);
+    padding: 1.8rem 2.2rem; margin: 2.5rem 0; font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; line-height: 1.75; color: #3a3830;
+  }
+  .intro-callout strong { color: var(--ink); }
+
+  /* ══ SECTION HEADER (por categoría) ══ */
+  .cat-section { margin-top: 5.5rem; }
+  .cat-section:first-of-type { margin-top: 3rem; }
+  .cat-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; padding-bottom: 1.6rem; border-bottom: 3px solid var(--cat); margin-bottom: 1.6rem; flex-wrap: wrap; }
+  .cat-header-left { display: flex; align-items: center; gap: 1rem; }
+  .cat-icon { width: 46px; height: 46px; border-radius: 10px; background: var(--cat-bg); border: 1px solid var(--cat); display: flex; align-items: center; justify-content: center; color: var(--cat); font-size: 1.15rem; flex-shrink: 0; }
+  .cat-title { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: clamp(1.5rem, 3vw, 2.1rem); }
+  .cat-title span { color: var(--cat); }
+  .cat-count-badge { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--cat); border: 1px solid var(--cat); padding: 0.4rem 0.9rem; border-radius: 20px; white-space: nowrap; }
+  .cat-intro { font-size: 0.98rem; color: var(--muted); max-width: 720px; margin-bottom: 2.2rem; }
+
+  /* ══ JUMP CHIPS (índice numérico dentro de la categoría) ══ */
+  .jump-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2.5rem; }
+  .jump-chip { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; letter-spacing: 0.03em; text-decoration: none; color: var(--cat); background: var(--cat-bg); border: 1px solid var(--cat); padding: 0.3rem 0.65rem; border-radius: 20px; transition: all 0.15s; }
+  .jump-chip:hover { background: var(--cat); color: #fff; }
+
+  /* ══ SPEC CARD ══ */
+  .spec-card { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin-bottom: 1.4rem; overflow: hidden; scroll-margin-top: 70px; }
+  .spec-card__head { display: flex; align-items: center; gap: 1rem; padding: 1.2rem 1.6rem; background: var(--cat-bg); border-bottom: 1px solid var(--line); }
+  .spec-num { font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 0.85rem; color: #fff; background: var(--cat); border-radius: 4px; padding: 0.25rem 0.55rem; flex-shrink: 0; }
+  .spec-title { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 1.2rem; flex: 1; }
+  .spec-cat-tag { font-family: 'IBM Plex Mono', monospace; font-size: 0.52rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--cat); white-space: nowrap; }
+  .spec-body { padding: 1.6rem; }
+  .spec-def { font-size: 0.96rem; margin-bottom: 1.3rem; padding-bottom: 1.3rem; border-bottom: 1px dashed var(--line); }
+  .spec-def strong { color: var(--cat); font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; display: block; margin-bottom: 0.4rem; }
+  .spec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.3rem; margin-bottom: 1.3rem; }
+  .spec-field .spec-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 0.4rem; }
+  .spec-field p { font-size: 0.88rem; line-height: 1.55; }
+  .spec-prompts { background: var(--paper); border: 1px solid var(--line); border-radius: 4px; padding: 1rem 1.2rem; margin-bottom: 1.3rem; }
+  .prompt-line { display: flex; gap: 0.8rem; align-items: baseline; font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; padding: 0.35rem 0; }
+  .prompt-line + .prompt-line { border-top: 1px dashed var(--line); }
+  .prompt-lang { flex-shrink: 0; width: 26px; font-size: 0.58rem; font-weight: 600; color: var(--cat); letter-spacing: 0.05em; }
+  .prompt-line code { color: #3a3830; font-family: 'IBM Plex Mono', monospace; }
+  .spec-footer { display: flex; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; font-size: 0.82rem; color: var(--muted); }
+  .spec-footer strong { color: var(--ink); font-weight: 600; }
+  .spec-footer .spec-combo strong { color: var(--cat); }
+
+  /* ══ FOOTER ══ */
+  .mag-footer { background: var(--ink); color: #8a8578; padding: 3rem; text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; line-height: 2.2; }
+  .mag-footer .logo { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 900; color: var(--paper); letter-spacing: -0.02em; text-transform: none; margin-bottom: 0.5rem; }
+  .mag-footer-social { margin-top: 1rem; display: flex; gap: 1.5rem; justify-content: center; align-items: center; }
+  .mag-footer-social a { color: #cfc9b8; text-decoration: none; }
+  .mag-footer-social a:hover { color: var(--orange); }
+
+  /* ══ NEXT-PART CTA ══ */
+  .next-part { background: var(--ink); color: var(--paper); border-radius: 8px; padding: 2.6rem 3rem; margin-top: 4rem; display: flex; justify-content: space-between; align-items: center; gap: 2rem; flex-wrap: wrap; }
+  .next-part-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--orange); margin-bottom: 0.6rem; }
+  .next-part-title { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.4rem; }
+  .next-part a { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; color: var(--ink); background: var(--orange); padding: 0.8rem 1.4rem; border-radius: 4px; white-space: nowrap; }
+
+  /* ══ IMAGEN DESTACADA DE CATEGORÍA ══ */
+  .cat-hero-image { margin-bottom: 2.2rem; border-radius: 4px; overflow: hidden; border: 1px solid var(--line); }
+  .cat-hero-image .lightbox-trigger { display: block; width: 100%; padding: 0; border: none; background: none; cursor: zoom-in; }
+  .cat-hero-image img { display: block; width: 100%; max-height: 340px; object-fit: cover; transition: filter 0.2s ease; }
+  .cat-hero-image .lightbox-trigger:hover img { filter: brightness(1.04) saturate(1.05); }
+  .cat-hero-caption { display: flex; gap: 1rem; align-items: flex-start; padding: 0.9rem 1.3rem; background: var(--cat-bg); border-top: 1px solid var(--line); }
+  .cat-hero-caption .fig-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.52rem; color: var(--cat); letter-spacing: 0.15em; text-transform: uppercase; white-space: nowrap; margin-top: 0.15rem; }
+  .cat-hero-caption .fig-text { font-family: 'IBM Plex Sans', sans-serif; font-size: 0.85rem; color: var(--muted); line-height: 1.55; }
+  .cat-hero-caption .fig-text strong { color: var(--ink); }
+
+  /* ══ LIGHTBOX ══ */
+  .lightbox-overlay {
+    position: fixed; inset: 0; z-index: 2000;
+    background: rgba(15, 13, 10, 0.92);
+    display: none; align-items: center; justify-content: center;
+    padding: 4vh 4vw; cursor: zoom-out;
+    backdrop-filter: blur(6px);
+  }
+  .lightbox-overlay.open { display: flex; animation: lightboxIn 0.25s ease; }
+  @keyframes lightboxIn { from { opacity: 0; } to { opacity: 1; } }
+  .lightbox-overlay figure { max-width: 1100px; max-height: 92vh; margin: 0; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+  .lightbox-overlay img { max-width: 100%; max-height: 78vh; border-radius: 6px; box-shadow: 0 30px 80px -20px rgba(0,0,0,0.6); cursor: default; }
+  .lightbox-overlay figcaption { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: #cfc9b8; letter-spacing: 0.03em; text-align: center; max-width: 640px; line-height: 1.6; cursor: default; }
+  .lightbox-close {
+    position: absolute; top: 24px; right: 32px;
+    width: 42px; height: 42px; border-radius: 50%;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2);
+    color: var(--paper); font-size: 1.3rem; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: background 0.2s ease;
+  }
+  .lightbox-close:hover { background: var(--orange); border-color: var(--orange); }
+  @media (max-width: 680px) {
+    .lightbox-close { top: 14px; right: 14px; width: 36px; height: 36px; }
+    .cat-hero-image img { max-height: 220px; }
+  }
+
+  /* ══ IMAGEN DE FICHA ══ */
+  .spec-image { position: relative; width: 100%; height: 220px; overflow: hidden; border-bottom: 1px solid var(--line); background: var(--paper); }
+  .spec-image .lightbox-trigger { display: block; width: 100%; height: 100%; padding: 0; margin: 0; border: none; background: none; cursor: zoom-in; }
+  .spec-image img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s ease; }
+  .spec-image .lightbox-trigger:hover img { transform: scale(1.04); }
+  .spec-image-tag { position: absolute; top: 0.6rem; right: 0.6rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.5rem; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; background: rgba(28,27,25,0.6); padding: 0.25rem 0.55rem; border-radius: 20px; pointer-events: none; }
+
+  /* ══ LIGHTBOX ══ */
+  .lightbox-overlay { position: fixed; inset: 0; z-index: 2000; background: rgba(20,18,15,0.92); display: none; align-items: center; justify-content: center; padding: 4vh 4vw; cursor: zoom-out; backdrop-filter: blur(6px); }
+  .lightbox-overlay.open { display: flex; animation: lightboxIn 0.2s ease; }
+  @keyframes lightboxIn { from { opacity: 0; } to { opacity: 1; } }
+  .lightbox-overlay figure { max-width: 1000px; max-height: 92vh; margin: 0; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+  .lightbox-overlay img { max-width: 100%; max-height: 78vh; border-radius: 4px; box-shadow: 0 30px 80px -20px rgba(0,0,0,0.6); cursor: default; }
+  .lightbox-overlay figcaption { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: #cfc9b8; letter-spacing: 0.04em; text-align: center; max-width: 640px; line-height: 1.6; cursor: default; }
+  .lightbox-close { position: absolute; top: 24px; right: 32px; width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: var(--paper); font-size: 1.3rem; line-height: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s ease; }
+  .lightbox-close:hover { background: var(--orange); border-color: var(--orange); }
+  @media (max-width: 680px) { .lightbox-close { top: 14px; right: 14px; width: 36px; height: 36px; } }
+
+  @media (max-width: 780px) {
+    .cat-index-inner { grid-template-columns: 1fr; }
+    .spec-grid { grid-template-columns: 1fr; }
+    .page { padding: 3rem 1.4rem; }
+    .hero-inner { padding: 4rem 1.4rem 3rem; }
+    .cat-index-inner { padding: 1.6rem 1.4rem; }
+    .next-part { padding: 2rem 1.6rem; flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="signal-nav">
+  <a class="signal-nav__home" href="../index.html">
+    <span class="signal-nav__logo">S<span style="color:var(--orange)">I</span>GNAL<span style="color:var(--orange)">.</span></span>
+    <span class="signal-nav__ed">Guía Técnica</span>
+  </a>
+  <div class="signal-nav__trail"><span class="signal-nav__current">50 Elementos Visuales · Parte I</span></div>
+  <div class="signal-nav__arrows">
+    <a href="../index.html">Índice</a>
+    <span class="signal-nav__sep">·</span>
+    <a href="guia-elementos-visuales-ia-parte-2.html">Parte II →</a>
+  </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<header class="hero">
+  <div class="hero-reticle"></div>
+  <div class="hero-inner">
+    <div class="hero-kicker">Guía técnica — Prompt engineering visual</div>
+    <h1 class="hero-title">Los 50 elementos visuales que una IA puede controlar en una imagen <span class="part">— Parte I</span></h1>
+    <p class="hero-deck">Composición, cámara e iluminación: 28 fichas técnicas de consulta rápida sobre qué controla cada término en tu prompt, cuándo usarlo, cuándo evitarlo y con qué combinarlo. Con ejemplos en español e inglés para cada elemento.</p>
+    <div class="social-bar">
+      <a href="https://www.instagram.com/signal.ai.mag/" target="_blank" rel="noopener" class="social-link">
+        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.209-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        @signal.ai.mag
+      </a>
+      <a href="https://signalzine.rf.gd/" target="_blank" rel="noopener" class="social-link">
+        <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm-1 17.93V16h2v1.93A8.01 8.01 0 0 1 4.07 13H6v-2H4.07A8.01 8.01 0 0 1 11 4.07V6h2V4.07A8.01 8.01 0 0 1 19.93 11H18v2h1.93A8.01 8.01 0 0 1 13 19.93z"/></svg>
+        signalzine.rf.gd
+      </a>
+      <a href="mailto:revista.signal@gmail.com" class="social-link">
+        <svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        revista.signal@gmail.com
+      </a>
+    </div>
+    <div class="hero-meta-row">
+      <div class="hero-meta"><strong>Por</strong>Gerardo Ventura</div>
+      <div class="hero-meta"><strong>Serie</strong>Guía Técnica 01 · Parte I de II</div>
+      <div class="hero-meta"><strong>Cobertura</strong>Elementos 01–28 de 50</div>
+      <div class="hero-meta"><strong>Uso</strong>Referencia — guardar para consulta</div>
+    </div>
+  </div>
+</header>
+
+<!-- ══ CATEGORY INDEX ══ -->
+<section class="cat-index">
+  <div class="cat-index-inner">
+    <a href="#composicion" class="cat-chip">
+      <div class="cat-chip-top"><span class="cat-chip-swatch" style="background:var(--cat-comp)"></span><span class="cat-chip-count">10 elementos</span></div>
+      <div class="cat-chip-name">Composición</div>
+      <div class="cat-chip-range">Fichas 01 – 10</div>
+    </a>
+    <a href="#camara" class="cat-chip">
+      <div class="cat-chip-top"><span class="cat-chip-swatch" style="background:var(--cat-cam)"></span><span class="cat-chip-count">8 elementos</span></div>
+      <div class="cat-chip-name">Cámara</div>
+      <div class="cat-chip-range">Fichas 11 – 18</div>
+    </a>
+    <a href="#iluminacion" class="cat-chip">
+      <div class="cat-chip-top"><span class="cat-chip-swatch" style="background:var(--cat-luz)"></span><span class="cat-chip-count">10 elementos</span></div>
+      <div class="cat-chip-name">Iluminación</div>
+      <div class="cat-chip-range">Fichas 19 – 28</div>
+    </a>
+  </div>
+</section>
+
+<article>
+<div class="page">
+
+  <!-- INTRO -->
+  <section class="intro-text">
+    <p>En la generación de imágenes por IA —Stable Diffusion, DALL·E, Midjourney, Muse y similares— un buen prompt funciona como un guion: define qué y cómo debe crear el modelo. Para lograr resultados controlados y coherentes es clave incluir elementos de composición fotográfica y pictórica en el texto.</p>
+    <p>Estos modelos usan redes como CLIP para proyectar el texto a un espacio conjunto de texto-imagen, por lo que reconocen expresiones relacionadas con posición, lente, luz, color y estilo. Un estudio sobre prompts reales de Stable Diffusion encontró que las categorías más frecuentes coinciden, precisamente, con los principios clásicos de la fotografía. Describir bien la <em>mise-en-scène</em> (objetos y escena) y el <em>dispositivo</em> (lente, apertura, ángulo) mejora la capacidad del modelo para generar imágenes conforme a reglas estéticas establecidas.</p>
+    <div class="intro-callout">
+      <strong>Cómo usar esta guía →</strong> Cada ficha resume un elemento en formato de consulta rápida: definición, efecto real en el modelo, cuándo usarlo, cuándo evitarlo, ejemplo de prompt en ES/EN, error común y con qué otros elementos combina bien (referenciados por número). No hace falta leerla en orden — salta directo al elemento que necesitas.
+    </div>
+    <p>Esta Parte I cubre las tres categorías más estructurales del prompt: <strong>composición</strong> (cómo se organiza la escena), <strong>cámara</strong> (el dispositivo simulado que la captura) e <strong>iluminación</strong> (la luz que define atmósfera y forma). La Parte II cubre color, materiales/texturas, estilo, y una sección práctica con plantillas y tablas de referencia.</p>
+  </section>
+
+  <!-- ══ COMPOSICIÓN ══ -->
+  <section class="cat-section" id="composicion" style="--cat:var(--cat-comp); --cat-bg:var(--cat-comp-bg);">
+    <div class="cat-header">
+      <div class="cat-header-left">
+        <div class="cat-icon"><i class="fa-solid fa-vector-square"></i></div>
+        <h2 class="cat-title">01 · <span>Composición</span></h2>
+      </div>
+      <span class="cat-count-badge">10 elementos</span>
+    </div>
+    <p class="cat-intro">Cómo se disponen los elementos dentro del encuadre. Controla la narrativa visual: guía al modelo para organizar la escena siguiendo la regla de los tercios, líneas guía, simetría o profundidad de planos.</p>
+    <div class="jump-row">
+      <a class="jump-chip" href="#el-01">01 Encuadre</a>
+      <a class="jump-chip" href="#el-02">02 Tercios</a>
+      <a class="jump-chip" href="#el-03">03 Simetría</a>
+      <a class="jump-chip" href="#el-04">04 Esp. negativo</a>
+      <a class="jump-chip" href="#el-05">05 Líneas guía</a>
+      <a class="jump-chip" href="#el-06">06 Punto focal</a>
+      <a class="jump-chip" href="#el-07">07 Balance</a>
+      <a class="jump-chip" href="#el-08">08 Profundidad</a>
+      <a class="jump-chip" href="#el-09">09 Capas</a>
+      <a class="jump-chip" href="#el-10">10 Perspectiva</a>
+    </div>
+
+    <article class="spec-card" id="el-01">
+      <div class="spec-card__head"><span class="spec-num">01</span><h3 class="spec-title">Encuadre</h3><span class="spec-cat-tag">Composición</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-01-encuadre.jpg','Encuadre — primer plano de una anciana con arrugas marcadas')">
+          <img src="images/el-01-encuadre.jpg" alt="Ejemplo visual: Encuadre — primer plano de una anciana con arrugas marcadas" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Tamaño y forma de la imagen respecto al sujeto: primer plano, plano medio, plano general. Se indica especificando la proximidad ("close-up", "wide shot").</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>Un encuadre estrecho enfoca detalles cercanos; uno amplio muestra más contexto y entorno.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Quieras centrar la atención (primer plano) o mostrar el entorno completo (gran angular).</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>Pidas muchos detalles inconexos — un encuadre muy amplio dispersa el foco.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Retrato en primer plano de una anciana con arrugas marcadas"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Close-up portrait of an elderly woman with pronounced wrinkles"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> pedir "vista lejana con fondo distraído" en vez de centrarse en el sujeto.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #08 #09 #16</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-02">
+      <div class="spec-card__head"><span class="spec-num">02</span><h3 class="spec-title">Regla de los tercios</h3><span class="spec-cat-tag">Composición</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-02-tercios.jpg','Regla de los tercios — colinas y árbol en el tercio izquierdo')">
+          <img src="images/el-02-tercios.jpg" alt="Ejemplo visual: Regla de los tercios — colinas y árbol en el tercio izquierdo" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Colocar sujetos o puntos de interés en las intersecciones de una cuadrícula imaginaria de 3×3.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>Al mencionar "rule of thirds" el modelo tiende a desplazar el sujeto del centro, logrando una imagen más dinámica.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Busques equilibrio y atractivo visual; muy útil en retratos y paisajes.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>El diseño requiera simetría central por definición (arquitectura frontal, mandalas).</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Paisaje con colinas verdes, sujeto principal en el tercio izquierdo"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Landscape with green hills, main subject on the left third"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> colocar el sujeto justo en el centro pese a pedir tercios.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #05 #28</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-03">
+      <div class="spec-card__head"><span class="spec-num">03</span><h3 class="spec-title">Simetría</h3><span class="spec-cat-tag">Composición</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-03-simetria.jpg','Simetría — catedral con espejo de agua')">
+          <img src="images/el-03-simetria.jpg" alt="Ejemplo visual: Simetría — catedral con espejo de agua" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Composiciones equilibradas donde ambos lados de la imagen tienen el mismo peso visual: de reflexión, rotacional o translacional.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>Pedir "symmetry" suele resultar en paisajes con reflejo especular o arquitectura balanceada.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>El tema sea arquitectura, reflejos en agua o elementos repetitivos.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>La escena sea natural y caótica — la simetría forzada luce artificial.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Fotografía simétrica de una catedral con espejo de agua enfrente"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Symmetrical photograph of a cathedral with a reflecting pool in front"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> simetría involuntaria por sujeto cortado en el borde.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> retratos frontales · #23</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-04">
+      <div class="spec-card__head"><span class="spec-num">04</span><h3 class="spec-title">Espacio negativo</h3><span class="spec-cat-tag">Composición</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-04-espacio-negativo.jpg','Espacio negativo — faro aislado bajo un cielo amplio')">
+          <img src="images/el-04-espacio-negativo.jpg" alt="Ejemplo visual: Espacio negativo — faro aislado bajo un cielo amplio" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>El área "vacía" alrededor del sujeto principal. No aporta información relevante, pero aísla o enfatiza al sujeto.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>Incluir "negative space" produce un encuadre minimalista con el sujeto aislado.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Quieras enfatizar un objeto único o transmitir soledad / minimalismo.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>Busques una escena llena de acción o detalles múltiples.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Ilustración de un faro en costa rocosa con gran espacio negativo en el cielo claro"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Illustration of a lighthouse on a rocky coast with large negative space in the clear sky"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> que el fondo tenga elementos distractores pese a pedir espacio negativo.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #06 #32</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-05">
+      <div class="spec-card__head"><span class="spec-num">05</span><h3 class="spec-title">Líneas guía</h3><span class="spec-cat-tag">Composición</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-05-lineas-guia.jpg','Líneas guía — carretera que conduce hacia las montañas')">
+          <img src="images/el-05-lineas-guia.jpg" alt="Ejemplo visual: Líneas guía — carretera que conduce hacia las montañas" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Líneas reales o sugeridas (caminos, ríos, bordes) que dirigen la mirada hacia el sujeto.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>Mencionar "leading lines" o describir caminos angulares genera elementos lineales que conducen el enfoque.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Quieras dirigir la atención o añadir sensación de profundidad (carretera, rieles, ríos).</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>La imagen sea abstracta y sin perspectiva — las líneas pueden pasar desapercibidas.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Carretera recta y vacía que conduce hacia montañas al fondo, atardecer"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Empty straight road leading to mountains in the distance, at sunset"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> líneas poco prominentes, que se cruzan o se confunden con otros elementos.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #10 #11</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-06">
+      <div class="spec-card__head"><span class="spec-num">06</span><h3 class="spec-title">Punto focal</h3><span class="spec-cat-tag">Composición</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-10-perspectiva.jpg','Punto focal — ojos de un gato en foco, fondo difuminado')">
+          <img src="images/el-10-perspectiva.jpg" alt="Ejemplo visual: Punto focal — ojos de un gato en foco, fondo difuminado" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>El centro de interés principal del encuadre: a qué parte de la imagen debe atraer la mirada.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>Incluir "focal point" guía al modelo a destacar un elemento específico (figura, edificio).</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Haya un sujeto claro: una persona, un monumento, un objeto.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>La composición sea abstracta y no exista un foco único posible.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Enfoque nítido en los ojos de un gato, con fondo suavemente difuminado"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Sharp focus on a cat's eyes, with the background softly blurred"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> desenfocar el sujeto principal aun marcándolo como "focal point".</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #16 #19–23</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-07">
+      <div class="spec-card__head"><span class="spec-num">07</span><h3 class="spec-title">Balance visual</h3><span class="spec-cat-tag">Composición</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-07-balance-visual.jpg','Balance visual — retrato grupal equilibrado')">
+          <img src="images/el-08-profundidad.jpg" alt="Ejemplo visual: Balance visual — retrato grupal equilibrado" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Distribución de elementos para que la imagen resulte equilibrada — de forma simétrica o asimétrica.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>Un prompt con "balanced composition" alienta a distribuir el peso visual de forma homogénea.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Haya varios objetos o personas, para evitar que un lado compita demasiado con el otro.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>Busques conscientemente un desequilibrio dramático.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Retrato grupal equilibrado de tres personas, una al centro y dos a los lados, colores armoniosos"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Balanced group portrait of three people, one in center and two on sides, with harmonious colors"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> agrupar todo el peso en un lado pese a pedir composición balanceada.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #02 #03</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-08">
+      <div class="spec-card__head"><span class="spec-num">08</span><h3 class="spec-title">Profundidad</h3><span class="spec-cat-tag">Composición</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-08-profundidad.jpg','Profundidad — planos de árboles, picos y nubes lejanas')">
+          <img src="images/el-07-balance-visual.jpg" alt="Ejemplo visual: Profundidad — planos de árboles, picos y nubes lejanas" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Sensación de tridimensionalidad: objetos distribuidos en distintos planos (primer plano, fondo).</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>Términos como "deep perspective" o "layers" generan escenas con varias distancias evidentes.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Trabajes paisajes y fondos complejos donde se desee sensación de distancia real.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>El estilo buscado sea plano o "flat" — diseño minimalista intencional.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Paisaje montañoso con árboles en primer plano, picos a media distancia y nubes lejanas"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Mountain landscape with trees in the foreground, mid-distance peaks, and distant clouds"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> imágenes que parecen "cortadas" sin gradación real de planos.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #12 #05</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-09">
+      <div class="spec-card__head"><span class="spec-num">09</span><h3 class="spec-title">Capas</h3><span class="spec-cat-tag">Composición</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-09-capas.jpg','Capas — flores, ciervo y montañas en tres planos')">
+          <img src="images/el-09-capas.jpg" alt="Ejemplo visual: Capas — flores, ciervo y montañas en tres planos" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Elementos superpuestos en profundidad — primer plano, sujetos principales, fondo — para enriquecer la escena.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Layered composition" sugiere elementos distribuidos en distintos niveles de profundidad.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>El ambiente sea complejo: junglas, ciudades, interiores con varios objetos.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>La escena sea simple o minimalista, sin necesidad real de capas.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Bosque con flores en primer plano, ciervo en segundo plano y montañas con niebla al fondo"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Forest with flowers in the foreground, a deer in the midground, and foggy mountains in the background"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> mezclar niveles de enfoque de forma inconsistente entre capas.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #16</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-10">
+      <div class="spec-card__head"><span class="spec-num">10</span><h3 class="spec-title">Perspectiva</h3><span class="spec-cat-tag">Composición</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-10-perspectiva.jpg','Perspectiva — vista de pájaro de un sendero en el bosque')">
+          <img src="images/el-10-perspectiva.jpg" alt="Ejemplo visual: Perspectiva — vista de pájaro de un sendero en el bosque" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Punto de vista o posición de cámara: vista de pájaro, nadir, ángulo picado o contrapicado.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>Frases como "bird's-eye view", "worm's-eye view" u "ojo de pez" cambian radicalmente la geometría de la escena.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Busques efectos dramáticos o creativos: vista de pájaro en ciudades, ángulo bajo para imponer al sujeto.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>Busques realismo clásico sin motivo — una vista muy extrema puede lucir artificial.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Fotografía a vista de pájaro de un bosque con un sendero serpenteante"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Bird's-eye photo of a forest with a winding trail"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> mezclar múltiples ángulos en un mismo prompt ("pájaro" y "ojo de pez" a la vez).</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #11 #18</span>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ══ CÁMARA ══ -->
+  <section class="cat-section" id="camara" style="--cat:var(--cat-cam); --cat-bg:var(--cat-cam-bg);">
+    <div class="cat-header">
+      <div class="cat-header-left">
+        <div class="cat-icon"><i class="fa-solid fa-camera-retro"></i></div>
+        <h2 class="cat-title">02 · <span>Cámara</span></h2>
+      </div>
+      <span class="cat-count-badge">8 elementos</span>
+    </div>
+    <p class="cat-intro">El dispositivo fotográfico simulado: lentes, ajustes y ángulos que definen cómo "captura" la imagen la cámara virtual. Da al modelo instrucciones concretas sobre enfoque, distorsión y profundidad de campo.</p>
+    <div class="jump-row">
+      <a class="jump-chip" href="#el-11">11 Dist. focal</a>
+      <a class="jump-chip" href="#el-12">12 Ángulo</a>
+      <a class="jump-chip" href="#el-13">13 Altura</a>
+      <a class="jump-chip" href="#el-14">14 Tipo de lente</a>
+      <a class="jump-chip" href="#el-15">15 Apertura</a>
+      <a class="jump-chip" href="#el-16">16 Prof. de campo</a>
+      <a class="jump-chip" href="#el-17">17 Enfoque</a>
+      <a class="jump-chip" href="#el-18">18 Movimiento</a>
+    </div>
+
+    <article class="spec-card" id="el-11">
+      <div class="spec-card__head"><span class="spec-num">11</span><h3 class="spec-title">Distancia focal</h3><span class="spec-cat-tag">Cámara</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-11-distancia-focal.jpg','Distancia focal — gran angular sobre una avenida urbana')">
+          <img src="images/el-11-distancia-focal.jpg" alt="Ejemplo visual: Distancia focal — gran angular sobre una avenida urbana" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Qué tan "abierto" o "cerrado" es el campo de visión — gran angular vs. teleobjetivo.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Wide-angle lens" amplía el escenario y exagera la distancia; "telephoto lens" comprime los planos.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Paisajes extensos pidan gran angular; retratos acercados o deportes, teleobjetivo.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>Uses angular en retratos muy cercanos — distorsiona el rostro.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Fotografía de paisaje urbano con lente gran angular de 24mm, mostrando amplias calles"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Cityscape photograph with a 24mm wide-angle lens, showing broad streets"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> usar "macro lens" para escenas lejanas — solo enfoca muy de cerca.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #16 #05</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-12">
+      <div class="spec-card__head"><span class="spec-num">12</span><h3 class="spec-title">Ángulo</h3><span class="spec-cat-tag">Cámara</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-12-angulo.jpg','Ángulo — retrato tomado desde un ángulo bajo')">
+          <img src="images/el-12-angulo.jpg" alt="Ejemplo visual: Ángulo — retrato tomado desde un ángulo bajo" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Ángulo de la cámara respecto al sujeto: picado alto, picado bajo, normal.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"High angle" (desde arriba) o "low angle" (desde abajo) cambian la sensación de poder y escala.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Un ángulo bajo haga al sujeto más dominante; uno alto dé sensación panorámica o de sumisión.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>Mezcles ángulos contradictorios en un mismo prompt — puede confundir al modelo.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Retrato dramático desde ángulo bajo, mostrando cielo detrás de la modelo"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Dramatic portrait shot from a low angle, with sky behind the model"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> describir un ángulo que contradice el resto de la composición.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #10 #11</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-13">
+      <div class="spec-card__head"><span class="spec-num">13</span><h3 class="spec-title">Altura de cámara</h3><span class="spec-cat-tag">Cámara</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-13-altura-camara.jpg','Altura de cámara — cámara a nivel del suelo junto a un caballo')">
+          <img src="images/el-13-altura-camara.jpg" alt="Ejemplo visual: Altura de cámara — cámara a nivel del suelo junto a un caballo" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Nivel vertical de la cámara: a ras de suelo, a la cintura, a los hombros. Distinto del ángulo, pero relacionado.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Camera at chest height" vs. "at ground level" ajusta el encuadre y la perspectiva resultante.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Quieras enfatizar el suelo o un primer plano bajo ("ground level"); "eye level" es la opción neutral.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>Combines alturas y ángulos incongruentes (vista de pájaro + cámara a ras de suelo).</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Imagen de un caballo tomada con cámara a nivel del suelo, resaltando las patas delanteras"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Image of a horse taken with a camera at ground level, emphasizing the front legs"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> mezclar altura y lente que no corresponden entre sí.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #10 #11</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-14">
+      <div class="spec-card__head"><span class="spec-num">14</span><h3 class="spec-title">Tipo de lente</h3><span class="spec-cat-tag">Cámara</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-14-tipo-lente.jpg','Tipo de lente — macro extremo de un ojo humano')">
+          <img src="images/el-14-tipo-lente.jpg" alt="Ejemplo visual: Tipo de lente — macro extremo de un ojo humano" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Estilo particular de lente: macro, ojo de pez, telefoto, lente de retrato.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Macro lens" enfoca detalles minúsculos; "fisheye lens" ofrece perspectiva ultra ancha con distorsión esférica.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Necesites close-ups extremos (macro) o efectos creativos muy amplios (fisheye).</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>Uses fisheye en retratos formales — el resultado se ve deformado.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Primer plano macro de un ojo humano, mostrando texturas del iris"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Macro close-up of a human eye, showing iris textures"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> combinar lentes incompatibles ("macro and wide angle") en un mismo prompt.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #16</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-15">
+      <div class="spec-card__head"><span class="spec-num">15</span><h3 class="spec-title">Apertura</h3><span class="spec-cat-tag">Cámara</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-15-apertura.jpg','Apertura — retrato nocturno con bokeh a f/1.4')">
+          <img src="images/el-15-apertura.jpg" alt="Ejemplo visual: Apertura — retrato nocturno con bokeh a f/1.4" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Tamaño del diafragma (f/1.4 a f/16). Afecta la cantidad de luz y la profundidad de campo.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Wide aperture (f/1.8)" indica muy poca profundidad de campo y mucha entrada de luz.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Gran apertura (f/1.x) sirva para retratos con fondo desenfocado; f/16 para paisajes bien enfocados.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>Pidas valores fuera de rango real, como f/0.1.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Retrato nocturno con lente 50mm a f/1.4, rostro iluminado y fondo con bokeh colorido"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Night portrait with a 50mm lens at f/1.4, with face lit and a colorful bokeh background"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> mencionar "f/2.8" sin indicar sujeto — el modelo puede ignorar la relación.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #16 #19–24</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-16">
+      <div class="spec-card__head"><span class="spec-num">16</span><h3 class="spec-title">Profundidad de campo</h3><span class="spec-cat-tag">Cámara</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-16-profundidad-campo.jpg','Profundidad de campo — músico en foco, fondo desenfocado')">
+          <img src="images/el-16-profundidad-campo.jpg" alt="Ejemplo visual: Profundidad de campo — músico en foco, fondo desenfocado" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Rango de distancias que queda enfocado. "Shallow depth of field" da fondo borroso (bokeh); "deep focus", todo nítido.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>Términos como "bokeh", "f/2.8" o "deep focus" aparecen consistentemente en prompts reales con este efecto.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Retratos o macro necesiten shallow DOF (bokeh); paisajes necesiten deep focus.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>Quieras un fondo totalmente nítido si el objetivo es resaltar un sujeto principal.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Retrato de un músico con fondo urbano desenfocado, efecto bokeh"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Portrait of a musician with a blurred urban background, bokeh effect"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> comandos contrapuestos, como "f/2.8" junto con "deep focus".</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #15 #12</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-17">
+      <div class="spec-card__head"><span class="spec-num">17</span><h3 class="spec-title">Enfoque</h3><span class="spec-cat-tag">Cámara</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-17-enfoque.jpg','Enfoque — foco nítido en las manos de un violinista')">
+          <img src="images/el-17-enfoque.jpg" alt="Ejemplo visual: Enfoque — foco nítido en las manos de un violinista" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Especifica qué parte concreta de la imagen debe quedar nítida.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>Usar "focus on face" o "sharp focus on foreground" dirige al modelo a enfatizar ese plano exacto.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Necesites garantizar nitidez en el sujeto cuando hay movimiento o distracciones alrededor.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>Dejes ambigüedad sin especificar sujeto en escenas complejas con varios elementos.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Fotografía en blanco y negro de un violinista, foco nítido en sus manos mientras tocan"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Black-and-white photo of a violinist, sharp focus on his playing hands"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> fondo nítido con sujeto borroso, pese a pedir foco en el sujeto.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #16 #09</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-18">
+      <div class="spec-card__head"><span class="spec-num">18</span><h3 class="spec-title">Movimiento de cámara</h3><span class="spec-cat-tag">Cámara</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-18-movimiento.jpg','Movimiento de cámara — panning sobre un tren en marcha')">
+          <img src="images/el-18-movimiento.jpg" alt="Ejemplo visual: Movimiento de cámara — panning sobre un tren en marcha" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Indica barridos, paneos o cámara en movimiento — por ejemplo "panning shot" o "camera tracking".</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>Prompts como "motion blur of passing cars" crean efectos dinámicos de desenfoque direccional.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>La escena sea de acción o busques añadir dinamismo — autos en carrera, deportes.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>El tema sea estático — un paisaje fijo se ve mal con desenfoque de movimiento.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Tren bala fotografiado con barrido (panning), fondo difuminado en dirección del movimiento"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Bullet train photographed with panning, blurred background in direction of movement"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> describir movimiento en una escena sin ningún sujeto móvil.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #12 · luz de neón</span>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ══ ILUMINACIÓN ══ -->
+  <section class="cat-section" id="iluminacion" style="--cat:var(--cat-luz); --cat-bg:var(--cat-luz-bg);">
+    <div class="cat-header">
+      <div class="cat-header-left">
+        <div class="cat-icon"><i class="fa-solid fa-lightbulb"></i></div>
+        <h2 class="cat-title">03 · <span>Iluminación</span></h2>
+      </div>
+      <span class="cat-count-badge">10 elementos</span>
+    </div>
+    <p class="cat-intro">La luz define la atmósfera y la forma de la escena. Los generadores responden a descriptores de dirección, intensidad y temperatura de color — controlar la luz en el prompt es esencial para lograr realismo o efectos dramáticos.</p>
+    <div class="jump-row">
+      <a class="jump-chip" href="#el-19">19 Dirección</a>
+      <a class="jump-chip" href="#el-20">20 Intensidad</a>
+      <a class="jump-chip" href="#el-21">21 Temperatura</a>
+      <a class="jump-chip" href="#el-22">22 Luz dura</a>
+      <a class="jump-chip" href="#el-23">23 Luz suave</a>
+      <a class="jump-chip" href="#el-24">24 Contraluz</a>
+      <a class="jump-chip" href="#el-25">25 Volumétrica</a>
+      <a class="jump-chip" href="#el-26">26 Rim light</a>
+      <a class="jump-chip" href="#el-27">27 Luz práctica</a>
+      <a class="jump-chip" href="#el-28">28 Hora del día</a>
+    </div>
+
+    <article class="spec-card" id="el-19">
+      <div class="spec-card__head"><span class="spec-num">19</span><h3 class="spec-title">Dirección de la luz</h3><span class="spec-cat-tag">Iluminación</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-19-direccion-luz.jpg','Dirección de la luz — retrato con luz lateral suave')">
+          <img src="images/el-19-direccion-luz.jpg" alt="Ejemplo visual: Dirección de la luz — retrato con luz lateral suave" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>De dónde viene la fuente lumínica: frontal, lateral, cenital, contraluz.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Side lighting" resalta texturas; "top lighting" da uniformidad; "backlight" crea siluetas.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Elijas la dirección según el efecto: lateral (45°) para textura, frontal para uniformidad.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>La dirección contradiga la hora del día indicada — puede generar confusión.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Modelo iluminada desde la derecha con luz lateral suave"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Model lit from the right with soft side lighting"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> iluminación cruzada que no corresponde con la fuente definida.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #20 #21 #04</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-20">
+      <div class="spec-card__head"><span class="spec-num">20</span><h3 class="spec-title">Intensidad</h3><span class="spec-cat-tag">Iluminación</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-20-intensidad.jpg','Intensidad — luz dura con sombras marcadas')">
+          <img src="images/el-20-intensidad.jpg" alt="Ejemplo visual: Intensidad — luz dura con sombras marcadas" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Fuerte (luz dura) vs. débil (luz suave).</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Hard light" crea sombras nítidas; "soft light" produce sombras tenues, casi imperceptibles.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Luz fuerte convenga para drama; luz suave, para retratos favorecedores.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>"Hard studio light" no case con el contexto — por ejemplo un paisaje natural sereno.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Retrato con luz dura desde un lateral, sombras marcadas en el rostro"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Portrait with hard light from one side, sharp shadows on the face"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> mezclar "hard light" con adjetivos de suavidad en el mismo prompt.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #28</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-21">
+      <div class="spec-card__head"><span class="spec-num">21</span><h3 class="spec-title">Temperatura de color</h3><span class="spec-cat-tag">Iluminación</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-21-temperatura.jpg','Temperatura de color — escena nocturna en tonos fríos')">
+          <img src="images/el-21-temperatura.jpg" alt="Ejemplo visual: Temperatura de color — escena nocturna en tonos fríos" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Tono cálido (amarillo/naranja) vs. frío (azul) de la luz de la escena.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Warm light" aporta sensación acogedora; "cool blue tones" evocan melancolía o ambientes nocturnos.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>La dorada convenga en amanecer/atardecer; la fría, en escenas nocturnas o fantásticas.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>La calidez rompa el realismo — sol de mediodía con tono naranja intenso, salvo intención.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Escena urbana nocturna con luces de neón azul profundo"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Night city scene with deep blue neon lights"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> mezclar señales de temperatura contradictorias en el mismo prompt.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #28 #33</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-22">
+      <div class="spec-card__head"><span class="spec-num">22</span><h3 class="spec-title">Luz dura</h3><span class="spec-cat-tag">Iluminación</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-22-luz-dura.jpg','Luz dura — calle urbana bajo sol de mediodía')">
+          <img src="images/el-22-luz-dura.jpg" alt="Ejemplo visual: Luz dura — calle urbana bajo sol de mediodía" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Luz directa que genera sombras muy definidas, como el sol de mediodía o un foco puntual.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>Solicitar "harsh lighting" o "direct sunlight" produce sombras marcadas y alto contraste.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Busques contraste dramático: publicidad de moda, escenas ásperas o urbanas.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>El objetivo sean retratos suaves — la luz dura acentúa imperfecciones.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Fotografía urbana con luz dura de mediodía, colores saturados y sombras intensas"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Urban photo with midday harsh light, saturated colors and strong shadows"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> pedir luz dura en un contexto de día nublado descrito en el mismo prompt.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #30 #32</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-23">
+      <div class="spec-card__head"><span class="spec-num">23</span><h3 class="spec-title">Luz suave</h3><span class="spec-cat-tag">Iluminación</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-23-luz-suave.jpg','Luz suave — retrato con iluminación difusa y uniforme')">
+          <img src="images/el-23-luz-suave.jpg" alt="Ejemplo visual: Luz suave — retrato con iluminación difusa y uniforme" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Luz difusa que casi no genera sombras — día nublado, luces de estudio con difusores.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Soft lighting" produce una imagen uniforme, con sombras tenues casi imperceptibles.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Quieras retratos favorecedores o escenas de calma (luz matutina, día nublado).</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>Busques drama fuerte — salvo que ese contraste sea justo el efecto deseado.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Retrato en estudio con luz suave y uniforme desde delante, sin sombras marcadas"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Studio portrait with soft and even lighting from the front, without harsh shadows"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> pedir luz suave y contrastes fuertes en el mismo prompt.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #17</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-24">
+      <div class="spec-card__head"><span class="spec-num">24</span><h3 class="spec-title">Contraluz</h3><span class="spec-cat-tag">Iluminación</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-24-contraluz.jpg','Contraluz — silueta a contraluz frente al atardecer')">
+          <img src="images/el-24-contraluz.jpg" alt="Ejemplo visual: Contraluz — silueta a contraluz frente al atardecer" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Iluminación desde atrás del sujeto. Produce halo o silueta y aumenta la sensación de volumen.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Backlight" o "contre-jour" hace que el modelo coloque la fuente de luz detrás del sujeto.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Busques siluetas, contornos resplandecientes (cabello) o una atmósfera etérea.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>Necesites detalle frontal nítido — no coincide con el efecto de contraluz.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Retrato a contraluz de una silueta femenina con el sol poniente detrás"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Backlit portrait of a female silhouette with the setting sun behind her"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> decir "contraluz" y luego describir detalles frontales brillantes — incoherente.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #28 #16</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-25">
+      <div class="spec-card__head"><span class="spec-num">25</span><h3 class="spec-title">Luz volumétrica</h3><span class="spec-cat-tag">Iluminación</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-25-luz-volumetrica.jpg','Luz volumétrica — rayos de sol atravesando la niebla del bosque')">
+          <img src="images/el-25-luz-volumetrica.jpg" alt="Ejemplo visual: Luz volumétrica — rayos de sol atravesando la niebla del bosque" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Luz que crea haces visibles debido a neblina, polvo o partículas en el aire.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Volumetric light" produce efectos atmosféricos, como rayos de sol dibujados en el aire.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Necesites atmósferas dramáticas o místicas: rayos solares en bosque, neblina iluminada.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>No haya neblina real en escena, salvo que el objetivo sea fantasía.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Escena de bosque con luz volumétrica, rayos de sol atravesando la niebla"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Forest scene with volumetric light, sunbeams piercing through the fog"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> luz volumétrica exagerada que produce un brillo artificial sobresaturado.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #30</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-26">
+      <div class="spec-card__head"><span class="spec-num">26</span><h3 class="spec-title">Luz de borde (rim light)</h3><span class="spec-cat-tag">Iluminación</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-26-rim-light.jpg','Luz de borde (rim light) — contorno iluminado sobre fondo oscuro')">
+          <img src="images/el-26-rim-light.jpg" alt="Ejemplo visual: Luz de borde (rim light) — contorno iluminado sobre fondo oscuro" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Luz que ilumina los bordes del sujeto desde atrás o los lados, creando contornos brillantes.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Rim lighting" destaca siluetas: el modelo añade un halo alrededor del contorno del sujeto.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Quieras separar al sujeto del fondo y aportar dramatismo cinematográfico.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>Combines con iluminación frontal directa — compite con el efecto de borde.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Fotografía de modelo con rim light desde atrás, borde brillante alrededor de su figura"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Photo of a model with rim light from behind, bright outline around her figure"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> pedir rim light sin mencionar un fondo oscuro que permita verlo.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #30 #21</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-27">
+      <div class="spec-card__head"><span class="spec-num">27</span><h3 class="spec-title">Luz práctica</h3><span class="spec-cat-tag">Iluminación</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-27-luz-practica.jpg','Luz práctica — retrato iluminado por una lámpara de mesa')">
+          <img src="images/el-27-luz-practica.jpg" alt="Ejemplo visual: Luz práctica — retrato iluminado por una lámpara de mesa" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Luz emitida por elementos visibles dentro de la propia escena: lámparas, velas, pantallas.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Practical lighting" o nombrar la fuente (lamp, candle) induce al modelo a incluir esa luz de forma natural.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Busques ambientes realistas: una lámpara iluminando un rostro, linternas en un bosque.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>La escena sea abierta y sin objetos emisores visibles — se ve forzado.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Retrato en interiores iluminado sólo por una lámpara de mesa cálida"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Indoor portrait illuminated only by a warm table lamp"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> mencionar la lámpara en el encuadre pero sin que ilumine realmente la escena.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #21 #04</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-28">
+      <div class="spec-card__head"><span class="spec-num">28</span><h3 class="spec-title">Hora del día</h3><span class="spec-cat-tag">Iluminación</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-28-hora-del-dia.jpg','Hora del día — paisaje campestre en hora dorada')">
+          <img src="images/el-28-hora-del-dia.jpg" alt="Ejemplo visual: Hora del día — paisaje campestre en hora dorada" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Momento específico del día — amanecer, día, atardecer, noche — que determina temperatura y dirección natural de la luz.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Golden hour" produce luz dorada suave; "blue hour" produce luz azul y fría.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Amanecer/atardecer den tonos cálidos y sombras largas; mediodía dé luz dura; noche, tonos azules artificiales.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>Haya incoherencias como "atardecer" combinado con descripciones de luz verde.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Paisaje de campo en hora dorada, luz cálida naranja y sombras alargadas"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Countryside landscape at golden hour, warm orange light and long shadows"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> ignorar el cambio de color de la luz según la hora descrita (noche con sol amarillo).</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #24 #23</span>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ══ NEXT PART ══ -->
+  <div class="next-part">
+    <div>
+      <div class="next-part-label">Continúa la guía</div>
+      <div class="next-part-title">Parte II — Color, Materiales, Estilo y Guía Práctica</div>
+    </div>
+    <a href="guia-elementos-visuales-ia-parte-2.html">Ver Parte II →</a>
+  </div>
+
+</div>
+</article>
+
+<footer class="mag-footer">
+  <div class="logo">SIGNAL<span style="color:var(--orange)">.</span></div>
+  <div>Estéticas de internet y cultura digital</div>
+  <div class="mag-footer-social">
+    <a href="https://www.instagram.com/signal.ai.mag/" target="_blank" rel="noopener">Instagram</a>
+    <span style="color:#3a392f">·</span>
+    <a href="https://signalzine.rf.gd/" target="_blank" rel="noopener">Web</a>
+    <span style="color:#3a392f">·</span>
+    <a href="mailto:revista.signal@gmail.com">Email</a>
+  </div>
+</footer>
+
+<div class="lightbox-overlay" id="lightbox" onclick="closeLightbox(event)">
+  <button class="lightbox-close" onclick="closeLightbox(event)">&times;</button>
+  <figure>
+    <img id="lightbox-img" src="" alt="">
+    <figcaption id="lightbox-caption"></figcaption>
+  </figure>
+</div>
+
+<script>
+  function openLightbox(src, caption) {
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox-caption').textContent = caption || '';
+    document.getElementById('lightbox').classList.add('open');
+  }
+  function closeLightbox(e) {
+    if (e) e.stopPropagation();
+    document.getElementById('lightbox').classList.remove('open');
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeLightbox();
+  });
+</script>
+</body>
+</html>

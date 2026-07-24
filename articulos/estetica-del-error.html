@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGNAL — La Estética del Error</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=JetBrains+Mono:wght@300;400;500&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+  :root {
+    --ink: #1a1814;
+    --paper: #f5f0e8;
+    --paper-dark: #ede7d9;
+    --accent: #c4873a;
+    --accent-light: #e8c88a;
+    --teal: #4a8a7c;
+    --muted: #7a7268;
+    --rule: #c8bfb0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.7;
+    padding-top: 44px;
+  }
+
+  /* ══ SIGNAL NAV ══ */
+  .signal-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    background: var(--ink);
+    border-bottom: 2px solid var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    height: 44px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .signal-nav__home {
+    display: flex; align-items: center; gap: 0.8rem;
+    text-decoration: none; color: var(--paper);
+  }
+  .signal-nav__logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.9rem; font-weight: 900;
+    letter-spacing: 0.05em; text-transform: none;
+  }
+  .signal-nav__ed { color: var(--accent); font-size: 0.55rem; border-left: 1px solid #3a3630; padding-left: 0.8rem; }
+  .signal-nav__home:hover { opacity: 0.8; }
+  .signal-nav__trail { color: #5a5450; font-size: 0.55rem; }
+  .signal-nav__current { color: var(--accent); }
+  .signal-nav__arrows {
+    display: flex; align-items: center; gap: 0.6rem; color: #4a4438;
+  }
+  .signal-nav__arrows a {
+    display: inline-flex; align-items: center;
+    color: #f5f0e8; background: #2e2924;
+    border: 1px solid #4a4438;
+    text-decoration: none; padding: 0.3rem 0.7rem;
+    font-size: 0.55rem; letter-spacing: 0.1em;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    white-space: nowrap;
+  }
+  .signal-nav__arrows a:hover {
+    background: var(--accent); border-color: var(--accent); color: var(--ink);
+  }
+  .signal-nav__disabled {
+    display: inline-flex; color: #3a3630; background: #1e1c18;
+    border: 1px solid #2a2620; padding: 0.3rem 0.7rem;
+    font-size: 0.55rem; letter-spacing: 0.1em; opacity: 0.5; cursor: not-allowed;
+  }
+  .signal-nav__sep { color: #3a3630; padding: 0 0.2rem; }
+  @media (max-width: 680px) {
+    .signal-nav__trail { display: none; }
+    .signal-nav { padding: 0 1rem; }
+  }
+
+  /* ── COVER ── */
+  .cover {
+    min-height: calc(100vh - 40px);
+    background: var(--ink);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover-noise {
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; opacity: 0.6;
+  }
+
+  /* Decorative glitch lines on cover — distinct from the previous issue */
+  .cover-lines {
+    position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+  }
+  .cover-lines::before {
+    content: '';
+    position: absolute;
+    top: 20%; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent 0%, #c4873a18 30%, #c4873a33 60%, transparent 100%);
+  }
+  .cover-lines::after {
+    content: '';
+    position: absolute;
+    top: 20.4%; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent 0%, transparent 20%, #c4873a44 50%, transparent 75%);
+  }
+  /* Glitch horizontal slice */
+  .cover-glitch-slice {
+    position: absolute;
+    top: 55%; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(to right, transparent 0%, #c4873a08 20%, #c4873a1a 45%, #c4873a08 70%, transparent 100%);
+    pointer-events: none;
+  }
+
+  .cover-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 2.5rem 3rem 1.2rem;
+    border-bottom: 1px solid #3a3630;
+    position: relative; z-index: 1;
+  }
+  .masthead {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; color: #6a6258;
+    letter-spacing: 0.15em; text-transform: uppercase; line-height: 1.8;
+  }
+  .cover-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 5rem; font-weight: 900; color: var(--paper);
+    letter-spacing: -0.02em; line-height: 1;
+    text-align: center; padding: 3rem 3rem 0;
+    position: relative; z-index: 1;
+  }
+  .cover-logo span { color: var(--accent); }
+  .cover-tagline {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; color: #5a5450;
+    letter-spacing: 0.3em; text-transform: uppercase;
+    text-align: center; margin-top: 0.5rem;
+  }
+  .cover-main {
+    display: flex; flex-direction: column;
+    justify-content: flex-end;
+    padding: 2rem 3rem 3rem; position: relative; z-index: 1;
+  }
+  .cover-issue {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; color: var(--accent);
+    letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 1rem;
+  }
+  .cover-headline {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 700;
+    color: var(--paper); line-height: 1.15; max-width: 700px;
+  }
+  .cover-headline em { color: var(--accent-light); font-style: italic; }
+  .cover-subhead {
+    margin-top: 1.2rem;
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.1rem; color: #8a8278;
+    max-width: 520px; line-height: 1.6;
+  }
+  .cover-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.2rem 3rem; border-top: 1px solid #2a2620;
+    position: relative; z-index: 1;
+  }
+  .cover-index { display: flex; gap: 2.5rem; }
+  .cover-index-item {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem; color: #5a5450;
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .cover-index-item strong {
+    display: block; color: #9a9288; font-size: 0.65rem; margin-bottom: 0.2rem;
+  }
+
+  /* ── SOCIAL BAR ── */
+  .social-bar {
+    display: flex; align-items: center; gap: 1rem;
+    margin-top: 1.5rem; padding-top: 1.5rem;
+    border-top: 1px solid #2a2620; flex-wrap: wrap;
+  }
+  .social-link {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase;
+    text-decoration: none; padding: 0.4rem 0.8rem;
+    border: 1px solid #3a3630; color: #9a9288; transition: all 0.2s ease;
+  }
+  .social-link svg { width: 12px; height: 12px; fill: currentColor; }
+  .social-link:hover { border-color: var(--accent); color: var(--accent); }
+  .instagram {
+    display: inline-flex; align-items: center; gap: 2px;
+    padding: 1px 4px; border-radius: 20px;
+    text-decoration: none; color: #fff; font-weight: 600;
+    background: linear-gradient(45deg,#f09433,#e1306c,#833ab4);
+  }
+  .instagram:hover { opacity: .9; }
+
+  /* ── LAYOUT ── */
+  .page {
+    max-width: 900px; margin: 0 auto; padding: 5rem 3rem;
+  }
+
+  /* ── INDEX PAGE ── */
+  .index-page {
+    background: var(--paper-dark);
+    border-top: 4px solid var(--ink);
+  }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; font-weight: 500; color: var(--accent);
+    letter-spacing: 0.3em; text-transform: uppercase;
+    margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem;
+  }
+  .section-label::after {
+    content: ''; flex: 1; height: 1px; background: var(--rule);
+  }
+  .index-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 2px; background: var(--rule); border: 1px solid var(--rule);
+  }
+  .index-item {
+    background: var(--paper-dark); padding: 2rem 2.5rem;
+    text-decoration: none; color: inherit; display: block;
+    transition: background 0.2s ease, transform 0.15s ease;
+  }
+  .index-item:hover { background: #e0d8c8; transform: translateY(-2px); }
+  .index-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem; font-weight: 900; color: var(--rule);
+    line-height: 1; margin-bottom: 0.5rem;
+  }
+  .index-item:hover .index-num { color: var(--accent); }
+  .index-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem; font-weight: 700; line-height: 1.3; margin-bottom: 0.5rem;
+  }
+  .index-desc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; color: var(--muted);
+    letter-spacing: 0.05em; line-height: 1.6;
+  }
+
+  /* ── ARTICLE ── */
+  .article-header {
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 3rem; margin-bottom: 3rem;
+  }
+  .article-category {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; color: var(--teal);
+    letter-spacing: 0.3em; text-transform: uppercase; margin-bottom: 1.5rem;
+  }
+  h1.article-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 900;
+    line-height: 1.1; margin-bottom: 1rem;
+  }
+  h1.article-title em { font-style: italic; color: var(--accent); }
+  .article-deck {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.25rem; font-weight: 300; font-style: italic;
+    color: var(--muted); line-height: 1.6; max-width: 600px;
+    border-left: 3px solid var(--accent); padding-left: 1.5rem; margin-top: 1.5rem;
+  }
+  .article-meta { display: flex; gap: 2rem; margin-top: 2rem; flex-wrap: wrap; }
+  .meta-item {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem; color: var(--muted);
+    letter-spacing: 0.05em; text-transform: uppercase;
+  }
+  .meta-item strong {
+    display: block; color: var(--ink); font-size: 0.6rem; margin-bottom: 0.2rem;
+  }
+
+  /* ── SECTIONS ── */
+  h2.section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.5rem, 3vw, 2.2rem); font-weight: 700;
+    line-height: 1.2; margin-bottom: 1.5rem;
+  }
+  h3.subsection {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem; color: var(--teal);
+    letter-spacing: 0.2em; text-transform: uppercase;
+    margin-bottom: 2rem;
+  }
+  .body-text p {
+    margin-bottom: 1.5em;
+  }
+  .body-text p:last-child { margin-bottom: 0; }
+
+  /* ── DIVIDER ── */
+  .divider {
+    display: flex; align-items: center; gap: 1.5rem;
+    margin: 4rem 0; color: var(--rule);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; letter-spacing: 0.2em;
+  }
+  .divider::before, .divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--rule);
+  }
+  .divider span { white-space: nowrap; color: var(--accent); }
+
+  /* ── PULLQUOTE ── */
+  .pullquote {
+    background: var(--ink); color: var(--paper);
+    padding: 3rem 3.5rem; margin: 3rem 0;
+    position: relative;
+  }
+  .pullquote::before {
+    content: '\201C';
+    font-family: 'Playfair Display', serif;
+    font-size: 6rem; color: var(--accent); opacity: 0.4;
+    position: absolute; top: -1rem; left: 2rem;
+    line-height: 1;
+  }
+  .pullquote p {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+    font-style: italic; line-height: 1.4;
+    position: relative; z-index: 1;
+  }
+  .pullquote cite {
+    display: block; margin-top: 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; color: #8a8278;
+    letter-spacing: 0.1em; font-style: normal;
+    position: relative; z-index: 1;
+  }
+
+  /* ── FACT BOX ── */
+  .fact-box {
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--accent);
+    padding: 2rem 2.5rem;
+    margin: 3rem 0;
+    background: var(--paper-dark);
+  }
+  .fact-box-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem; color: var(--accent);
+    letter-spacing: 0.2em; text-transform: uppercase;
+    margin-bottom: 1.2rem;
+  }
+  .fact-box p { margin-bottom: 1em; font-size: 0.95rem; }
+  .fact-box p:last-child { margin-bottom: 0; }
+
+  /* ── FACT BOX — TEAL VARIANT ── */
+  .fact-box.teal {
+    border-left-color: var(--teal);
+  }
+  .fact-box.teal .fact-box-label { color: var(--teal); }
+
+  /* ── DESTACADO ── */
+  .destacado {
+    position: relative;
+    background: var(--paper-dark);
+    border-top: 2px solid var(--ink);
+    border-bottom: 2px solid var(--ink);
+    padding: 3rem 3.5rem;
+    margin: 3rem 0;
+    overflow: hidden;
+  }
+  .destacado::before {
+    content: attr(data-word);
+    position: absolute; right: -1rem; top: 50%;
+    transform: translateY(-50%) rotate(90deg);
+    font-family: 'Playfair Display', serif;
+    font-size: 8rem; font-weight: 900;
+    color: var(--rule); opacity: 0.35;
+    letter-spacing: -0.05em;
+    pointer-events: none; user-select: none;
+  }
+  .destacado-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem; color: var(--teal);
+    letter-spacing: 0.2em; text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .destacado h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem; font-weight: 700;
+    margin-bottom: 1.5rem; line-height: 1.3;
+  }
+  .destacado p { margin-bottom: 1.2em; font-size: 0.95rem; }
+  .destacado p:last-child { margin-bottom: 0; }
+
+  /* ── GLITCH GRID — componente exclusivo de este artículo ── */
+  .glitch-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    margin: 3rem 0;
+  }
+  .glitch-card {
+    background: var(--paper);
+    padding: 2rem 2.5rem;
+    position: relative; overflow: hidden;
+    transition: background 0.2s ease;
+  }
+  .glitch-card:hover { background: var(--paper-dark); }
+  .glitch-card__era {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem; color: var(--teal);
+    letter-spacing: 0.2em; text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .glitch-card__title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem; font-weight: 700;
+    line-height: 1.25; margin-bottom: 0.8rem;
+  }
+  .glitch-card__desc {
+    font-size: 0.9rem; color: var(--muted); line-height: 1.6;
+  }
+  .glitch-card__num {
+    position: absolute; bottom: 0.5rem; right: 1.2rem;
+    font-family: 'Playfair Display', serif;
+    font-size: 5rem; font-weight: 900;
+    color: var(--rule); opacity: 0.2;
+    line-height: 1; pointer-events: none; user-select: none;
+  }
+  .glitch-card:hover .glitch-card__num { color: var(--accent); opacity: 0.12; }
+
+  /* ── ARTISTAS GRID — perfil de creadores ── */
+  .artistas-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    margin: 2.5rem 0;
+  }
+  .artista-card {
+    background: var(--paper); padding: 1.8rem 2rem;
+    transition: background 0.2s;
+  }
+  .artista-card:hover { background: var(--paper-dark); }
+  .artista-handle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; color: var(--accent);
+    letter-spacing: 0.1em; margin-bottom: 0.4rem;
+  }
+  .artista-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem; font-weight: 700;
+    margin-bottom: 0.6rem;
+  }
+  .artista-desc {
+    font-size: 0.85rem; color: var(--muted); line-height: 1.55;
+  }
+  .artista-tag {
+    display: inline-block; margin-top: 0.8rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.5rem; letter-spacing: 0.15em;
+    text-transform: uppercase; padding: 0.2rem 0.5rem;
+    border: 1px solid var(--rule); color: var(--muted);
+  }
+
+  /* ── TERMS GLOSSARY ── */
+  .glossary {
+    background: var(--paper-dark);
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--teal);
+    padding: 2rem 2.5rem; margin: 3rem 0;
+  }
+  .glossary-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem; color: var(--teal);
+    letter-spacing: 0.2em; text-transform: uppercase;
+    margin-bottom: 1.5rem; padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .glossary-item {
+    display: grid; grid-template-columns: 160px 1fr;
+    gap: 1.5rem; padding: 0.9rem 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: baseline;
+  }
+  .glossary-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .glossary-term {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; color: var(--ink);
+    letter-spacing: 0.05em; text-transform: uppercase;
+    font-weight: 500;
+  }
+  .glossary-def {
+    font-size: 0.9rem; color: var(--muted); line-height: 1.5;
+  }
+
+  /* ── TIMELINE ── */
+  .timeline {
+    border-left: 2px solid var(--rule);
+    margin: 2rem 0 2rem 1rem;
+    padding-left: 2.5rem;
+  }
+  .timeline-item {
+    position: relative; margin-bottom: 2.5rem;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute; left: -3.1rem; top: 0.45rem;
+    width: 10px; height: 10px;
+    background: var(--paper); border: 2px solid var(--accent);
+    border-radius: 50%;
+  }
+  .timeline-year {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; color: var(--accent);
+    letter-spacing: 0.15em; margin-bottom: 0.3rem;
+  }
+  .timeline-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem;
+  }
+  .timeline-desc {
+    font-size: 0.9rem; color: var(--muted); line-height: 1.6;
+  }
+
+  /* ── OPINION BLOCK ── */
+  .opinion-block {
+    background: var(--ink); color: var(--paper);
+    padding: 3.5rem 4rem; margin: 2rem 0;
+    position: relative;
+  }
+  .opinion-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem; color: var(--accent);
+    letter-spacing: 0.2em; text-transform: uppercase;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #3a3630;
+    padding-bottom: 1rem;
+  }
+  .opinion-block p {
+    font-size: 1.05rem; margin-bottom: 1.5em; line-height: 1.75;
+    color: #c8c0b4;
+  }
+  .opinion-block p:last-of-type { margin-bottom: 0; }
+  .opinion-block em { color: var(--accent-light); font-style: italic; }
+  .opinion-block strong { color: var(--paper); }
+  .opinion-author {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; color: #6a6258;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-top: 2.5rem; padding-top: 1.5rem;
+    border-top: 1px solid #3a3630;
+  }
+
+  /* ── CONCLUSION ── */
+  .conclusion {
+    border-top: 4px solid var(--ink);
+    padding-top: 4rem;
+    margin-top: 4rem;
+  }
+
+  /* ── FOOTER ── */
+  .mag-footer {
+    background: var(--ink); color: #6a6258;
+    padding: 3rem; text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; letter-spacing: 0.15em;
+    text-transform: uppercase; line-height: 2.2;
+  }
+  .mag-footer .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem; font-weight: 900; color: var(--paper);
+    letter-spacing: -0.02em; text-transform: none;
+    margin-bottom: 0.5rem;
+  }
+  .mag-footer-social {
+    margin-top: 1rem; display: flex; gap: 1.5rem;
+    justify-content: center; align-items: center;
+  }
+  .mag-footer-social a {
+    color: #8a8278; text-decoration: none; transition: color 0.2s;
+  }
+  .mag-footer-social a:hover { color: var(--accent); }
+
+  /* ── IMAGEN ARTÍCULO CON PIE DE FOTO ── */
+  .article-image {
+    margin: 3rem 0;
+    position: relative;
+  }
+  .article-image img {
+    width: 100%; display: block;
+    border: 1px solid var(--rule);
+  }
+  .article-image figcaption {
+    display: flex; gap: 1.2rem; align-items: flex-start;
+    padding: 1rem 1.2rem;
+    background: var(--paper-dark);
+    border: 1px solid var(--rule); border-top: none;
+  }
+  .article-image figcaption .fig-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.52rem; color: var(--accent);
+    letter-spacing: 0.2em; text-transform: uppercase;
+    white-space: nowrap; margin-top: 0.15rem; flex-shrink: 0;
+  }
+  .article-image figcaption .fig-text {
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.88rem; color: var(--muted);
+    font-style: italic; line-height: 1.55;
+  }
+  .article-image figcaption .fig-text strong {
+    color: var(--ink); font-style: normal; font-weight: 600;
+  }
+
+  /* ── INSTAGRAM INSERTS ── */
+  .ig-insert {
+    margin: 3rem 0;
+    border: 1px solid var(--rule);
+    background: var(--paper-dark);
+    display: grid;
+    grid-template-columns: 3px 1fr;
+  }
+  .ig-insert__stripe {
+    background: linear-gradient(180deg, #f09433 0%, #e1306c 50%, #833ab4 100%);
+  }
+  .ig-insert__body {
+    padding: 1.6rem 2rem;
+  }
+  .ig-insert__header {
+    display: flex; align-items: center; gap: 0.8rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .ig-insert__icon {
+    width: 28px; height: 28px;
+    background: linear-gradient(45deg,#f09433,#e1306c,#833ab4);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .ig-insert__icon i { color: #fff; font-size: 0.75rem; }
+  .ig-insert__handle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; font-weight: 500;
+    letter-spacing: 0.05em; color: var(--ink);
+  }
+  .ig-insert__handle span {
+    display: block;
+    font-size: 0.52rem; color: var(--muted);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    font-weight: 400; margin-top: 0.1rem;
+  }
+  .ig-insert__handle a {
+    color: inherit; text-decoration: none;
+  }
+  .ig-insert__handle a:hover { color: var(--accent); }
+  .ig-insert__label {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.48rem; color: var(--muted);
+    letter-spacing: 0.2em; text-transform: uppercase;
+    border: 1px solid var(--rule); padding: 0.2rem 0.5rem;
+    white-space: nowrap;
+  }
+  .ig-insert__caption {
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.92rem; color: var(--muted);
+    font-style: italic; line-height: 1.6;
+  }
+  .ig-insert__caption strong {
+    color: var(--ink); font-style: normal;
+  }
+  .ig-insert__post-ref {
+    margin-top: 0.8rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.52rem; color: var(--muted);
+    letter-spacing: 0.08em;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .ig-insert__post-ref::before {
+    content: '';
+    display: inline-block; width: 16px; height: 1px;
+    background: var(--rule);
+  }
+  .ig-insert__post-ref a {
+    color: var(--accent); text-decoration: none;
+  }
+  .ig-insert__post-ref a:hover { text-decoration: underline; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .cover-logo { animation: fadeUp 0.8s ease forwards; }
+  .cover-headline { animation: fadeUp 0.8s 0.2s ease forwards; opacity: 0; }
+  .cover-subhead { animation: fadeUp 0.8s 0.4s ease forwards; opacity: 0; }
+
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 680px) {
+    .cover-header { padding: 1.5rem; }
+    .cover-logo { font-size: 3.5rem; padding: 2rem 1.5rem 0; }
+    .cover-main { padding: 1.5rem; }
+    .cover-index { display: none; }
+    .page { padding: 3rem 1.5rem; }
+    .index-grid { grid-template-columns: 1fr; }
+    .glitch-grid { grid-template-columns: 1fr; }
+    .artistas-grid { grid-template-columns: 1fr; }
+    .glossary-item { grid-template-columns: 1fr; gap: 0.4rem; }
+    .pullquote { padding: 2rem 1.5rem; }
+    .opinion-block { padding: 2.5rem 2rem; }
+    .destacado { padding: 2rem 2rem; }
+    .article-meta { flex-wrap: wrap; gap: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ SIGNAL NAV ══ -->
+<nav class="signal-nav">
+  <a class="signal-nav__home" href="../index.html">
+        <span class="signal-nav__logo">S<span style="color:var(--accent)">I</span>GN<span style="color:var(--accent)">A</span>L<span style="color:var(--accent)">.</span></span>
+    <span class="signal-nav__ed">Investigación</span>
+  </a>
+  <div class="signal-nav__trail">
+    <span class="signal-nav__current">La Estética del Error</span>
+  </div>
+  <div class="signal-nav__arrows">
+    <a href="../index.html" style="border-color:#4a8a7c;color:#4a8a7c;" onmouseover="this.style.background='#4a8a7c';this.style.color='#fff'" onmouseout="this.style.background='#2e2924';this.style.color='#4a8a7c'">Índice</a>
+    <span class="signal-nav__sep">·</span>
+    <a href="renacimiento-artificial.html">← Anterior</a>
+    <span class="signal-nav__sep">·</span>
+    <a href="anatomia-imagen-generativa.html">Siguiente →</a>
+  </div>
+</nav>
+
+<!-- ══ COVER ══ -->
+<section class="cover">
+<div class="cover-noise"></div>
+<div class="cover-lines"></div>
+<div class="cover-glitch-slice"></div>
+
+<header class="cover-header">
+  <div class="masthead">Revista de Arte e Inteligencia Artificial<br>2026<br>Arte · Proceso · Comunidad</div>
+  <div class="masthead" style="text-align:right;">Distribución digital<br>Instagram · Substack<br>Acceso libre</div>
+</header>
+
+<div class="cover-logo">S<span>I</span>GN<span>A</span>L
+  <div class="cover-tagline">Arte generativo · Proceso · Comunidad</div>
+</div>
+
+<div class="cover-main">
+  <div class="cover-issue">
+    Por: Gerardo Ventura
+    <a href="https://instagram.com/gfvc1978" target="_blank" class="instagram" rel="noopener">
+      <i class="fa-brands fa-instagram"></i> @gfvc1978
+    </a>
+  </div>
+  <div class="cover-issue">Investigación</div>
+  <h1 class="cover-headline">La Estética<br>del <em>Error</em></h1>
+  <p class="cover-subhead">Cómo las imperfecciones de la inteligencia artificial se transformaron en un nuevo lenguaje visual. Del glitch a la alucinación, la historia de los defectos que se volvieron arte.</p>
+
+  <div class="social-bar">
+    <a href="https://www.instagram.com/signal.ai.mag/" target="_blank" rel="noopener" class="social-link">
+      <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.209-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      @signal.ai.mag
+    </a>
+    <a href="https://signalzine.rf.gd/" target="_blank" rel="noopener" class="social-link">
+      <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm-1 17.93V16h2v1.93A8.01 8.01 0 0 1 4.07 13H6v-2H4.07A8.01 8.01 0 0 1 11 4.07V6h2V4.07A8.01 8.01 0 0 1 19.93 11H18v2h1.93A8.01 8.01 0 0 1 13 19.93z"/></svg>
+      signalzine.rf.gd
+    </a>
+    <a href="https://substack.com/@signalmag" target="_blank" rel="noopener" class="social-link">
+      <svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:currentColor"><path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11 22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z"/></svg>
+      Substack
+    </a>
+    <a href="mailto:revista.signal@gmail.com" class="social-link">
+      <svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+      revista.signal@gmail.com
+    </a>
+  </div>
+</div>
+
+<footer class="cover-footer">
+  <div class="cover-index">
+    <div class="cover-index-item"><strong>I</strong>La Obsesión por la Perfección</div>
+    <div class="cover-index-item"><strong>II</strong>El Glitch como Movimiento</div>
+    <div class="cover-index-item"><strong>III</strong>Las Alucinaciones de la IA</div>
+    <div class="cover-index-item"><strong>IV</strong>Cuando el Error se Vuelve Estilo</div>
+  </div>
+  <div class="masthead" style="color:#3a3630;">signal.mag / no.02 / inv.04</div>
+</footer>
+</section>
+
+<!-- ══ INDEX ══ -->
+<section class="index-page">
+<div class="page">
+  <div class="section-label">Contenido — Investigación 04</div>
+  <div class="index-grid">
+    <a href="#seccion-intro" class="index-item">
+      <div class="index-num">I</div>
+      <div class="index-title">La Obsesión por la Perfección</div>
+      <div class="index-desc">La ilusión técnica de lo impecable y por qué siempre fue inalcanzable</div>
+    </a>
+    <a href="#seccion-glitch" class="index-item">
+      <div class="index-num">II</div>
+      <div class="index-title">El Glitch como Movimiento Cultural</div>
+      <div class="index-desc">De los años 90 al presente: cuando la corrupción de datos se volvió identidad visual</div>
+    </a>
+    <a href="#seccion-alucinaciones" class="index-item">
+      <div class="index-num">III</div>
+      <div class="index-title">Las Alucinaciones de la IA</div>
+      <div class="index-desc">Anatomías imposibles, arquitecturas surrealistas, objetos que desafían la lógica</div>
+    </a>
+    <a href="#seccion-estilo" class="index-item">
+      <div class="index-num">IV</div>
+      <div class="index-title">Cuando el Error se Vuelve Estilo</div>
+      <div class="index-desc">Artistas que buscan deliberadamente la imperfección como declaración estética</div>
+    </a>
+  </div>
+</div>
+</section>
+
+<!-- ══ ARTICLE ══ -->
+<article>
+<div class="page">
+
+  <!-- ARTICLE HEADER -->
+  <header class="article-header fade-in" id="seccion-intro">
+    <div class="article-category">Investigación 04 — Estética · Tecnología · Arte Generativo</div>
+    <h1 class="article-title">La Estética del <em>Error</em></h1>
+    <p class="article-deck">Cómo las imperfecciones de la inteligencia artificial se transformaron en un nuevo lenguaje visual. Del grano fotográfico a la alucinación algorítmica: la historia siempre fue la misma.</p>
+    <div class="article-meta">
+      <div class="meta-item"><strong>Publicado</strong>2026</div>
+      <div class="meta-item"><strong>Investigación</strong>04 de 06</div>
+      <div class="meta-item"><strong>Categoría</strong>Arte + Tecnología</div>
+      <div class="meta-item"><strong>Tiempo de lectura</strong>~12 min</div>
+    </div>
+  </header>
+
+  <!-- SECCIÓN I -->
+  <section id="seccion-intro-body">
+    <h2 class="section-title fade-in">I. La Obsesión por la Perfección Técnica</h2>
+    <h3 class="subsection fade-in">§ 01 — El defecto como punto de partida</h3>
+
+    <div class="body-text fade-in">
+      <p>Cada nueva tecnología de imagen llegó al mundo con la misma promesa: fidelidad absoluta. La fotografía del siglo XIX pretendía capturar la realidad con una precisión que la pintura nunca podría. El cine sonoro prometía reproducir el mundo tal como lo percibimos. La imagen digital de los años noventa ofrecía limpiar definitivamente el ruido, el grano, la imperfección orgánica de los medios analógicos.</p>
+      <p>Ninguna lo logró. O más exactamente: ninguna quiso. En la práctica, lo que ocurrió fue siempre lo contrario: en el momento en que una tecnología alcanzaba la limpieza suficiente para ser considerada "perfecta", los artistas comenzaban a explorar deliberadamente sus defectos anteriores. El grano cinematográfico que los cineastas de los sesenta intentaban eliminar era exactamente lo que los directores de los noventa usaban para construir atmósferas. La distorsión análoga que los ingenieros de audio pasaron décadas combatiendo se convirtió en el sonido que define géneros enteros.</p>
+      <p>No es paradoja. Es el ciclo natural de la estética tecnológica: la imperfección de una era se convierte en el vocabulario poético de la siguiente.</p>
+    </div>
+
+    <div class="fact-box fade-in">
+      <div class="fact-box-label">El ciclo de la imperfección — Una constante histórica</div>
+      <p><strong>Grano fotográfico:</strong> Durante décadas fue señal de mala calidad técnica. Hoy, los fotógrafos digitales aplican filtros de grano en posproducción para dotar a sus imágenes de una textura que las cámaras modernas ya no producen naturalmente.</p>
+      <p><strong>Distorsión de cinta magnética:</strong> Los cassettes y el VHS degradaban la señal. La estética "lo-fi" y "VHS" es hoy un género visual completo con millones de seguidores, y las aplicaciones que simulan esa degradación facturan millones de dólares.</p>
+      <p><strong>Pixelación y baja resolución:</strong> El pixel art nació de una limitación técnica. Hoy es un estilo artístico con festivales propios, comunidades activas y un mercado NFT que supera los mil millones de dólares acumulados.</p>
+    </div>
+
+    <div class="body-text fade-in">
+      <p>Lo que distingue nuestro momento histórico es que el ciclo se ha acelerado dramáticamente. La inteligencia artificial generativa existe como tecnología madura desde hace menos de cinco años. Y ya estamos en la segunda vuelta: los errores que producía en sus primeras versiones — las manos con seis dedos, los textos ilegibles, las arquitecturas imposibles — han pasado de ser vergüenzas técnicas a convertirse en recursos expresivos buscados.</p>
+      <p>Esto no es casual. Es el mismo mecanismo de siempre. Lo que cambia es la velocidad.</p>
+    </div>
+  </section>
+
+  <!-- IMAGEN ARTÍCULO -->
+  <figure class="article-image fade-in">
+    <img src="images/midjourney-v3.jpg"
+         alt="Formación geológica imposible generada por IA — capas de roca en amarillo ocre y rojo carmesí que ascienden hacia un cielo nublado">
+    <figcaption>
+      <span class="fig-label">Imagen</span>
+      <span class="fig-text">
+        <strong>Sin título (Formación) · IA generativa · 2022</strong> — 
+        Una estructura geológica imposible: capas sedimentarias en ocre, siena y carmesí que se apilan con una lógica interna coherente pero físicamente improbable. El modelo conoce las rocas, conoce la luz del atardecer, conoce las nubes — pero los ensambla fuera de toda escala y proporción real. El resultado no es un error: es una memoria geológica que nunca existió. Imagen generada con Midjourney v3 para SIGNAL. </span>
+    </figcaption>
+  </figure>
+
+  <div class="divider fade-in"><span>§ II</span></div>
+
+  <!-- SECCIÓN II -->
+  <section id="seccion-glitch">
+    <h2 class="section-title fade-in">II. El Glitch como Movimiento Cultural</h2>
+    <h3 class="subsection fade-in">§ 02 — Arte de los 90 y 2000: la distorsión como identidad</h3>
+
+    <div class="body-text fade-in">
+      <p>El glitch art no nació en una galería ni en un manifiesto estético. Nació en el momento exacto en que un artista — y después otro, y luego decenas — decidió no descartar una imagen corrompida sino mirarla con atención.</p>
+      <p>En los primeros años de la era digital, la corrupción de datos era accidente puro: un archivo de imagen dañado que producía artefactos visuales al abrirse, una señal de video interferida que fragmentaba la pantalla en bloques de color, un programa de edición que fallaba al renderizar y producía geometrías involuntarias. La respuesta técnica era cerrar el archivo, limpiar el error, empezar de nuevo. Algunos artistas hicieron lo contrario.</p>
+    </div>
+
+    <div class="timeline fade-in">
+      <div class="timeline-item">
+        <div class="timeline-year">1995 — 2000</div>
+        <div class="timeline-title">Los primeros exploradores del error digital</div>
+        <div class="timeline-desc">Artistas como Rosa Menkman, Cory Arcangel y JODI comenzaron a documentar y amplificar los errores de los sistemas digitales. Sus obras no eran la consecuencia de fallas accidentales sino de intervenciones deliberadas en el código: abrían archivos de imagen en editores de texto, modificaban bytes de video directamente, crasheaban videojuegos con instrucciones imposibles. El resultado era visualmente caótico y conceptualmente preciso: una crítica a la ilusión de control que ofrecían los sistemas digitales.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">2000 — 2008</div>
+        <div class="timeline-title">El glitch entra al mainstream cultural</div>
+        <div class="timeline-desc">La estética del error comenzó a migrar desde los laboratorios de net art hacia la industria musical, la moda y el diseño gráfico. Portadas de álbum, videos musicales, campañas publicitarias adoptaron la gramática visual del glitch: fragmentación, repetición pixelada, corrupción cromática, texto ilegible superpuesto a la imagen. Lo que había sido una postura crítica frente a la tecnología se convirtió también en un lenguaje de seducción visual.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">2008 — 2016</div>
+        <div class="timeline-title">Democratización y saturación</div>
+        <div class="timeline-desc">Las aplicaciones móviles pusieron los filtros glitch al alcance de cualquier persona con un teléfono. La estética se democratizó y al mismo tiempo se vació parcialmente de su carga conceptual original. Paralelo a esto, una nueva generación de artistas comenzó a explorar territorios más complejos: glitch en video en tiempo real, sonido corrupto como performance, errores de realidad aumentada como material escultórico.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">2016 — presente</div>
+        <div class="timeline-title">El error como patrimonio visual</div>
+        <div class="timeline-desc">El glitch art tiene ya museos, bienales, colecciones institucionales. Lo que empezó como una actitud de resistencia frente a la perfección digital es hoy parte del canon del arte contemporáneo. Y en ese momento preciso —cuando el glitch analógico quedaba domesticado—, apareció un nuevo territorio de errores: los modelos generativos de IA.</div>
+      </div>
+    </div>
+
+    <div class="destacado fade-in" data-word="GLITCH">
+      <div class="destacado-label">Referencia — Arte glitch canónico</div>
+      <h3>Rosa Menkman y la gramática del ruido</h3>
+      <p>La artista y teórica holandesa Rosa Menkman publicó en 2011 el <em>Glitch Moment/um</em>, el primer manifiesto teórico del arte glitch. Su argumento central: los errores no son interrupciones del proceso comunicativo sino momentos de revelación sobre la naturaleza real de los sistemas. Un archivo corrompido no muestra falla: muestra cómo el sistema funciona en condiciones límite, dónde están sus costuras, qué hay debajo de la interfaz pulida.</p>
+      <p>Ese argumento, desarrollado para los errores de los sistemas digitales de los 2000, describe con exactitud lo que ocurre cuando un modelo generativo de IA produce una alucinación. No es un fallo del sistema. Es el sistema mostrando cómo piensa.</p>
+    </div>
+
+    <div class="glitch-grid fade-in">
+      <div class="glitch-card">
+        <div class="glitch-card__era">Técnica — Databending</div>
+        <div class="glitch-card__title">Intervención directa en el código binario</div>
+        <div class="glitch-card__desc">Abrir un archivo de imagen en un editor de texto o audio y modificar sus bytes directamente. El resultado es impredecible y no reproducible: cada corrupción es única. Esta incapacidad de replicar el resultado es, para sus practicantes, parte del atractivo estético.</div>
+        <div class="glitch-card__num">01</div>
+      </div>
+      <div class="glitch-card">
+        <div class="glitch-card__era">Técnica — Circuit Bending</div>
+        <div class="glitch-card__title">Modificación física del hardware</div>
+        <div class="glitch-card__desc">Intervenir físicamente el circuito de una consola de videojuegos o cámara para producir salidas visuales inesperadas. Reed Ghazala sistematizó el circuit bending para el audio; artistas visuales adaptaron sus principios a la imagen electrónica.</div>
+        <div class="glitch-card__num">02</div>
+      </div>
+      <div class="glitch-card">
+        <div class="glitch-card__era">Técnica — Pixel Sorting</div>
+        <div class="glitch-card__title">Reorganización algorítmica de píxeles</div>
+        <div class="glitch-card__desc">Algoritmos que reordenan los píxeles de una imagen según parámetros de brillo, color o posición. El efecto produce imágenes que parecen derretirse o deshilacharse en una dirección, revelando la estructura matemática subyacente a toda fotografía digital.</div>
+        <div class="glitch-card__num">03</div>
+      </div>
+      <div class="glitch-card">
+        <div class="glitch-card__era">Técnica — Signal Interference</div>
+        <div class="glitch-card__title">Interferencia de señal en transmisión analógica</div>
+        <div class="glitch-card__desc">Captura y manipulación de señales de video analógico mientras se transmiten. La interferencia produce patrones cromáticos y distorsiones espaciales imposibles de generar digitalmente y que conservan la impredecibilidad del mundo físico.</div>
+        <div class="glitch-card__num">04</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INSERTO IG: BEEPLE -->
+  <div class="ig-insert fade-in">
+    <div class="ig-insert__stripe"></div>
+    <div class="ig-insert__body">
+      <div class="ig-insert__header">
+        <div class="ig-insert__icon"><i class="fa-brands fa-instagram"></i></div>
+        <div class="ig-insert__handle">
+          <a href="https://www.instagram.com/beeple_crap/" target="_blank" rel="noopener">@beeple_crap</a>
+          <span>Mike Winkelmann · Charleston, SC</span>
+        </div>
+        <span class="ig-insert__label">Referencia visual</span>
+      </div>
+      <p class="ig-insert__caption">
+        <strong>Everydays: 5000 días de error acumulado.</strong> Durante más de trece años, Mike Winkelmann publicó una imagen digital cada día sin excepción. Las primeras son torpes, los primeros años son irregulares — y ese archivo de la imperfección progresiva es, quizás, el documento más honesto sobre cómo se desarrolla un vocabulario visual propio. Antes de los 69 millones de dólares en Christie's, hubo miles de imágenes que nadie vio y que Winkelmann publicó de todos modos. El error cotidiano como disciplina.
+      </p>
+      <div class="ig-insert__post-ref">
+        Seguir en Instagram:
+        <a href="https://www.instagram.com/beeple_crap/" target="_blank" rel="noopener">instagram.com/beeple_crap</a>
+      </div>
+    </div>
+  </div>
+<!-- Instagram embed -->
+<div style="margin: 2rem 0; display:flex; flex-direction:column; align-items:center;">
+  <div style="font-family:'JetBrains Mono',monospace; font-size:0.58rem; color:var(--teal); letter-spacing:0.2em; text-transform:uppercase; margin-bottom:0.8rem; align-self:flex-start;">Muestra de obra reciente</div>
+  <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/DYzk4R-Avd1/" data-instgrm-version="14" style="background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15);margin:0;max-width:540px;min-width:326px;padding:0;width:99.375%;width:-webkit-calc(100% - 2px);width:calc(100% - 2px);">
+  </blockquote>
+</div>
+<script async src="//www.instagram.com/embed.js"></script>
+  <div class="divider fade-in"><span>§ III</span></div>
+
+  <!-- SECCIÓN III -->
+  <section id="seccion-alucinaciones">
+    <h2 class="section-title fade-in">III. Las Alucinaciones de la IA</h2>
+    <h3 class="subsection fade-in">§ 03 — El error como ventana al espacio latente</h3>
+
+    <div class="body-text fade-in">
+      <p>La palabra "alucinación" es técnicamente imprecisa pero poéticamente exacta. Un modelo generativo no alucina en el sentido clínico: no confunde la realidad con la ficción porque no tiene acceso a ninguna realidad exterior. Lo que produce cuando "alucina" es una interpolación en el espacio latente que no corresponde a ningún referente del mundo físico — una combinación de patrones que el modelo ha aprendido pero que nunca existió ensamblada de esa manera.</p>
+      <p>El resultado visual puede ser perturbador o fascinante, dependiendo de quién lo mire y con qué intención. Los primeros usuarios de DALL-E, Stable Diffusion y Midjourney encontraron estos artefactos como obstáculos: la mano con seis dedos, el texto ilegible superpuesto, la arquitectura que no podría sostenerse en el mundo físico. Los ingenieros los consideraban bugs a resolver. Una parte de la comunidad artística los consideró, desde el primer momento, algo más interesante.</p>
+    </div>
+
+    <div class="pullquote fade-in">
+      <p>Las mejores ideas no siempre nacen del control. A veces emergen del ruido.</p>
+      <cite>— SIGNAL · La Estética del Error</cite>
+    </div>
+
+    <div class="body-text fade-in">
+      <p>Entender por qué estos errores tienen la forma que tienen requiere entender mínimamente cómo funcionan los modelos de difusión. Estos sistemas aprenden representaciones comprimidas de millones de imágenes — el llamado espacio latente — y aprenden a navegar ese espacio para generar imágenes nuevas a partir de descripciones textuales. El proceso no es determinista: hay ruido inyectado en cada paso de la generación, hay múltiples caminos posibles hacia cada imagen, hay regiones del espacio latente que son más estables que otras.</p>
+      <p>Las anatomías imposibles ocurren cuando el modelo navega hacia una región del espacio latente donde la correspondencia entre el concepto "mano humana" y la representación visual específica no está bien consolidada. El modelo sabe que una mano tiene dedos. No siempre sabe exactamente cuántos, ni en qué configuración geométrica precisa. El resultado es una mano que parece una mano desde cierta distancia conceptual pero que viola las reglas físicas del mundo desde cerca.</p>
+      <p>Las arquitecturas surrealistas ocurren cuando el modelo interpola entre referencias de distintos estilos o épocas arquitectónicas sin un referente unificador claro. Una columnata romana que emerge de un edificio art déco que se disuelve en una torre contemporánea: no es inconsistencia sino coherencia de un tipo diferente, una coherencia de texturas y proporciones que existe a nivel visual sin necesitar existir a nivel estructural.</p>
+    </div>
+
+    <div class="destacado fade-in" data-word="LATENTE">
+      <div class="destacado-label">Concepto técnico — El espacio latente como territorio de error</div>
+      <h3>Dónde viven las alucinaciones</h3>
+      <p>El espacio latente de un modelo de difusión es un espacio matemático de alta dimensionalidad donde cada punto representa una imagen posible. Las imágenes del mundo real que el modelo vio durante el entrenamiento corresponden a regiones densas de este espacio. Las alucinaciones ocurren en los bordes, en las zonas de baja densidad donde el modelo extrapola más que interpola.</p>
+      <p>Curiosamente, estas zonas de baja densidad son también las más ricas visualmente. Es donde el modelo produce imágenes que no se parecen a nada que haya visto antes — porque son combinaciones de patrones que nunca coexistieron en una misma imagen real. La lógica visual funciona. La lógica referencial no. Eso es exactamente la definición técnica de lo surrealista.</p>
+    </div>
+
+   
+
+    <!-- INSERTO IG: REFIK ANADOL -->
+    <div class="ig-insert fade-in">
+      <div class="ig-insert__stripe"></div>
+      <div class="ig-insert__body">
+        <div class="ig-insert__header">
+          <div class="ig-insert__icon"><i class="fa-brands fa-instagram"></i></div>
+          <div class="ig-insert__handle">
+            <a href="https://www.instagram.com/refikanadol/" target="_blank" rel="noopener">@refikanadol</a>
+            <span>Refik Anadol Studio · Los Ángeles / Estambul</span>
+          </div>
+          <span class="ig-insert__label">Referencia visual</span>
+        </div>
+        <p class="ig-insert__caption">
+          <strong>El espacio latente como instalación.</strong> Refik Anadol lleva años haciendo visible exactamente lo que el artículo describe: la arquitectura interior de los modelos de IA. Sus obras — <em>Unsupervised</em> en el MoMA, <em>Machine Hallucinations</em> en múltiples bienales — son visualizaciones en tiempo real de cómo un modelo navega su espacio latente. No son imágenes generadas: son el proceso de generación en sí, convertido en experiencia sensorial. Cuando Anadol habla de "alucinaciones de la máquina", no usa la palabra como metáfora. La usa como descripción técnica precisa.
+        </p>
+        <div class="ig-insert__post-ref">
+          Seguir en Instagram:
+          <a href="https://www.instagram.com/refikanadol/" target="_blank" rel="noopener">instagram.com/refikanadol</a>
+        </div>
+      </div>
+    </div>
+	  
+	  <!-- Instagram embed -->
+<div style="margin: 2rem 0; display:flex; flex-direction:column; align-items:center;">
+  <div style="font-family:'JetBrains Mono',monospace; font-size:0.58rem; color:var(--teal); letter-spacing:0.2em; text-transform:uppercase; margin-bottom:0.8rem; align-self:flex-start;">Muestra de obra reciente</div>
+  <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/CyQtuiTryoU/?img_index=1" data-instgrm-version="14" style="background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15);margin:0;max-width:540px;min-width:326px;padding:0;width:99.375%;width:-webkit-calc(100% - 2px);width:calc(100% - 2px);">
+  </blockquote>
+</div>
+<script async src="//www.instagram.com/embed.js"></script>
+
+    <div class="body-text fade-in"> que se han vuelto reconocibles para quienes trabajan con estas herramientas regularmente. Los objetos de función ambigua: mecanismos que parecen funcionales pero cuya mecánica es imposible, herramientas que combinan características de herramientas distintas en una sola pieza, vehículos que serían aerodinámicamente contradictorios. La textura sobre textura: superficies que el modelo llena con patrones de texturas distintas que coexisten sin perturbarse, como si la realidad física de los materiales no impusiera restricciones. Las geometrías recursivas involuntarias: patrones que se repiten a escalas cada vez más pequeñas en regiones de la imagen que no fueron diseñadas para contenerlos.</p>
+      <p>Ninguno de estos efectos está disponible con el mismo carácter en el arte glitch tradicional. Son específicamente alucinaciones de modelo de difusión. Su gramática visual es nueva.</p>
+    </div>
+
+    <div class="glossary fade-in">
+      <div class="glossary-label">Tipología — Categorías de alucinación en modelos generativos</div>
+      <div class="glossary-item">
+        <div class="glossary-term">Anatomía imposible</div>
+        <div class="glossary-def">Representación de cuerpos o estructuras que violan las reglas físicas o anatómicas del mundo real. Las manos con número incorrecto de dedos son el ejemplo canónico, pero incluye también fusiones de cuerpos, articulaciones inexistentes y proporciones corporales que el modelo produce coherentemente a nivel visual pero no a nivel físico.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Arquitectura surrealista</div>
+        <div class="glossary-def">Construcciones que combinan elementos de distintos estilos, épocas o culturas arquitectónicas sin lógica estructural. El modelo ha aprendido qué es "bello" en arquitectura desde muchas tradiciones y las combina sin que la gravedad o la ingeniería impongan restricciones.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Texto alucinado</div>
+        <div class="glossary-def">Caracteres que parecen texto legible pero no lo son: letras de alfabetos mezclados, caracteres que combinan rasgos de varios sistemas de escritura, palabras que casi se pueden leer. Los modelos más recientes han mejorado dramáticamente en generación de texto, lo que paradójicamente ha reducido la disponibilidad de este tipo de artefacto.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Objeto de función ambigua</div>
+        <div class="glossary-def">Artefactos mecánicos o herramientas cuya forma sugiere una función pero cuya mecánica es imposible o autocontradictoria. Se producen cuando el modelo interpola entre distintos tipos de objetos funcionales sin un referente específico claro.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Textura sobre textura</div>
+        <div class="glossary-def">Superficies donde el modelo superpone patrones de materiales distintos que coexisten visualmente sin que la física de los materiales interfiera. Resultan en superficies de riqueza visual extrema pero coherencia física nula.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider fade-in"><span>§ IV</span></div>
+
+  <!-- SECCIÓN IV -->
+  <section id="seccion-estilo">
+    <h2 class="section-title fade-in">IV. Cuando el Error se Vuelve Estilo</h2>
+    <h3 class="subsection fade-in">§ 04 — Artistas que buscan deliberadamente la imperfección</h3>
+
+    <div class="body-text fade-in">
+      <p>El momento en que un error pasa de accidente a recurso es siempre el mismo: alguien lo produce dos veces. La primera ocurrencia puede ser azar. La segunda es una elección. Y con esa elección se inicia un vocabulario.</p>
+      <p>En las comunidades de arte generativo de las plataformas más activas — los servidores de Discord dedicados a Midjourney y Stable Diffusion, los foros de Civitai, las cuentas de Instagram y Twitter que documentan el proceso creativo — existe ya un lenguaje compartido para hablar de las imperfecciones deseables. Artistas que comparten no solo el resultado final sino las instrucciones específicas para producir ciertos tipos de alucinación. Flujos de trabajo diseñados para empujar deliberadamente al modelo hacia sus zonas de inestabilidad.</p>
+    </div>
+
+    <div class="artistas-grid fade-in">
+      <div class="artista-card">
+        <div class="artista-handle">Perfil creativo</div>
+        <div class="artista-name">El Cazador de Bordes</div>
+        <div class="artista-desc">Trabaja con prompts deliberadamente contradictorios — combinaciones semánticas que el modelo no puede resolver con coherencia — para empujar la generación hacia las zonas de alta tensión del espacio latente donde ocurren las imperfecciones más ricas.</div>
+        <div class="artista-tag">Método: prompt engineering extremo</div>
+      </div>
+      <div class="artista-card">
+        <div class="artista-handle">Perfil creativo</div>
+        <div class="artista-name">La Curadora de Basura</div>
+        <div class="artista-desc">Genera cientos de imágenes con parámetros de baja coherencia y alta temperatura, seleccionando los accidentes más interesantes. Su proceso es explícitamente curatorial: no diseña las imágenes, diseña el sistema de selección.</div>
+        <div class="artista-tag">Método: generación masiva + curaduría</div>
+      </div>
+      <div class="artista-card">
+        <div class="artista-handle">Perfil creativo</div>
+        <div class="artista-name">El Arqueólogo de Modelos Viejos</div>
+        <div class="artista-desc">Trabaja exclusivamente con versiones antiguas de modelos — Stable Diffusion 1.4, los primeros DALL-E — cuyas limitaciones técnicas producen tipos específicos de alucinación que los modelos más recientes ya no generan con la misma frecuencia.</div>
+        <div class="artista-tag">Método: arqueología de herramientas</div>
+      </div>
+    </div>
+
+    
+    <!-- INSERTO IG: PHARMAPSYCHOTIC -->
+    <div class="ig-insert fade-in">
+      <div class="ig-insert__stripe"></div>
+      <div class="ig-insert__body">
+        <div class="ig-insert__header">
+          <div class="ig-insert__icon"><i class="fa-brands fa-instagram"></i></div>
+          <div class="ig-insert__handle">
+            <a href="https://www.instagram.com/pharmapsychotic/" target="_blank" rel="noopener">@pharmapsychotic</a>
+            <span>Sarah Faber · Arte generativo experimental</span>
+          </div>
+          <span class="ig-insert__label">Referencia visual</span>
+        </div>
+        <p class="ig-insert__caption">
+          <strong>Prompt engineering como exploración de bordes.</strong> Pharmapsychotic es uno de los perfiles más relevantes para entender el trabajo en las zonas de inestabilidad del modelo: sus publicaciones documentan no solo el resultado final sino el proceso — los parámetros exactos, los pesos de los prompts, las versiones de modelo usadas. Es trabajo de laboratorio publicado como arte. Sus imágenes viven en ese territorio preciso donde el modelo produce algo coherente visualmente pero imposible referencialmente: el territorio que este artículo intenta mapear.
+        </p>
+        <div class="ig-insert__post-ref">
+          Seguir en Instagram:
+          <a href="https://www.instagram.com/pharmapsychotic/" target="_blank" rel="noopener">instagram.com/pharmapsychotic</a>
+        </div>
+      </div>
+    </div>
+	   <!-- Instagram embed -->
+<div style="margin: 2rem 0; display:flex; flex-direction:column; align-items:center;">
+  <div style="font-family:'JetBrains Mono',monospace; font-size:0.58rem; color:var(--teal); letter-spacing:0.2em; text-transform:uppercase; margin-bottom:0.8rem; align-self:flex-start;">Muestra de obra reciente</div>
+  <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/C903tncM9k-/?img_index=1" data-instgrm-version="14" style="background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15);margin:0;max-width:540px;min-width:326px;padding:0;width:99.375%;width:-webkit-calc(100% - 2px);width:calc(100% - 2px);">
+  </blockquote>
+</div>
+<script async src="//www.instagram.com/embed.js"></script>
+
+    <div class="body-text fade-in">
+      <p>Lo que une a estos distintos enfoques es una inversión de la relación tradicional entre artista y herramienta. En el arte generativo convencional, el artista intenta maximizar el control: el prompt más preciso, los parámetros más estables, el modelo más avanzado. En el arte del error deliberado, el artista intenta maximizar la impredecibilidad productiva: condiciones que generen resultados inesperados dentro de un rango de interés estético.</p>
+      <p>Es una postura que tiene una genealogía larga. Los surrealistas con sus cadáveres exquisitos y juegos de azar, Fluxus con sus instrucciones que cedían el control al ejecutante y al contexto, el arte generativo de sistemas caóticos en los años setenta y ochenta: la idea de que el artista diseña condiciones de posibilidad más que objetos determinados no es nueva. Lo que sí es nuevo es la escala y la velocidad a la que estos sistemas producen posibilidades.</p>
+    </div>
+
+    <div class="pullquote fade-in">
+      <p>El atractivo de lo extraño no es el desorden. Es el orden diferente. Toda alucinación tiene su propia lógica — solo que no es la nuestra.</p>
+      <cite>— SIGNAL · La Estética del Error</cite>
+    </div>
+
+    <div class="body-text fade-in">
+      <p>Hay algo más en juego, sin embargo. Los errores de la IA no son solo interesantes visualmente: son filosóficamente reveladores. Cuando un modelo produce una mano con seis dedos, no está fallando al representar una mano. Está revelando cómo construye el concepto "mano" a partir de miles de instancias vistas durante el entrenamiento — un promedio estadístico que sabe que las manos tienen dedos pero que no tiene garantizado el número exacto en cada región de su espacio latente.</p>
+      <p>Eso convierte cada alucinación en un pequeño tratado sobre el aprendizaje automático. Una imagen que dice: esto es lo que el modelo cree que debería verse esto, cuando no está completamente seguro. La incertidumbre hecha visible. Y la incertidumbre, en arte, siempre ha sido un territorio más fértil que la certeza.</p>
+    </div>
+
+    <div class="fact-box teal fade-in">
+      <div class="fact-box-label">La evolución del error — Lo que se pierde con la mejora técnica</div>
+      <p>Un fenómeno paradójico acompaña el progreso técnico de los modelos generativos: a medida que mejoran, ciertos tipos de alucinación desaparecen. Las manos de seis dedos se volvieron raras a partir de 2023. El texto ilegible disminuyó drásticamente con los modelos más recientes. Las arquitecturas más extremadamente imposibles son menos frecuentes en los modelos actuales.</p>
+      <p>Esto ha creado un mercado secundario inesperado: artistas que trabajan deliberadamente con modelos antiguos para acceder a tipos de error que los modelos nuevos ya no producen con la misma facilidad. La versión 1.4 de Stable Diffusion, publicada en 2022, tiene hoy usuarios activos precisamente por sus imperfecciones características. Es el equivalente digital de preferir fotografiar con película expirada porque la degradación química produce resultados que el film nuevo no puede replicar.</p>
+      <p>El error tiene fecha de caducidad técnica pero no estética. Una alucinación documentada en 2022 no desaparece cuando el modelo que la producía es reemplazado. Vive en la imagen. Y la imagen existe mientras haya alguien que la mire.</p>
+    </div>
+  </section>
+
+  <div class="divider fade-in"><span>§ V</span></div>
+
+  <!-- CONCLUSIÓN -->
+  <section id="cierre" class="conclusion">
+    <h3 class="subsection">§ Cierre — La posición del editor</h3>
+    <h2 class="section-title">El accidente más productivo de la historia del arte</h2>
+
+    <div class="opinion-block fade-in">
+      <div class="opinion-label">Punto de vista editorial</div>
+
+      <p>Hay una frase que se repite en los foros de arte generativo, con distintas variaciones, desde hace tres años: "la IA no sólo produce imágenes; produce accidentes creativos." La dicen con admiración. La dicen a veces con cierta incomodidad, como si reconocer el valor del accidente implicara admitir que el control no es tan importante como creíamos.</p>
+
+      <p>Tiene razón en ambas cosas. La IA produce accidentes creativos de una manera y a una escala que ninguna herramienta anterior hacía. Y reconocer el valor de esos accidentes requiere cuestionar la idea de que el arte es fundamentalmente un acto de control — de dominio de la técnica al servicio de la intención.</p>
+
+      <p>Lo que la historia del glitch art, del arte de ruido, del arte de error nos enseña es que esa idea del control total siempre fue parcialmente una ilusión. El grano en la fotografía no era solo ruido: era la huella de la luz sobre la emulsión, parte del proceso físico que hacía posible la imagen. El artista que decidía trabajar con grano no abandonaba el control: añadía una capa de proceso que él no podía dirigir completamente pero sí podía contextualizar, seleccionar, presentar.</p>
+
+      <p>El artista que trabaja con alucinaciones de IA hace lo mismo. No controla qué produce el modelo. Controla qué pregunta le hace, con qué parámetros, en qué momento detiene el proceso, qué selecciona de lo que genera. No es menos arte por serlo. Es <em>un tipo diferente de arte</em>, con sus propias formas de intención y sus propias formas de azar.</p>
+
+      <p>Lo que más me interesa de este momento no es técnico ni estético: es epistemológico. Cada alucinación de un modelo generativo es una pequeña ventana a la forma en que ese sistema representa el mundo. Es una imagen que dice: así es como la IA "ve" algo cuando no está completamente segura. Eso tiene valor documental además de valor artístico. Estamos produciendo un registro visual de cómo las máquinas aprenden a imaginar — y ese registro es, en sí mismo, uno de los documentos culturales más insólitos de nuestra era.</p>
+
+      <p>Dentro de cincuenta años, alguien mirará estas imágenes y entenderá algo sobre lo que éramos capaces de construir, y sobre lo que todavía no sabíamos construir. Los errores serán el archivo más honesto.</p>
+
+      <div class="opinion-author">
+        Gerardo Ventura · Editor · SIGNAL · 2026
+        <a href="https://instagram.com/gfvc1978" target="_blank" class="instagram" rel="noopener" style="margin-left: 0.5rem;"><i class="fa-brands fa-instagram"></i> @gfvc1978</a>
+      </div>
+    </div>
+
+    <div class="divider"><span>✦ ✦ ✦</span></div>
+
+    <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;text-align:center;padding: 1rem 0 2rem;">
+      SIGNAL · Investigación 04 · San Salvador · 2026 · Arte generativo e inteligencia artificial
+    </div>
+  </section>
+
+</div>
+</article>
+
+<!-- ══ FOOTER ══ -->
+<footer class="mag-footer">
+  <div class="logo">SIGNAL<span style="color:var(--accent)">.</span></div>
+  <div>Arte generativo e inteligencia artificial</div>
+  <div class="mag-footer-social">
+    <a href="https://www.instagram.com/signal.ai.mag/" target="_blank" rel="noopener">Instagram</a>
+    <span style="color:#3a3630">·</span>
+    <a href="https://substack.com/@signalmag" target="_blank" rel="noopener">Substack</a>
+    <span style="color:#3a3630">·</span>
+    <a href="https://signalzine.rf.gd/" target="_blank" rel="noopener">Web</a>
+    <span style="color:#3a3630">·</span>
+    <a href="mailto:revista.signal@gmail.com">Email</a>
+  </div>
+</footer>
+
+<script>
+  // Fade-in con IntersectionObserver
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => {
+          e.target.classList.add('visible');
+        }, i * 60);
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08 });
+
+  document.querySelectorAll('.fade-in').forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>

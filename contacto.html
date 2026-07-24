@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contacto — SIGNAL</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=JetBrains+Mono:wght@300;400;500&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:        #1a1814;
+    --bg:         #1a1814;
+    --bg2:        #222018;
+    --paper:      #f5f0e8;
+    --accent:     #c4873a;
+    --accent2:    #e8c88a;
+    --muted:      #7a7268;
+    --rule:       #2a2620;
+    --white:      #f0ece4;
+  }
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--ink);
+    color: var(--white);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.4;
+  }
+
+  header {
+    border-bottom: 1px solid var(--rule);
+    padding: 0 3rem;
+    position: sticky;
+    top: 0;
+    background: rgba(26,24,20,0.97);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 48px;
+  }
+  .header-tags {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .header-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    color: var(--white);
+    text-decoration: none;
+  }
+  .header-logo span { color: var(--accent); }
+  .header-site {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+
+  .page-hero {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 6rem 3rem 4rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .page-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+  .page-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: clamp(3rem, 8vw, 6rem);
+    line-height: 0.95;
+    color: var(--white);
+    letter-spacing: -0.02em;
+  }
+  .page-title span { color: var(--accent); }
+
+  .contact-wrap {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 5rem 3rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: start;
+  }
+
+  /* FORM */
+  .form-group {
+    margin-bottom: 2rem;
+  }
+  .form-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 0.6rem;
+  }
+  .form-input,
+  .form-select,
+  .form-textarea {
+    width: 100%;
+    background: var(--bg2);
+    border: 1px solid var(--rule);
+    color: var(--white);
+    font-family: 'Crimson Pro', serif;
+    font-size: 1rem;
+    padding: 0.9rem 1.2rem;
+    outline: none;
+    transition: border-color 0.2s;
+    appearance: none;
+  }
+  .form-input:focus,
+  .form-select:focus,
+  .form-textarea:focus {
+    border-color: var(--accent);
+  }
+  .form-input::placeholder,
+  .form-textarea::placeholder { color: var(--muted); }
+  .form-textarea {
+    resize: vertical;
+    min-height: 160px;
+    line-height: 1.6;
+  }
+  .form-select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a7268' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+  }
+  .form-select option { background: var(--bg2); color: var(--white); }
+
+  .btn-submit {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    background: var(--accent);
+    color: #000;
+    border: none;
+    padding: 1rem 2.5rem;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-submit:hover {
+    background: var(--accent2);
+    transform: translateY(-1px);
+  }
+
+  /* RIGHT COLUMN */
+  .contact-channels { }
+
+  .channel-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .channel-item {
+    border-bottom: 1px solid var(--rule);
+    padding: 1.5rem 0;
+    display: flex;
+    gap: 1.5rem;
+    align-items: start;
+  }
+  .channel-icon {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    text-transform: uppercase;
+    min-width: 5rem;
+    padding-top: 0.25rem;
+  }
+  .channel-info {}
+  .channel-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 0.3rem;
+  }
+  .channel-desc {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+  }
+  .channel-link {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .channel-link:hover { color: var(--accent2); }
+
+  .response-note {
+    margin-top: 3rem;
+    padding: 1.5rem;
+    background: var(--bg2);
+    border-left: 2px solid var(--accent);
+  }
+  .response-note p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .response-note p strong { color: var(--accent2); font-weight: 400; }
+
+  /* SUCCESS MSG */
+  .form-success {
+    display: none;
+    padding: 1.5rem;
+    background: rgba(74,138,124,0.1);
+    border: 1px solid #4a8a7c;
+    margin-top: 1rem;
+  }
+  .form-success p {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: #4a8a7c;
+    text-transform: uppercase;
+  }
+
+  /* FOOTER */
+  .site-footer { background: var(--ink); padding: 3rem; border-top: 1px solid #2a2418; }
+  .footer-inner { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem; }
+  .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 900; color: var(--paper); letter-spacing: -0.02em; }
+  .footer-logo span { color: var(--accent); }
+  .footer-links { display: flex; gap: 2rem; flex-wrap: wrap; }
+  .footer-links a { font-family: 'JetBrains Mono', monospace; font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase; color: #4a4438; text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--accent); }
+  .footer-copy { font-family: 'JetBrains Mono', monospace; font-size: 0.5rem; color: #2a2418; letter-spacing: 0.1em; text-transform: uppercase; }
+
+  @media (max-width: 768px) {
+    header { padding: 0 1.5rem; }
+    .header-tags, .header-site { display: none; }
+    .page-hero { padding: 4rem 1.5rem 3rem; }
+    .contact-wrap { grid-template-columns: 1fr; gap: 3rem; padding: 3rem 1.5rem; }
+    .site-footer { padding: 2rem 1.5rem; }
+    .footer-inner { flex-direction: column; gap: 1rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-tags">IA GENERATIVA · ARTE DIGITAL · CULTURA VISUAL · FUTURO</div>
+  <a href="index.html" class="header-logo">S<span>I</span>GN<span>A</span>L<span>.</span></a>
+  <div class="header-site">SIGNALZINE.RF.GD</div>
+</header>
+
+<div class="page-hero">
+  <div class="page-label">ESCRÍBENOS · COLABORA · CONECTA</div>
+  <h1 class="page-title">CON<span>TACTO</span></h1>
+</div>
+
+<div class="contact-wrap">
+
+  <!-- FORM -->
+  <div>
+    <div class="form-group">
+      <label class="form-label" for="nombre">Nombre</label>
+      <input class="form-input" type="text" id="nombre" placeholder="Tu nombre completo">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="email">Correo electrónico</label>
+      <input class="form-input" type="email" id="email" placeholder="tu@correo.com">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="asunto">Motivo</label>
+      <select class="form-select" id="asunto">
+        <option value="" disabled selected>Selecciona un motivo</option>
+        <option value="colaboracion">Propuesta de colaboración</option>
+        <option value="artista">Soy artista y quiero aparecer en SIGNAL</option>
+        <option value="prensa">Prensa / medios</option>
+        <option value="feedback">Comentario sobre una edición</option>
+        <option value="otro">Otro</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="mensaje">Mensaje</label>
+      <textarea class="form-textarea" id="mensaje" placeholder="Cuéntanos en qué podemos ayudarte…"></textarea>
+    </div>
+    <button class="btn-submit" onclick="handleSubmit()">ENVIAR MENSAJE →</button>
+    <div class="form-success" id="successMsg">
+      <p>✓ Mensaje recibido — te responderemos pronto</p>
+    </div>
+  </div>
+
+  <!-- CHANNELS -->
+  <div class="contact-channels">
+    <div class="channel-heading">Otras formas de llegar</div>
+
+    <div class="channel-item">
+      <div class="channel-icon">Email</div>
+      <div class="channel-info">
+        <div class="channel-title">Correo directo</div>
+        <div class="channel-desc">Para consultas editoriales, propuestas de colaboración o cualquier otro tema.</div>
+        <a href="mailto:revista.signal@gmail.com" class="channel-link">revista.signal@gmail.com →</a>
+      </div>
+    </div>
+
+    <div class="channel-item">
+      <div class="channel-icon">Instagram</div>
+      <div class="channel-info">
+        <div class="channel-title">@signal.ai.mag</div>
+        <div class="channel-desc">Seguimos la conversación también en Instagram. DMs abiertos.</div>
+        <a href="https://www.instagram.com/signal.ai.mag/" target="_blank" rel="noopener" class="channel-link">Ver perfil →</a>
+      </div>
+    </div>
+
+    <div class="channel-item">
+      <div class="channel-icon">Substack</div>
+      <div class="channel-info">
+        <div class="channel-title">@signalmag</div>
+        <div class="channel-desc">Suscríbete para recibir cada nueva edición directamente en tu bandeja.</div>
+        <a href="https://substack.com/@signalmag" target="_blank" rel="noopener" class="channel-link">Suscribirse →</a>
+      </div>
+    </div>
+
+    <div class="response-note">
+      <p>Respondemos todos los mensajes. El tiempo de respuesta habitual es de <strong>2 a 5 días hábiles</strong>. Para colaboraciones artísticas, incluye ejemplos de tu trabajo.</p>
+    </div>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-logo">S<span>I</span>GN<span>A</span>L</div>
+    <div class="footer-links">
+      <a href="https://www.instagram.com/signal.ai.mag/" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://substack.com/@signalmag" target="_blank" rel="noopener">Substack</a>
+      <a href="mailto:revista.signal@gmail.com">Email</a>
+      <a href="acerca-de.html">Acerca de</a>
+      <a href="contacto.html">Contacto</a>
+      <a href="privacidad.html">Privacidad</a>
+      <a href="terminos.html">Términos</a>
+    </div>
+    <div class="footer-copy">Signal · Arte generativo · Acceso libre</div>
+  </div>
+</footer>
+
+<script>
+function handleSubmit() {
+  const nombre = document.getElementById('nombre').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const mensaje = document.getElementById('mensaje').value.trim();
+  if (!nombre || !email || !mensaje) {
+    alert('Por favor completa los campos obligatorios.');
+    return;
+  }
+  document.getElementById('successMsg').style.display = 'block';
+  document.getElementById('nombre').value = '';
+  document.getElementById('email').value = '';
+  document.getElementById('mensaje').value = '';
+}
+</script>
+
+</body>
+</html>

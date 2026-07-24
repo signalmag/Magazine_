@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGNAL — ¿Quién Firma la Obra?</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=JetBrains+Mono:wght@300;400;500&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+  :root {
+    --ink: #1a1814;
+    --paper: #f5f0e8;
+    --paper-dark: #ede7d9;
+    --accent: #c4873a;
+    --accent-light: #e8c88a;
+    --teal: #4a8a7c;
+    --muted: #7a7268;
+    --rule: #c8bfb0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.7;
+    padding-top: 44px;
+  }
+
+  /* ══ NAV ══ */
+  .signal-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    background: var(--ink);
+    border-bottom: 2px solid var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    height: 44px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .signal-nav__home {
+    display: flex; align-items: center; gap: 0.8rem;
+    text-decoration: none; color: var(--paper);
+  }
+  .signal-nav__logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.9rem; font-weight: 900;
+    letter-spacing: 0.05em; text-transform: none;
+  }
+  .signal-nav__ed { color: var(--accent); font-size: 0.55rem; border-left: 1px solid #3a3630; padding-left: 0.8rem; }
+  .signal-nav__home:hover { opacity: 0.8; }
+  .signal-nav__trail { color: #5a5450; font-size: 0.55rem; }
+  .signal-nav__current { color: var(--accent); }
+  .signal-nav__arrows {
+    display: flex; align-items: center; gap: 0.6rem; color: #4a4438;
+  }
+  .signal-nav__arrows a {
+    color: #8a8278; text-decoration: none; transition: color 0.2s;
+  }
+  .signal-nav__arrows a:hover { color: var(--accent); }
+  .signal-nav__sep { opacity: 0.3; }
+  @media (max-width: 680px) {
+    .signal-nav__trail { display: none; }
+    .signal-nav { padding: 0 1rem; }
+  }
+
+  /* ══ COVER ══ */
+  .cover {
+    min-height: calc(100vh - 40px);
+    background: var(--ink);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover-noise {
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; opacity: 0.6;
+  }
+  .cover-lines {
+    position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+  }
+  .cover-lines::before {
+    content: '';
+    position: absolute;
+    top: -20%; right: -5%;
+    width: 1px; height: 140%;
+    background: linear-gradient(to bottom, transparent 0%, #c4873a22 30%, #c4873a44 60%, transparent 100%);
+    transform: rotate(-12deg);
+  }
+  .cover-lines::after {
+    content: '';
+    position: absolute;
+    top: -20%; right: 8%;
+    width: 1px; height: 140%;
+    background: linear-gradient(to bottom, transparent 0%, #c4873a11 40%, #c4873a22 70%, transparent 100%);
+    transform: rotate(-12deg);
+  }
+
+  /* Decorative signature mark */
+  .cover-sigmark {
+    position: absolute;
+    bottom: 8rem; right: 3rem;
+    pointer-events: none; z-index: 0;
+    opacity: 0.04;
+  }
+  .cover-sigmark svg { width: 280px; height: 280px; }
+
+  .cover-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 2.5rem 3rem 1.2rem;
+    border-bottom: 1px solid #3a3630;
+    position: relative; z-index: 1;
+  }
+  .masthead {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; color: #6a6258;
+    letter-spacing: 0.15em; text-transform: uppercase; line-height: 1.8;
+  }
+  .cover-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 5rem; font-weight: 900; color: var(--paper);
+    letter-spacing: -0.02em; line-height: 1;
+    text-align: center; padding: 3rem 3rem 0;
+    position: relative; z-index: 1;
+  }
+  .cover-logo span { color: var(--accent); }
+  .cover-tagline {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; color: #5a5450;
+    letter-spacing: 0.3em; text-transform: uppercase;
+    text-align: center; margin-top: 0.5rem;
+  }
+  .cover-main {
+    display: flex; flex-direction: column;
+    justify-content: flex-end;
+    padding: 2rem 3rem 3rem; position: relative; z-index: 1;
+  }
+  .cover-issue {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; color: var(--accent);
+    letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 1rem;
+  }
+  .cover-headline {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 700;
+    color: var(--paper); line-height: 1.15; max-width: 700px;
+  }
+  .cover-headline em { color: var(--accent-light); font-style: italic; }
+  .cover-subhead {
+    margin-top: 1.2rem;
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.1rem; color: #8a8278;
+    max-width: 520px; line-height: 1.6;
+  }
+  .cover-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.2rem 3rem; border-top: 1px solid #2a2620;
+    position: relative; z-index: 1;
+  }
+  .cover-index { display: flex; gap: 2.5rem; }
+  .cover-index-item {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem; color: #5a5450;
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .cover-index-item strong {
+    display: block; color: #9a9288; font-size: 0.65rem; margin-bottom: 0.2rem;
+  }
+
+  /* ══ SOCIAL BAR ══ */
+  .social-bar {
+    display: flex; align-items: center; gap: 1rem;
+    margin-top: 1.5rem; padding-top: 1.5rem;
+    border-top: 1px solid #2a2620; flex-wrap: wrap;
+  }
+  .social-link {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase;
+    text-decoration: none; padding: 0.4rem 0.8rem;
+    border: 1px solid #3a3630; color: #9a9288; transition: all 0.2s ease;
+  }
+  .social-link:hover { border-color: var(--accent); color: var(--accent); }
+  .instagram {
+    display: inline-flex; align-items: center; gap: 2px;
+    padding: 1px 4px; border-radius: 20px;
+    text-decoration: none; color: #fff; font-weight: 600;
+    background: linear-gradient(45deg,#f09433,#e1306c,#833ab4);
+  }
+  .instagram:hover { opacity: .9; }
+
+  /* ══ LAYOUT ══ */
+  .page {
+    max-width: 900px; margin: 0 auto; padding: 5rem 3rem;
+  }
+
+  /* ══ INDEX PAGE ══ */
+  .index-page {
+    background: var(--paper-dark);
+    border-top: 4px solid var(--ink);
+  }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; font-weight: 500; color: var(--accent);
+    letter-spacing: 0.3em; text-transform: uppercase;
+    margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem;
+  }
+  .section-label::after {
+    content: ''; flex: 1; height: 1px; background: var(--rule);
+  }
+  .index-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 2px; background: var(--rule); border: 1px solid var(--rule);
+  }
+  .index-item {
+    background: var(--paper-dark); padding: 2rem 2.5rem;
+    text-decoration: none; color: inherit; display: block;
+    transition: background 0.2s ease, transform 0.15s ease;
+  }
+  .index-item:hover { background: #e0d8c8; transform: translateY(-2px); }
+  .index-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem; font-weight: 900; color: var(--rule);
+    line-height: 1; margin-bottom: 0.5rem;
+  }
+  .index-item:hover .index-num { color: var(--accent); }
+  .index-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem; font-weight: 700; line-height: 1.3; margin-bottom: 0.5rem;
+  }
+  .index-desc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; color: var(--muted);
+    letter-spacing: 0.05em; line-height: 1.6;
+  }
+
+  /* ══ ARTICLE ══ */
+  .article-header {
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 3rem; margin-bottom: 3rem;
+  }
+  .article-category {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; color: var(--teal);
+    letter-spacing: 0.3em; text-transform: uppercase; margin-bottom: 1.5rem;
+  }
+  h1.article-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 900;
+    line-height: 1.1; margin-bottom: 1rem;
+  }
+  h1.article-title em { font-style: italic; color: var(--accent); }
+  .article-deck {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.25rem; font-weight: 300; font-style: italic;
+    color: var(--muted); line-height: 1.6; max-width: 600px;
+    border-left: 3px solid var(--accent); padding-left: 1.5rem; margin-top: 1.5rem;
+  }
+  .article-meta { display: flex; gap: 2rem; margin-top: 2rem; flex-wrap: wrap; }
+  .meta-item {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem; color: var(--muted);
+    letter-spacing: 0.05em; text-transform: uppercase;
+  }
+  .meta-item strong {
+    display: block; color: var(--ink); font-size: 0.6rem; margin-bottom: 0.2rem;
+  }
+
+  /* ══ DROPCAP ══ */
+  .dropcap::first-letter {
+    font-family: 'Playfair Display', serif;
+    font-size: 4.2rem; font-weight: 900;
+    color: var(--accent); float: left;
+    line-height: 0.85; margin-right: 0.12em;
+    margin-top: 0.08em;
+  }
+
+  /* ══ SECTIONS ══ */
+  h2.section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.5rem, 3vw, 2.2rem); font-weight: 700;
+    line-height: 1.2; margin-bottom: 1.5rem;
+  }
+  h3.subsection {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem; color: var(--teal);
+    letter-spacing: 0.2em; text-transform: uppercase;
+    margin-bottom: 2rem;
+  }
+  .body-text p { margin-bottom: 1.5em; }
+  .body-text p:last-child { margin-bottom: 0; }
+
+  /* ══ DIVIDER ══ */
+  .divider {
+    display: flex; align-items: center; gap: 1.5rem;
+    margin: 4rem 0; color: var(--rule);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; letter-spacing: 0.2em;
+  }
+  .divider::before, .divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--rule);
+  }
+  .divider span { white-space: nowrap; color: var(--accent); }
+
+  /* ══ PULLQUOTE ══ */
+  .pullquote {
+    background: var(--ink); color: var(--paper);
+    padding: 3rem 3.5rem; margin: 3rem 0;
+    position: relative;
+  }
+  .pullquote::before {
+    content: '\201C';
+    font-family: 'Playfair Display', serif;
+    font-size: 6rem; color: var(--accent); opacity: 0.4;
+    position: absolute; top: -1rem; left: 2rem;
+    line-height: 1;
+  }
+  .pullquote p {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+    font-style: italic; line-height: 1.4;
+    position: relative; z-index: 1;
+  }
+  .pullquote cite {
+    display: block; margin-top: 1.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; color: #8a8278;
+    letter-spacing: 0.1em; font-style: normal;
+    position: relative; z-index: 1;
+  }
+
+  /* ══ FACT BOX ══ */
+  .fact-box {
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--accent);
+    padding: 2rem 2.5rem;
+    margin: 3rem 0;
+    background: var(--paper-dark);
+  }
+  .fact-box-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem; color: var(--accent);
+    letter-spacing: 0.2em; text-transform: uppercase;
+    margin-bottom: 1.2rem;
+  }
+  .fact-box p { margin-bottom: 1em; font-size: 0.95rem; }
+  .fact-box p:last-child { margin-bottom: 0; }
+
+  /* ══ TABLE ══ */
+  .signal-table {
+    width: 100%; border-collapse: collapse;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem; margin: 1.5rem 0;
+  }
+  .signal-table th {
+    text-align: left; padding: 0.6rem 1rem;
+    border-bottom: 2px solid var(--ink);
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink); font-weight: 500;
+    font-size: 0.58rem;
+  }
+  .signal-table td {
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid var(--rule);
+    color: var(--muted); vertical-align: top;
+    line-height: 1.5;
+  }
+  .signal-table td:first-child {
+    color: var(--ink); font-weight: 500;
+  }
+  .signal-table tr:last-child td { border-bottom: none; }
+  .signal-table tr:hover td { background: rgba(196,135,58,0.04); }
+
+  /* ══ DESTACADO ══ */
+  .destacado {
+    position: relative;
+    background: var(--paper-dark);
+    border-top: 2px solid var(--ink);
+    border-bottom: 2px solid var(--ink);
+    padding: 3rem 3.5rem;
+    margin: 3rem 0;
+    overflow: hidden;
+  }
+  .destacado::before {
+    content: attr(data-word);
+    position: absolute; right: -1rem; top: 50%;
+    transform: translateY(-50%) rotate(90deg);
+    font-family: 'Playfair Display', serif;
+    font-size: 8rem; font-weight: 900;
+    color: var(--rule); opacity: 0.35;
+    letter-spacing: -0.05em;
+    pointer-events: none; user-select: none;
+  }
+  .destacado-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem; color: var(--teal);
+    letter-spacing: 0.2em; text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .destacado h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem; font-weight: 700;
+    margin-bottom: 1.5rem; line-height: 1.3;
+  }
+  .destacado p { margin-bottom: 1.2em; font-size: 0.95rem; }
+  .destacado p:last-child { margin-bottom: 0; }
+
+  /* ══ TIMELINE ══ */
+  .timeline {
+    border-left: 2px solid var(--rule);
+    margin: 2rem 0 2rem 1rem;
+    padding-left: 2.5rem;
+  }
+  .timeline-item {
+    position: relative; margin-bottom: 2.5rem;
+  }
+  .timeline-item::before {
+    content: '';
+    position: absolute; left: -3.1rem; top: 0.45rem;
+    width: 10px; height: 10px;
+    background: var(--paper); border: 2px solid var(--accent);
+    border-radius: 50%;
+  }
+  .timeline-year {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; color: var(--accent);
+    letter-spacing: 0.15em; margin-bottom: 0.3rem;
+  }
+  .timeline-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem; font-weight: 700;
+    margin-bottom: 0.5rem; line-height: 1.3;
+  }
+  .timeline-desc {
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.92rem; color: var(--muted); line-height: 1.6;
+  }
+
+  /* ══ CONCLUSION / OPINION ══ */
+  .conclusion { border-top: 4px solid var(--ink); padding-top: 4rem; }
+  .opinion-block {
+    background: var(--paper-dark);
+    border: 1px solid var(--rule);
+    padding: 3rem 3.5rem; margin: 2rem 0;
+    position: relative;
+  }
+  .opinion-block::before {
+    content: 'EDITORIAL';
+    position: absolute; top: -0.6rem; left: 2rem;
+    background: var(--accent); color: var(--ink);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.5rem; letter-spacing: 0.25em;
+    padding: 0.2rem 0.6rem; text-transform: uppercase; font-weight: 500;
+  }
+  .opinion-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem; color: var(--teal);
+    letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 1.5rem;
+  }
+  .opinion-block p { margin-bottom: 1.4em; }
+  .opinion-block p:last-child { margin-bottom: 0; }
+  .opinion-author {
+    margin-top: 2rem; padding-top: 1.5rem;
+    border-top: 1px solid var(--rule);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem; color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  /* ══ TEAL FACT BOX (técnico) ══ */
+  .fact-box-teal {
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--teal);
+    padding: 2rem 2.5rem;
+    margin: 3rem 0;
+    background: var(--paper-dark);
+  }
+  .fact-box-teal .fact-box-label { color: var(--teal); }
+
+  /* ══ CASE STUDY BOX ══ */
+  .case-study {
+    border: 1px solid var(--rule);
+    padding: 2rem 2.5rem; margin: 2rem 0;
+    background: var(--paper);
+    position: relative;
+  }
+  .case-study__num {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem; font-weight: 900; color: var(--rule);
+    line-height: 1; position: absolute; top: 1rem; right: 1.5rem;
+    transition: color 0.2s;
+  }
+  .case-study:hover .case-study__num { color: var(--accent); }
+  .case-study__label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem; color: var(--accent);
+    letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.5rem;
+  }
+  .case-study__title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem; font-weight: 700; margin-bottom: 0.8rem; line-height: 1.3;
+  }
+  .case-study__body {
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.9rem; color: var(--muted); line-height: 1.6;
+  }
+  .case-studies-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 1.5rem; margin: 2.5rem 0;
+  }
+  @media (max-width: 600px) {
+    .case-studies-grid { grid-template-columns: 1fr; }
+    .index-grid { grid-template-columns: 1fr; }
+    .page { padding: 3rem 1.5rem; }
+    .cover-header, .cover-main, .cover-footer { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .pullquote { padding: 2rem 1.5rem; }
+    .destacado { padding: 2rem 1.5rem; }
+    .opinion-block { padding: 2rem 1.5rem; }
+  }
+
+  /* ══ EPIGRAPH ══ */
+  .epigraph {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic; font-size: 1.15rem;
+    color: var(--muted); line-height: 1.7;
+    padding: 2rem 0 2rem 2.5rem;
+    border-left: 2px solid var(--rule);
+    margin-bottom: 3rem;
+  }
+  .epigraph cite {
+    display: block; margin-top: 0.8rem;
+    font-style: normal;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem; letter-spacing: 0.1em;
+    color: var(--accent);
+  }
+
+  /* ══ FOOTER ══ */
+  .mag-footer {
+    background: var(--ink); color: #6a6258;
+    padding: 3rem; text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem; letter-spacing: 0.12em;
+    text-transform: uppercase; line-height: 2.2;
+    border-top: 4px solid var(--accent);
+  }
+  .mag-footer .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; font-weight: 900; letter-spacing: 0.05em;
+    color: var(--paper); text-transform: none; margin-bottom: 1rem;
+  }
+  .mag-footer-social { display: flex; justify-content: center; gap: 1rem; margin-top: 1rem; flex-wrap: wrap; }
+  .mag-footer-social a { color: #8a8278; text-decoration: none; transition: color 0.2s; }
+  .mag-footer-social a:hover { color: var(--accent); }
+
+  /* ══ FADE IN ══ */
+  .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ══ NAV ══ -->
+<nav class="signal-nav">
+  <a class="signal-nav__home" href="../index.html">
+        <span class="signal-nav__logo">S<span style="color:var(--accent)">I</span>GN<span style="color:var(--accent)">A</span>L<span style="color:var(--accent)">.</span></span>
+    <span class="signal-nav__ed">Debate</span>
+  </a>
+  <div class="signal-nav__trail">
+    <span class="signal-nav__current">¿Quién Firma la Obra?</span>
+  </div>
+  <div class="signal-nav__arrows">
+    <a href="../index.html" style="border-color:#4a8a7c;color:#4a8a7c;" onmouseover="this.style.background='#4a8a7c';this.style.color='#fff'" onmouseout="this.style.background='#2e2924';this.style.color='#4a8a7c'">Índice</a>
+    <span class="signal-nav__sep">·</span>
+    <a href="anatomia-imagen-generativa.html">← Anterior</a>
+    <span class="signal-nav__sep">·</span>
+    <a href="editorial.html">Siguiente →</a>
+  </div>
+</nav>
+
+<!-- ══ COVER ══ -->
+<div class="cover">
+  <div class="cover-noise"></div>
+  <div class="cover-lines"></div>
+
+  <!-- Decorative oversized question mark -->
+  <div class="cover-sigmark">
+    <svg viewBox="0 0 280 280" xmlns="http://www.w3.org/2000/svg">
+      <text x="60" y="230" font-family="Georgia, serif" font-size="260" font-weight="900" fill="white">?</text>
+    </svg>
+  </div>
+
+  <div class="cover-header">
+    <div class="masthead">
+      Signal · Arte Generativo · Inteligencia Artificial<br>
+      Debate · 2026
+    </div>
+    <div class="masthead" style="text-align:right;">
+      Autoría · Propiedad · Creatividad<br>
+      Lectura: 15 min
+    </div>
+  </div>
+
+  <div style="text-align:center; position:relative; z-index:1; padding: 2.5rem 3rem 0;">
+    <div class="cover-logo">SIGNAL<span>.</span></div>
+    <div class="cover-tagline">Arte generativo &amp; cultura visual</div>
+  </div>
+
+  <div class="cover-main">
+    <div class="cover-issue">Debate · Arte &amp; Autoría</div>
+    <h1 class="cover-headline">
+      ¿Quién Firma<br>la <em>Obra?</em>
+    </h1>
+    <p class="cover-subhead">
+      Autoría, propiedad y creatividad en una época donde las imágenes pueden ser generadas por una conversación.
+    </p>
+
+    <div class="social-bar">
+      <a href="https://www.instagram.com/signal.ai.mag/" target="_blank" rel="noopener" class="social-link">
+        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        Instagram
+      </a>
+      <a href="https://substack.com/@signalmag" target="_blank" rel="noopener" class="social-link">Substack</a>
+      <a href="https://signalzine.rf.gd/" target="_blank" rel="noopener" class="social-link">Web</a>
+    </div>
+  </div>
+
+  <div class="cover-footer">
+    <div class="cover-index">
+      <div class="cover-index-item"><strong>I</strong>La Firma Como Símbolo</div>
+      <div class="cover-index-item"><strong>II</strong>El Ecosistema Creativo</div>
+      <div class="cover-index-item"><strong>III</strong>¿Es el Prompt una Obra?</div>
+      <div class="cover-index-item"><strong>IV</strong>El Vacío Legal</div>
+    </div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:0.55rem;color:#3a3630;letter-spacing:0.1em;">
+      Artículo 09 de 12
+    </div>
+  </div>
+</div>
+
+<!-- ══ INDEX RÁPIDO ══ -->
+<div class="index-page">
+  <div class="page" style="padding-top:3.5rem;padding-bottom:3.5rem;">
+    <div class="section-label">Contenido de este artículo</div>
+    <div class="index-grid">
+      <a href="#seccion-01" class="index-item">
+        <div class="index-num">I</div>
+        <div class="index-title">La Firma Como Símbolo</div>
+        <div class="index-desc">Del Renacimiento a la modernidad. El nombre como garantía de origen y el surgimiento del artista individual.</div>
+      </a>
+      <a href="#seccion-02" class="index-item">
+        <div class="index-num">II</div>
+        <div class="index-title">El Nuevo Ecosistema Creativo</div>
+        <div class="index-desc">Usuario, modelo, dataset, empresa, artista. Cuando la creación deja de ser lineal y se vuelve distribuida.</div>
+      </a>
+      <a href="#seccion-03" class="index-item">
+        <div class="index-num">III</div>
+        <div class="index-title">¿Es el Prompt una Obra?</div>
+        <div class="index-desc">La dirección creativa como autoría. Fotografía, cine y el papel insustituible de la intención humana.</div>
+      </a>
+      <a href="#seccion-04" class="index-item">
+        <div class="index-num">IV</div>
+        <div class="index-title">El Vacío Legal y el Futuro</div>
+        <div class="index-desc">Derechos de autor, legislaciones emergentes, casos controversiales y cómo redefinir la autoría.</div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ARTÍCULO ══ -->
+<article>
+<div class="page">
+
+  <!-- HEADER DEL ARTÍCULO -->
+  <header class="article-header fade-in">
+    <div class="article-category">Debate · Arte &amp; Autoría</div>
+    <h1 class="article-title">¿Quién Firma <em>la Obra?</em></h1>
+    <p class="article-deck">
+      Autoría, propiedad y creatividad en una época donde las imágenes pueden ser generadas por una conversación.
+    </p>
+    <div class="article-meta">
+      <div class="meta-item"><strong>Tema</strong>Filosofía del arte · Propiedad intelectual</div>
+      <div class="meta-item"><strong>Publicado</strong>2026</div>
+      <div class="meta-item"><strong>Lectura</strong>~15 min</div>
+      <div class="meta-item"><strong>Sección</strong>Debate</div>
+    </div>
+  </header>
+
+  <!-- INTRODUCCIÓN -->
+  <div class="epigraph fade-in">
+    "Durante siglos la firma fue la prueba definitiva de autoría. Un nombre en una esquina transformaba un objeto en una obra."
+    <cite>— Premisa del artículo</cite>
+  </div>
+
+  <div class="body-text fade-in">
+    <p class="dropcap">La inteligencia artificial está cuestionando uno de los principios más antiguos del arte. Si una imagen surge de la colaboración entre una persona, un modelo entrenado con millones de obras previas y una infraestructura tecnológica construida por miles de ingenieros, ¿quién es realmente el autor? La pregunta no es retórica. Tiene consecuencias legales, económicas y filosóficas que apenas comenzamos a entender.</p>
+    <p>Lo que antes era una transacción directa —artista produce, mundo recibe— se ha convertido en un proceso distribuido, colectivo, casi anónimo en sus capas más profundas. Y sin embargo, alguien presiona el botón. Alguien escribe el prompt. Alguien decide qué conservar y qué descartar. ¿Es eso suficiente para firmar?</p>
+  </div>
+
+  <div class="divider fade-in"><span>§ I</span></div>
+
+  <!-- SECCIÓN I -->
+  <section id="seccion-01">
+    <h2 class="section-title fade-in">I. La Firma Como Símbolo</h2>
+    <h3 class="subsection fade-in">§ 01 — Del nombre al valor, del valor al mercado</h3>
+
+    <div class="body-text fade-in">
+      <p>Antes del Renacimiento, el arte era esencialmente anónimo. Las grandes catedrales góticas fueron construidas por gremios, no por individuos. Los manuscritos iluminados rara vez llevaban el nombre de quien los pintó. El arte era servicio, no expresión. Pertenecía a Dios, a la Iglesia, a la ciudad —no a un creador individual.</p>
+      <p>El cambio ocurrió entre los siglos XIV y XVI, y fue profundo. Artistas como Giotto, Botticelli, Leonardo y Miguel Ángel comenzaron a ser reconocidos no solo por su oficio sino por su visión particular. La firma dejó de ser un trámite y se convirtió en una declaración: <em>este objeto fue creado por esta mente específica.</em> La personalidad artística se volvió un valor en sí misma.</p>
+    </div>
+
+    <div class="destacado fade-in" data-word="FIRMA">
+      <div class="destacado-label">Contexto histórico — El artista como individuo</div>
+      <h3>El momento en que el nombre se convirtió en garantía</h3>
+      <p>Giorgio Vasari, en sus <em>Vidas de los artistas</em> (1550), codificó esta transformación cultural. Al documentar las biografías de los grandes maestros florentinos, estableció que la obra de arte era inseparable de la persona que la creó: sus experiencias, su carácter, su genio particular. La firma no era solo identificación. Era autenticación.</p>
+      <p>Este modelo llegó a su plenitud en el mercado de arte moderno. Una obra firmada por Picasso no vale lo que vale por sus materiales ni por su tamaño —vale por el índice de autenticidad que esa firma representa. El nombre del artista es, literalmente, parte del objeto. Quitarlo sería destruir algo esencial.</p>
+      <p>El sistema funcionó durante cinco siglos porque asumía una premisa que parecía obvia: cada obra tiene un origen claro, rastreable, individual. La firma como institución descansaba sobre la posibilidad de responder a la pregunta <em>¿quién hizo esto?</em> con una respuesta simple.</p>
+    </div>
+
+    <div class="body-text fade-in">
+      <p>La fotografía fue el primer desafío serio a este modelo. Cuando Daguerre presentó su invención en 1839, muchos pintores creyeron que el arte había muerto. Si una máquina podía reproducir la realidad con precisión perfecta, ¿qué quedaba para el pincel humano? La respuesta que emergió en las décadas siguientes fue reveladora: el arte se redefinió como expresión, no como representación. El pintor ya no necesitaba copiar el mundo —podía interpretarlo.</p>
+      <p>Pero la fotografía también planteó por primera vez la pregunta de la autoría maquínica. ¿Es el fotógrafo el autor de una foto o lo es la cámara? La respuesta que la cultura adoptó —el fotógrafo, porque toma decisiones creativas de encuadre, luz, momento— estableció un precedente que ahora resulta crucial: lo que importa es la intención, no la ejecución mecánica.</p>
+    </div>
+
+    <div class="pullquote fade-in">
+      <p>La firma fue diseñada para un mundo donde la creación era individual. El siglo XXI parece mucho más complejo.</p>
+      <cite>— SIGNAL</cite>
+    </div>
+  </section>
+
+  <div class="divider fade-in"><span>§ II</span></div>
+
+  <!-- SECCIÓN II -->
+  <section id="seccion-02">
+    <h2 class="section-title fade-in">II. El Nuevo Ecosistema Creativo</h2>
+    <h3 class="subsection fade-in">§ 02 — Cuando la creación deja de ser lineal</h3>
+
+    <div class="body-text fade-in">
+      <p>Una imagen generada con Midjourney, Stable Diffusion o DALL-E no tiene un solo origen. Tiene una red de orígenes que se superponen, interactúan y resultan imposibles de desenredar completamente. Intentar asignarle un autor único es como intentar señalar la gota de lluvia responsable de una inundación.</p>
+      <p>Consideremos los actores involucrados en la creación de una sola imagen generativa. Cada uno aporta algo que sin él no existiría en la forma final.</p>
+    </div>
+
+    <div class="fact-box fade-in">
+      <div class="fact-box-label">Autoría en la Era Generativa — Los cinco actores del proceso</div>
+      <table class="signal-table">
+        <thead>
+          <tr>
+            <th>Actor</th>
+            <th>Contribución</th>
+            <th>¿Es autor?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Usuario</td>
+            <td>Intención, dirección, selección final</td>
+            <td>Sí, parcialmente</td>
+          </tr>
+          <tr>
+            <td>Modelo de IA</td>
+            <td>Generación, síntesis visual, ejecución</td>
+            <td>Instrumento o coautor</td>
+          </tr>
+          <tr>
+            <td>Dataset de entrenamiento</td>
+            <td>Referencias estéticas, patrones visuales</td>
+            <td>Fuente sin voz</td>
+          </tr>
+          <tr>
+            <td>Empresa desarrolladora</td>
+            <td>Infraestructura, arquitectura, entrenamiento</td>
+            <td>Fabricante de herramienta</td>
+          </tr>
+          <tr>
+            <td>Artistas del dataset</td>
+            <td>Estilo, técnica, vocabulario visual</td>
+            <td>Contribuyentes involuntarios</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="body-text fade-in">
+      <p>Lo que hace único a este momento no es que la creación sea colaborativa —siempre lo fue. El cine, la arquitectura, la música de estudio involucran docenas o cientos de personas. Lo que lo hace único es que esa colaboración es ahora invisible, automática, y en gran parte no consentida.</p>
+      <p>Los artistas cuyos trabajos fueron usados para entrenar los modelos generativos más populares no firmaron ningún contrato. Sus obras fueron incorporadas a sistemas de aprendizaje automático que ahora producen imágenes estilísticamente derivadas de su trabajo, sin que reciban crédito ni compensación. Varios han iniciado demandas legales que probablemente definirán el marco legal de la próxima década.</p>
+    </div>
+
+    <div class="case-studies-grid fade-in">
+      <div class="case-study">
+        <div class="case-study__num">01</div>
+        <div class="case-study__label">Caso activo · 2023–2026</div>
+        <div class="case-study__title">Getty Images vs. Stability AI</div>
+        <div class="case-study__body">Getty demandó a Stability AI por usar más de 12 millones de imágenes de su colección para entrenar Stable Diffusion sin licencia ni compensación. El caso, activo en tribunales del Reino Unido y EE.UU., podría establecer precedentes que redefinen qué constituye uso justo en el contexto del entrenamiento de IA.</div>
+      </div>
+      <div class="case-study">
+        <div class="case-study__num">02</div>
+        <div class="case-study__label">Precedente · Febrero 2023</div>
+        <div class="case-study__title">La Oficina de Copyright de EE.UU.</div>
+        <div class="case-study__body">La Copyright Office de Estados Unidos rechazó el registro de una obra generada íntegramente por IA, argumentando que el copyright requiere autoría humana. Sin embargo, en el mismo período, aprobó el registro de un cómic donde el texto era humano y las imágenes eran de Midjourney, abriendo la puerta a la autoría híbrida.</div>
+      </div>
+      <div class="case-study">
+        <div class="case-study__num">03</div>
+        <div class="case-study__label">Artistas vs. plataformas · 2023</div>
+        <div class="case-study__title">Demanda colectiva de ilustradores</div>
+        <div class="case-study__body">Un grupo de ilustradores —entre ellos Sarah Andersen, Kelly McKernan y Karla Ortiz— demandó a Stability AI, Midjourney y DeviantArt, alegando que sus estilos artísticos distintivos fueron incorporados sin consentimiento. La demanda introdujo el concepto de "robo de estilo" al debate legal internacional.</div>
+      </div>
+      <div class="case-study">
+        <div class="case-study__num">04</div>
+        <div class="case-study__label">Regulación · 2024</div>
+        <div class="case-study__title">El AI Act de la Unión Europea</div>
+        <div class="case-study__body">El Acta de IA de la UE, en vigor desde 2024, obliga a los proveedores de modelos de propósito general a publicar resúmenes del contenido usado en entrenamiento. No resuelve el problema de la compensación, pero establece por primera vez un principio de transparencia sobre los datos de origen.</div>
+      </div>
+    </div>
+
+    <div class="body-text fade-in">
+      <p>Lo que estos casos tienen en común es que todos giran alrededor de la misma pregunta fundamental: ¿aprender de una obra es lo mismo que copiarla? Los modelos de IA no almacenan imágenes individuales —aprenden patrones estadísticos de relaciones entre píxeles, estilos, composiciones. Sus salidas no son copias sino síntesis. Pero esa síntesis está tan informada por las obras originales que la distinción filosófica puede parecer insuficiente para quienes sienten que su trabajo fue usado sin permiso.</p>
+    </div>
+
+    <div class="pullquote fade-in">
+      <p>Quizás la creatividad nunca fue una chispa divina. Quizás siempre fue una conversación infinita.</p>
+      <cite>— SIGNAL</cite>
+    </div>
+  </section>
+
+  <div class="divider fade-in"><span>§ III</span></div>
+
+  <!-- SECCIÓN III -->
+  <section id="seccion-03">
+    <h2 class="section-title fade-in">III. ¿Es el Prompt una Obra?</h2>
+    <h3 class="subsection fade-in">§ 03 — La intención como acto creativo</h3>
+
+    <div class="body-text fade-in">
+      <p>Existe un argumento que los defensores de la autoría generativa repiten con frecuencia: escribir un buen prompt es tan creativo como cualquier otra forma de dirección artística. No es pulsar un botón al azar. Es articular una visión, negociar con una herramienta, seleccionar entre cientos de resultados posibles, iterar hasta que el resultado responde a algo que estaba en la mente antes de que existiera en la pantalla.</p>
+      <p>El paralelo con la fotografía no es arbitrario. Ansel Adams no fabricó la cámara, ni reveló el negativo con sus propias manos en todos los casos, ni controló la luz natural de Yosemite. Lo que hizo fue decidir <em>cuándo, desde dónde y cómo</em> capturar ese momento. ¿Es esa decisión suficiente para llamarla autoría? La cultura respondió que sí, hace más de un siglo.</p>
+    </div>
+
+    <div class="destacado fade-in" data-word="PROMPT">
+      <div class="destacado-label">Análisis comparativo — Tres modelos de autoría mediada</div>
+      <h3>Fotografía, cine y generación algorítmica: una genealogía de la dirección</h3>
+      <p><strong>El fotógrafo</strong> no produce luz, no fabrica el sensor ni el lente. Toma decisiones de encuadre, momento, exposición. La cámara ejecuta. El fotógrafo dirige. La cultura lo reconoce como autor.</p>
+      <p><strong>El director de cine</strong> raramente opera la cámara, no compone la música, no diseña los trajes. Coordina y dirige a decenas de profesionales hacia una visión unificada. El crédito en los festivales es suyo. La autoría, también.</p>
+      <p><strong>El usuario de IA generativa</strong> escribe la dirección creativa en lenguaje natural, itera sobre los resultados, selecciona, descarta, refina. La máquina ejecuta. Si seguimos la lógica establecida por la fotografía y el cine, la intención humana debería ser suficiente para constituir autoría. El derecho, sin embargo, aún no lo ha resuelto.</p>
+    </div>
+
+    <div class="body-text fade-in">
+      <p>Pero hay una diferencia que los defensores de esta analogía tienden a minimizar: la variabilidad. El fotógrafo que aprieta el disparador obtiene un resultado determinado por las condiciones físicas del momento. El usuario de IA generativa puede obtener mil resultados distintos del mismo prompt, dependiendo de una semilla aleatoria que no controla. ¿Qué significa "intención creativa" cuando el resultado es estadísticamente indeterminado?</p>
+      <p>Una respuesta posible: la intención no está en el prompt, está en la selección. El artista generativo es, en este modelo, fundamentalmente un curador. No produce todas las imágenes que genera —elige cuál vale la pena mostrar. Y la curaduría, como práctica, ha sido reconocida como acto intelectual con sus propios derechos desde hace décadas.</p>
+    </div>
+
+    <div class="timeline fade-in">
+      <div class="timeline-item">
+        <div class="timeline-year">Originalidad humana — El mito</div>
+        <div class="timeline-title">Toda obra proviene de otras obras</div>
+        <div class="timeline-desc">Picasso integró el arte africano en el cubismo. Tarantino construyó su lenguaje sobre el cine de género de los 70. La música electrónica nació del sampling. La "influencia" es el nombre respetable de lo que en los modelos de IA llamamos "entrenamiento". La diferencia no es de naturaleza sino de escala y velocidad.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">Cómo aprende una IA — El espejo</div>
+        <div class="timeline-title">Patrones, relaciones, recombinación</div>
+        <div class="timeline-desc">Un modelo de difusión no memoriza imágenes: aprende las relaciones estadísticas entre conceptos y configuraciones visuales. Cuando genera "un retrato al estilo de Rembrandt", no copia ningún Rembrandt. Sintetiza lo que aprendió sobre cómo Rembrandt usaba la luz, la sombra, la textura. Es el mismo mecanismo que usa un pintor entrenado académicamente —solo que ejecutado a una velocidad inhumana.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">El espejo incómodo — 2023–2026</div>
+        <div class="timeline-title">La crítica a la IA revela algo sobre nosotros mismos</div>
+        <div class="timeline-desc">La acusación más frecuente contra la IA generativa es que "no crea, combina". Pero si miramos con honestidad, esa descripción también aplica, en gran medida, al proceso creativo humano. La diferencia quizás no esté en el mecanismo sino en la conciencia, en la intención, en el significado que el creador humano deposita deliberadamente en la obra.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">¿Qué es ser original? — La pregunta que queda</div>
+        <div class="timeline-title">Nuevas conexiones, no páginas en blanco</div>
+        <div class="timeline-desc">La originalidad quizás nunca consistió en crear desde la nada. Consistió en establecer conexiones que nadie había imaginado antes, en encontrar la combinación que transforma referencias conocidas en algo que no existía. Si eso es cierto, entonces la pregunta relevante no es si la IA puede ser original, sino si puede encontrar conexiones significativas. Y la respuesta, en 2026, es cada vez más difícil de negar.</div>
+      </div>
+    </div>
+
+    <div class="pullquote fade-in">
+      <p>La inteligencia artificial puede generar una imagen de una tormenta. Pero no puede recordar cómo se siente estar bajo la lluvia.</p>
+      <cite>— SIGNAL</cite>
+    </div>
+  </section>
+
+  <div class="divider fade-in"><span>§ IV</span></div>
+
+  <!-- SECCIÓN IV -->
+  <section id="seccion-04">
+    <h2 class="section-title fade-in">IV. El Vacío Legal y el Futuro de la Autoría</h2>
+    <h3 class="subsection fade-in">§ 04 — Regulaciones emergentes, casos controversiales y redefinición</h3>
+
+    <div class="body-text fade-in">
+      <p>El marco legal de la propiedad intelectual fue diseñado en una época en que la creación era un acto humano, individual, verificable. Las leyes de copyright del siglo XX asumen que existe un autor identificable cuya vida determina la duración de la protección. Ese modelo no tiene respuesta para una obra que no tuvo autor humano en ningún sentido convencional.</p>
+      <p>En 2023, la Copyright Office de Estados Unidos tomó una primera posición clara: las obras generadas íntegramente por IA no son protegibles bajo copyright porque el copyright requiere autoría humana. Pero la realidad rara vez es íntegramente IA o íntegramente humana. La mayoría de las obras generativas involucran ambas dimensiones, en proporciones variables y difíciles de medir.</p>
+    </div>
+
+    <div class="fact-box-teal fade-in">
+      <div class="fact-box-label">Marco legal global — Estado actual de la regulación (2026)</div>
+      <p><strong>Estados Unidos:</strong> La Copyright Office mantiene que solo las obras con "autoría humana discernible" son protegibles. Las imágenes generadas sin intervención creativa humana significativa quedan sin protección, lo que las convierte en dominio público inmediato. La línea exacta entre "suficiente intervención" e "insuficiente" está siendo definida caso por caso.</p>
+      <p><strong>Unión Europea:</strong> El AI Act (2024) establece obligaciones de transparencia pero no resuelve la cuestión de la autoría. El Parlamento Europeo continúa debatiendo si los modelos de IA pueden ser titulares de derechos o si esos derechos deben recaer en sus desarrolladores, sus usuarios, o en ninguno de los dos.</p>
+      <p><strong>China:</strong> En una dirección opuesta, tribunales chinos han reconocido derechos sobre obras generadas con IA cuando el usuario demostró "suficiente contribución creativa" al proceso de generación. Es el marco más permisivo del mundo y está siendo observado con atención por otros sistemas legales.</p>
+      <p><strong>Reino Unido:</strong> Mantiene desde 1988 una disposición en su ley de copyright que reconoce obras "generadas por computadora" como protegibles, con el programador o usuario como autor. El debate actual es si esta ley, escrita para herramientas deterministas, aplica a sistemas estocásticos como los modelos generativos modernos.</p>
+    </div>
+
+    <div class="body-text fade-in">
+      <p>El vacío legal más profundo, sin embargo, no es el de la autoría sino el del dataset. Los modelos que generan imágenes fueron entrenados con obras que sus creadores no consintieron que fueran usadas de esa manera. La pregunta de si eso constituye infracción, uso justo, o una categoría que todavía no tiene nombre, es la que podría tener las consecuencias económicas más grandes.</p>
+      <p>Si los tribunales determinan que el entrenamiento de IA con obras protegidas constituye infracción, los modelos más utilizados del mundo podrían enfrentar daños que los vuelvan inviables. Si determinan que no, estarán estableciendo que cualquier obra accesible en internet puede ser incorporada sin compensación a sistemas que luego competirán comercialmente con los creadores originales.</p>
+    </div>
+
+    <div class="destacado fade-in" data-word="LEY">
+      <div class="destacado-label">Debate de fondo — Lo que está en juego más allá del copyright</div>
+      <h3>La economía de la creatividad en la era de los modelos generativos</h3>
+      <p>El debate legal sobre el copyright generativo no es realmente sobre quién firma la obra. Es sobre quién puede vivir de crearla. Si los modelos de IA pueden producir imágenes en el estilo de cualquier ilustrador sin compensarle, ese ilustrador pierde una parte de su mercado. No porque la IA sea "mejor" —sino porque es más barata.</p>
+      <p>La ilustradora y activista Karla Ortiz lo planteó con precisión en su testimonio ante el Congreso de EE.UU. en 2023: "No necesitamos que la IA sea ilegal. Necesitamos que ser artista sea viable." La pregunta no es solo filosófica. Es económica, y tiene consecuencias reales para miles de profesionales cuyo trabajo formó la base de los modelos que ahora compiten con ellos.</p>
+      <p>Algunos estudios y plataformas han comenzado a ofrecer esquemas de compensación voluntaria: Adobe con Adobe Stock, Getty con su propio modelo generativo entrenado solo con contenido licenciado, Stability AI con un fondo para artistas. Son experimentos frágiles, pero indican que hay actores del sector que entienden que la legitimidad a largo plazo requiere resolver la cuestión del origen.</p>
+    </div>
+
+    <div class="body-text fade-in">
+      <p>El horizonte más interesante quizás no esté en los tribunales sino en las convenciones culturales emergentes. El derecho suele codificar lo que la cultura ya decidió. Y la cultura, aunque lentamente, está comenzando a desarrollar sus propias respuestas a la pregunta de la autoría generativa.</p>
+      <p>En festivales de arte digital, galerías y convocatorias de diseño, están apareciendo nuevas categorías: "obra generativa con dirección humana", "arte asistido por IA", "colaboración hombre-máquina". No son categorías legales. Son taxonomías culturales que reconocen que algo nuevo está ocurriendo y que las categorías antiguas no lo capturan bien.</p>
+    </div>
+  </section>
+
+  <div class="divider fade-in"><span>§ V</span></div>
+
+  <!-- CONCLUSIÓN EDITORIAL -->
+  <section id="cierre" class="conclusion">
+    <h3 class="subsection fade-in">§ Cierre — La posición del editor</h3>
+    <h2 class="section-title fade-in">Quizás la pregunta equivocada</h2>
+
+    <div class="opinion-block fade-in">
+      <div class="opinion-label">Punto de vista editorial</div>
+
+      <p>Llevamos años haciendo la pregunta equivocada. "¿Quién firma la obra?" asume que la firma —el autor único, el origen individual, la propiedad clara— es el marco correcto para entender lo que está ocurriendo. Pero quizás ese marco fue siempre una simplificación, y lo que la IA generativa está haciendo es revelarla como tal.</p>
+
+      <p>Las grandes obras de la historia nunca fueron verdaderamente individuales. La Capilla Sixtina involucró a decenas de asistentes de taller. <em>Ulysses</em> fue editado por Pound tanto como por Joyce. La arquitectura del software libre que corre internet fue construida por miles de programadores que nunca se conocieron. Siempre hubo redes de contribución detrás de las firmas individuales. Lo que cambia ahora es que esas redes se vuelven tan visibles, tan masivas, que la ficción del autor único resulta insostenible.</p>
+
+      <p>Lo que sí parece claro —y esto es lo que más me interesa de este debate— es que la pregunta relevante no es si la IA puede crear, sino qué rol queremos que tenga la intención humana en el proceso creativo, y qué valor le asignamos a esa intención. Una imagen generada por azar, sin ninguna dirección humana, no parece lo mismo que una imagen producida por alguien que pasó semanas iterando hacia una visión específica. La diferencia no es técnica. Es sobre el significado que la obra transporta.</p>
+
+      <p>Quizás la autoría del futuro no sea una pregunta de quién produjo sino de quién es responsable: de la intención, del impacto, del significado. Y en ese caso, la firma seguirá teniendo sentido —no como prueba de ejecución, sino como declaración de responsabilidad. Quien firma dice: esta visión es mía. Esta elección fue mía. Estas consecuencias, también.</p>
+
+      <p>Esa redefinición no le quita valor al arte. Se lo devuelve, en una forma más honesta.</p>
+
+      <div class="opinion-author">
+        Gerardo Ventura · Editor · SIGNAL · 2026
+        <a href="https://instagram.com/gfvc1978" target="_blank" rel="noopener" class="instagram" style="margin-left: 0.5rem;"><i class="fa-brands fa-instagram"></i> @gfvc1978</a>
+      </div>
+    </div>
+
+    <div class="divider"><span>✦ ✦ ✦</span></div>
+
+    <div style="font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;text-align:center;padding: 1rem 0 2rem;">
+      SIGNAL · San Salvador · 2026 · Arte generativo e inteligencia artificial
+    </div>
+  </section>
+
+</div>
+</article>
+
+<!-- ══ FOOTER ══ -->
+<footer class="mag-footer">
+  <div class="logo">SIGNAL<span style="color:var(--accent)">.</span></div>
+  <div>Arte generativo e inteligencia artificial</div>
+  <div class="mag-footer-social">
+    <a href="https://www.instagram.com/signal.ai.mag/" target="_blank" rel="noopener">Instagram</a>
+    <span style="color:#3a3630">·</span>
+    <a href="https://substack.com/@signalmag" target="_blank" rel="noopener">Substack</a>
+    <span style="color:#3a3630">·</span>
+    <a href="https://signalzine.rf.gd/" target="_blank" rel="noopener">Web</a>
+    <span style="color:#3a3630">·</span>
+    <a href="mailto:revista.signal@gmail.com">Email</a>
+  </div>
+</footer>
+
+<script>
+  // Fade-in on scroll
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 60);
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.fade-in').forEach(el => io.observe(el));
+</script>
+</body>
+</html>

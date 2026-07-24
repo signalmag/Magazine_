@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGNAL — Editorial 02: El Dinero que No Ves</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=JetBrains+Mono:wght@300;400;500&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+  :root {
+    --ink: #1a1814;
+    --paper: #f5f0e8;
+    --paper-dark: #ede7d9;
+    --accent: #c4873a;
+    --accent-light: #e8c88a;
+    --teal: #4a8a7c;
+    --muted: #7a7268;
+    --rule: #c8bfb0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.7;
+    padding-top: 44px;
+  }
+
+  /* ══ NAV ══ */
+  .signal-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    background: var(--ink);
+    border-bottom: 2px solid var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    height: 44px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .signal-nav__home {
+    display: flex; align-items: center; gap: 0.8rem;
+    text-decoration: none; color: var(--paper);
+  }
+  .signal-nav__logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.9rem; font-weight: 900;
+    letter-spacing: 0.05em; text-transform: none;
+  }
+  .signal-nav__home:hover { opacity: 0.8; }
+  .signal-nav__trail { color: #5a5450; font-size: 0.55rem; }
+  .signal-nav__current { color: var(--accent); }
+  .signal-nav__arrows {
+    display: flex; align-items: center; gap: 0.6rem; color: #4a4438;
+  }
+  .signal-nav__arrows a {
+    color: #8a8278; text-decoration: none; transition: color 0.2s;
+  }
+  .signal-nav__arrows a:hover { color: var(--accent); }
+  @media (max-width: 680px) {
+    .signal-nav__trail { display: none; }
+    .signal-nav { padding: 0 1rem; }
+  }
+
+  /* ── COVER ── */
+  .cover {
+    min-height: calc(100vh - 40px);
+    background: var(--ink);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover-noise {
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; opacity: 0.6;
+  }
+  /* Diagonal decorativa fondo */
+  .cover::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; right: -80px;
+    width: 500px; height: 500px;
+    border: 1px solid rgba(196,135,58,0.06);
+    transform: rotate(22deg);
+    pointer-events: none;
+  }
+  .cover-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 2.5rem 3rem 1.2rem;
+    border-bottom: 1px solid #3a3630;
+    position: relative; z-index: 2;
+  }
+  .masthead {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; color: #6a6258;
+    letter-spacing: 0.15em; text-transform: uppercase; line-height: 1.8;
+  }
+  .cover-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 5rem; font-weight: 900; color: var(--paper);
+    letter-spacing: -0.02em; line-height: 1;
+    text-align: center; padding: 3rem 3rem 0;
+    position: relative; z-index: 2;
+  }
+  .cover-logo span { color: var(--accent); }
+  .cover-tagline {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; color: #5a5450;
+    letter-spacing: 0.3em; text-transform: uppercase;
+    text-align: center; margin-top: 0.5rem;
+    position: relative; z-index: 2;
+  }
+  .cover-main {
+    display: flex; flex-direction: column;
+    justify-content: flex-end;
+    padding: 2rem 3rem 3rem;
+    position: relative; z-index: 2;
+  }
+  .cover-issue {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; color: var(--accent);
+    letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 1rem;
+  }
+  .cover-headline {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 700;
+    color: var(--paper); line-height: 1.15; 
+  }
+  .cover-headline em { color: var(--accent-light); font-style: italic; }
+  .cover-subhead {
+    margin-top: 1.2rem;
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.1rem; color: #8a8278;
+    max-width: 520px; line-height: 1.6;
+  }
+  .cover-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.2rem 3rem; border-top: 1px solid #2a2620;
+    position: relative; z-index: 2;
+  }
+  .cover-index { display: flex; gap: 2.5rem; }
+  .cover-index-item {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem; color: #5a5450;
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .cover-index-item strong {
+    display: block; color: #9a9288; font-size: 0.65rem; margin-bottom: 0.2rem;
+  }
+
+  /* ── SOCIAL BAR ── */
+  .social-bar {
+    display: flex; align-items: center; gap: 1rem;
+    margin-top: 1.5rem; padding-top: 1.5rem;
+    border-top: 1px solid #2a2620; flex-wrap: wrap;
+  }
+  .social-link {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase;
+    text-decoration: none; padding: 0.4rem 0.8rem;
+    border: 1px solid #3a3630; color: #9a9288; transition: all 0.2s ease;
+  }
+  .social-link:hover { border-color: var(--accent); color: var(--accent); }
+  .instagram {
+    display: inline-flex; align-items: center; gap: 2px;
+    padding: 1px 4px; border-radius: 20px;
+    text-decoration: none; color: #fff; font-weight: 600;
+    background: linear-gradient(45deg,#f09433,#e1306c,#833ab4);
+  }
+  .instagram:hover { opacity: .9; }
+
+  /* ── LAYOUT ── */
+  .page {
+    max-width: 900px; margin: 0 auto; padding: 5rem 3rem;
+  }
+  @media (max-width: 680px) {
+    .page { padding: 3rem 1.5rem; }
+    .cover-header, .cover-main, .cover-footer { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .cover-logo { font-size: 3rem; padding: 2rem 1.5rem 0; }
+  }
+
+  /* ── INDEX PAGE ── */
+  .index-page {
+    background: var(--paper-dark);
+    border-top: 4px solid var(--ink);
+  }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; font-weight: 500; color: var(--accent);
+    letter-spacing: 0.3em; text-transform: uppercase;
+    margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem;
+  }
+  .section-label::after {
+    content: ''; flex: 1; height: 1px; background: var(--rule);
+  }
+  .index-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 2px; background: var(--rule); border: 1px solid var(--rule);
+  }
+  @media (max-width: 580px) { .index-grid { grid-template-columns: 1fr; } }
+  .index-item {
+    background: var(--paper-dark); padding: 2rem 2.5rem;
+    text-decoration: none; color: inherit; display: block;
+    transition: background 0.2s ease, transform 0.15s ease;
+  }
+  .index-item:hover { background: #e0d8c8; transform: translateY(-2px); }
+  .index-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem; font-weight: 900; color: var(--rule);
+    line-height: 1; margin-bottom: 0.5rem;
+  }
+  .index-item:hover .index-num { color: var(--accent); }
+  .index-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem; font-weight: 700; line-height: 1.3; margin-bottom: 0.5rem;
+  }
+  .index-desc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; color: var(--muted);
+    letter-spacing: 0.05em; line-height: 1.6;
+  }
+
+  /* ── ARTICLE ── */
+  .article-header {
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 3rem; margin-bottom: 3rem;
+  }
+  .article-category {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; color: var(--teal);
+    letter-spacing: 0.3em; text-transform: uppercase; margin-bottom: 1.5rem;
+  }
+  h1.article-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 900;
+    line-height: 1.1; margin-bottom: 1rem;
+  }
+  h1.article-title em { font-style: italic; color: var(--accent); }
+  .article-deck {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.25rem; font-weight: 300; font-style: italic;
+    color: var(--muted); line-height: 1.6; max-width: 600px;
+    border-left: 3px solid var(--accent); padding-left: 1.5rem; margin-top: 1.5rem;
+  }
+  .article-meta { display: flex; gap: 2rem; margin-top: 2rem; flex-wrap: wrap; }
+  .meta-item {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem; color: var(--muted);
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .meta-item strong { display: block; color: var(--ink); margin-bottom: 0.2rem; }
+
+  /* ── BODY TEXT ── */
+  .body-text p {
+    margin-bottom: 1.5rem; font-size: 1.05rem; color: #2a2420;
+  }
+  .body-text p:first-child::first-letter {
+    font-family: 'Playfair Display', serif;
+    font-size: 4.5rem; font-weight: 900;
+    float: left; line-height: 0.8;
+    margin: 0.1em 0.12em 0 0; color: var(--accent);
+  }
+  h2.section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.7rem; font-weight: 700;
+    margin: 3rem 0 1rem; line-height: 1.2;
+  }
+  h3.subsection {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; font-weight: 500; color: var(--accent);
+    letter-spacing: 0.2em; text-transform: uppercase; margin: 2.5rem 0 0.8rem;
+  }
+
+  /* ── PULLQUOTE ── */
+  .pullquote {
+    margin: 3rem 0; padding: 2rem 3rem;
+    background: var(--ink); color: var(--paper); position: relative;
+  }
+  .pullquote::before {
+    content: '\201C';
+    font-family: 'Playfair Display', serif;
+    font-size: 8rem; color: var(--accent);
+    position: absolute; top: -1rem; left: 1.5rem;
+    line-height: 1; opacity: 0.4;
+  }
+  .pullquote p {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem; font-style: italic; line-height: 1.5;
+    color: #f0ebe0; position: relative; z-index: 1;
+  }
+  .pullquote cite {
+    display: block; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem; color: var(--accent-light);
+    letter-spacing: 0.15em; text-transform: uppercase;
+    margin-top: 1rem; font-style: normal;
+  }
+
+  /* ── FACT BOX ── */
+  .fact-box {
+    background: var(--paper-dark); border: 1px solid var(--rule);
+    border-left: 4px solid var(--teal); padding: 1.5rem 2rem; margin: 2rem 0;
+  }
+  .fact-box-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem; color: var(--teal);
+    letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.8rem;
+  }
+  .fact-box p { font-size: 0.95rem; margin-bottom: 0.6rem; color: #3a3430; }
+  .fact-box p:last-child { margin-bottom: 0; }
+  .fact-box strong { color: var(--ink); }
+
+  /* ── STAT ROW ── */
+  .stat-row {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 2px; background: var(--rule);
+    border: 1px solid var(--rule); margin: 2.5rem 0;
+  }
+  @media (max-width: 580px) { .stat-row { grid-template-columns: 1fr; } }
+  .stat-cell {
+    background: var(--paper-dark); padding: 1.8rem 2rem;
+    text-align: center;
+  }
+  .stat-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem; font-weight: 900; color: var(--accent);
+    line-height: 1; margin-bottom: 0.4rem; display: block;
+  }
+  .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem; color: var(--muted);
+    letter-spacing: 0.12em; text-transform: uppercase; line-height: 1.5;
+  }
+
+  /* ── DESTACADO ── */
+  .destacado {
+    background: linear-gradient(135deg, #1a1814 0%, #2a2420 100%);
+    color: var(--paper); padding: 3rem;
+    margin: 3rem 0; position: relative; overflow: hidden;
+  }
+  .destacado::before {
+    content: attr(data-word);
+    position: absolute; top: 0.5rem; right: 1.5rem;
+    font-family: 'Playfair Display', serif;
+    font-size: 5.5rem; font-weight: 900;
+    color: #2a2420; letter-spacing: -0.05em;
+    pointer-events: none; line-height: 1;
+  }
+  .destacado-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem; color: var(--accent);
+    letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 1.5rem;
+  }
+  .destacado p {
+    font-size: 1rem; color: #c8bfb0;
+    margin-bottom: 1rem; position: relative; z-index: 1; line-height: 1.75;
+  }
+  .destacado p:last-child { margin-bottom: 0; }
+  .destacado h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem; color: var(--paper);
+    margin-bottom: 1rem; position: relative; z-index: 1;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    display: flex; align-items: center; gap: 1rem; margin: 3rem 0;
+  }
+  .divider::before, .divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--rule);
+  }
+  .divider span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--muted);
+  }
+
+  /* ── OPINION BLOCK ── */
+  .opinion-block {
+    border: 1px solid var(--rule);
+    border-top: 4px solid var(--accent);
+    padding: 2.5rem; margin: 3rem 0;
+    background: var(--paper-dark);
+  }
+  .opinion-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem; color: var(--accent);
+    letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 1.5rem;
+  }
+  .opinion-block p {
+    font-size: 1.05rem; line-height: 1.75;
+    color: #2a2420; margin-bottom: 1.2rem;
+  }
+  .opinion-block p:last-child { margin-bottom: 0; }
+  .opinion-author {
+    margin-top: 1.5rem; padding-top: 1.2rem;
+    border-top: 1px solid var(--rule);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; color: var(--muted);
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+
+  /* ── NOTA ALERT ── */
+  .alert-box {
+    border: 1px solid var(--rule); border-left: 4px solid var(--accent);
+    background: #f8f3ea; padding: 1.2rem 1.8rem; margin: 2rem 0;
+  }
+  .alert-box-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem; color: var(--accent);
+    letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.5rem;
+  }
+  .alert-box p { font-size: 0.92rem; color: #3a3430; margin: 0; line-height: 1.6; }
+
+  /* ── FOOTER ── */
+  .mag-footer {
+    background: var(--ink); color: #5a5450;
+    padding: 3rem; text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase;
+    line-height: 2.2;
+  }
+  .mag-footer .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; font-weight: 900; color: var(--paper);
+    letter-spacing: -0.02em; text-transform: none; margin-bottom: 0.8rem;
+  }
+  .mag-footer-social { display: flex; justify-content: center; gap: 1rem; margin-top: 0.5rem; flex-wrap: wrap; }
+  .mag-footer-social a {
+    color: #8a8278; text-decoration: none; transition: color 0.2s;
+  }
+  .mag-footer-social a:hover { color: var(--accent); }
+
+  /* ── CONCLUSION ── */
+  .conclusion {
+    background: var(--paper-dark); border-top: 4px solid var(--ink);
+    padding: 4rem 3rem;
+    max-width: 100%;
+  }
+  .conclusion .body-text p:first-child::first-letter { all: unset; }
+
+  /* FADE IN */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+</style>
+</head>
+<body>
+
+<!-- ══ NAV ══ -->
+<nav class="signal-nav">
+  <a class="signal-nav__home" href="../index.html">
+    <span class="signal-nav__logo">S<span style="color:var(--accent)">I</span>GN<span style="color:var(--accent)">A</span>L<span style="color:var(--accent)">.</span></span>
+    <span class="signal-nav__ed">Editorial</span>
+  </a>
+  <div class="signal-nav__trail">
+    <span class="signal-nav__current">Editorial</span>
+  </div>
+  <div class="signal-nav__arrows">
+    <a href="../index.html" style="border-color:#4a8a7c;color:#4a8a7c;" onmouseover="this.style.background='#4a8a7c';this.style.color='#fff'" onmouseout="this.style.background='#2e2924';this.style.color='#4a8a7c'">Índice</a>
+    <span class="signal-nav__sep">·</span>
+    <a href="quien-firma-la-obra.html">← Anterior</a>
+    <span class="signal-nav__sep">·</span>
+    <span class="signal-nav__disabled">Siguiente →</span>
+  </div>
+</nav>
+
+<!-- ══ COVER ══ -->
+<div class="cover">
+  <div class="cover-noise"></div>
+
+  <div class="cover-header">
+    <div class="masthead">
+      SIGNAL Magazine<br>
+      Arte generativo · Cultura visual · IA<br>
+      San Salvador, El Salvador · 2026
+    </div>
+    <div class="masthead" style="text-align:right;">
+      Editorial<br>
+      Junio 2026
+    </div>
+  </div>
+
+  <div>
+	  <div class="cover-logo">S<span style="color:var(--accent)">I</span>GN<span style="color:var(--accent)">A</span>L<span>.</span></div>
+    <div class="cover-tagline">Arte generativo · Inteligencia artificial · Cultura visual</div>
+  </div>
+
+  <div class="cover-main">
+    <div class="cover-issue">Editorial</div>
+    <h1 class="cover-headline">
+       <span style="color:var(--accent)">El presupuesto,</span> la herramienta, las intensiones y lo que pagas.</h1>
+    <p class="cover-subhead">
+      Billones de dólares mueven la IA generativa. Los creadores pagan veinte al mes.
+      La pregunta no es quién financia esto. Es para quién fue diseñado.
+    </p>
+
+    <div class="social-bar">
+      <a href="https://www.instagram.com/signal.ai.mag/" target="_blank" rel="noopener" class="social-link">
+        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        Instagram
+      </a>
+      <a href="https://substack.com/@signalmag" target="_blank" rel="noopener" class="social-link">Substack</a>
+      <a href="https://signalzine.rf.gd/" target="_blank" rel="noopener" class="social-link">Web</a>
+    </div>
+  </div>
+
+  <div class="cover-footer">
+    <div class="cover-index">
+      <div class="cover-index-item"><strong>I.</strong> La inversión</div>
+      <div class="cover-index-item"><strong>II.</strong> Para quién</div>
+      <div class="cover-index-item"><strong>III.</strong> La pregunta</div>
+      <div class="cover-index-item"><strong>IV.</strong> El curador</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ INDEX PAGE ══ -->
+<div class="index-page">
+  <div class="page" style="padding-top:3.5rem; padding-bottom:3.5rem;">
+    <div class="section-label">En este artículo — Editorial</div>
+    <div class="index-grid">
+      <a href="#inversion" class="index-item">
+        <div class="index-num">I</div>
+        <div class="index-title">El dinero que mueve la IA</div>
+        <div class="index-desc">Billones, circularidad financiera y quién imprime esa moneda</div>
+      </a>
+      <a href="#paraquien" class="index-item">
+        <div class="index-num">II</div>
+        <div class="index-title">¿Para quién fue diseñada?</div>
+        <div class="index-desc">Defensa, industria y el usuario silvestre que paga la entrada</div>
+      </a>
+      <a href="#lapregunta" class="index-item">
+        <div class="index-num">III</div>
+        <div class="index-title">La pregunta incómoda</div>
+        <div class="index-desc">Si ya invirtieron, ¿por qué nos cobran? La respuesta honesta</div>
+      </a>
+      <a href="#curador" class="index-item">
+        <div class="index-num">IV</div>
+        <div class="index-title">El curador como artista</div>
+        <div class="index-desc">Quién va a destacar no será el que genere más, sino el que sepa ver</div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ARTÍCULO ══ -->
+<article>
+<div class="page">
+
+  <!-- ── HEADER ── -->
+  <div class="article-header fade-in">
+    <div class="article-category">Editorial · SIGNAL · Junio 2026</div>
+    <h1 class="article-title">
+      El dinero que no ves<br>
+      y la herramienta que <em>sí pagas</em>
+    </h1>
+    <p class="article-deck">
+      Hemos comprendido una fracción de lo que es la IA generativa. Pero esa fracción
+      ya es suficiente para hacernos las preguntas correctas: quién la financia, quién la usa
+      a fondo, y qué lugar ocupamos los creadores en todo esto.
+    </p>
+    <div class="article-meta">
+      <div class="meta-item"><strong>Autor</strong>Gerardo Ventura</div>
+      <div class="meta-item"><strong>Publicado</strong>2026</div>
+      <div class="meta-item"><strong>Categoría</strong>Editorial</div>
+      <div class="meta-item"><strong>Lectura</strong>~10 min</div>
+    </div>
+  </div>
+
+  <div class="divider"><span>§ I</span></div>
+
+  <!-- ── SECCIÓN I ── -->
+  <section id="inversion">
+    <h2 class="section-title">I. El dinero que mueve todo esto</h2>
+    <h3 class="subsection">§ La escala que no cabe en la imaginación</h3>
+
+    <div class="body-text fade-in">
+      <p>Hay una cifra que conviene tener presente antes de continuar leyendo: cuarenta mil millones de dólares. Eso es lo que Google se comprometió a invertir en Anthropic —la empresa detrás de Claude— en una sola operación confirmada en abril de 2026. No es la suma histórica acumulada de años de inversión. Es una sola transacción, anunciada en semanas, que redefine toda la narrativa sobre quién controla la inteligencia artificial generativa y por qué.</p>
+
+      <p>Para ponerlo en perspectiva: esa cifra supera el presupuesto total que la Unión Europea destinó a inversión en IA para el periodo completo 2025–2027. Un continente entero frente a una sola operación corporativa entre dos compañías privadas estadounidenses. No es una crítica; es una descripción precisa de la asimetría que define este momento.</p>
+    </div>
+
+    <div class="fact-box fade-in">
+      <div class="fact-box-label">Datos verificados — La inversión real</div>
+      <p>Google ha comprometido hasta <strong>$40.000 millones USD en Anthropic</strong> (2026), incluyendo $10.000 millones inmediatos y el resto vinculado a objetivos de rendimiento. La operación incluye acceso a 5 gigavatios de capacidad de cómputo en Google Cloud y hasta un millón de chips TPU para entrenar los modelos de Claude.</p>
+      <p>Microsoft acumuló <strong>$13.000 millones USD en OpenAI</strong> desde 2019. Amazon también tiene posición accionaria en Anthropic con miles de millones adicionales en compromisos de AWS.</p>
+      <p>OpenAI captó <strong>$122.000 millones USD en financiación adicional</strong> (anunciado en marzo de 2026), para expandir infraestructura y atender la demanda creciente de ChatGPT y Codex empresarial. Sus ingresos mensuales superan los <strong>$2.000 millones USD al mes</strong> en 2026.</p>
+      <p>Los contratos firmados entre los grandes proveedores cloud (AWS, Azure, Google Cloud) y startups como Anthropic y OpenAI ya suman más de <strong>dos billones de dólares en compromisos acumulados</strong>, según reportes de The Information.</p>
+    </div>
+
+    <div class="body-text fade-in">
+      <p>Lo que hace especialmente fascinante esta estructura financiera es su circularidad. Google invierte en Anthropic; Anthropic gasta ese dinero en infraestructura de Google Cloud. Microsoft integra OpenAI en cada producto de Office 365; OpenAI depende de Azure para existir. No es conspiración —es economía: el proveedor financia a su cliente porque así ambos crecen juntos. Los analistas tienen un nombre para esto: financiación circular. Y es, literalmente, cómo se están construyendo los cimientos de la IA generativa que usamos todos los días.</p>
+
+      <p>Esta lógica tiene consecuencias que van más allá de las finanzas. Cuando un proveedor financia a sus propios clientes, les vende el poder de cómputo, les diseña los chips y les distribuye los modelos, el mapa de dependencias se vuelve imposible de leer desde afuera. Para un creador en San Salvador, Ciudad de México o Buenos Aires que usa estas herramientas, la pregunta no es si la IA generativa es buena o mala. La pregunta es si entiende dentro de qué sistema opera cuando la usa.</p>
+    </div>
+
+    <div class="stat-row fade-in">
+      <div class="stat-cell">
+        <span class="stat-number">$40B</span>
+        <span class="stat-label">Inversión de Google<br>en Anthropic (2026)</span>
+      </div>
+      <div class="stat-cell">
+        <span class="stat-number">$122B</span>
+        <span class="stat-label">Ronda de financiación<br>de OpenAI (marzo 2026)</span>
+      </div>
+      <div class="stat-cell">
+        <span class="stat-number">$2T+</span>
+        <span class="stat-label">Compromisos cloud<br>acumulados en el sector</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><span>§ II</span></div>
+
+  <!-- ── SECCIÓN II ── -->
+  <section id="paraquien">
+    <h2 class="section-title">II. ¿Para quién fue diseñada esto?</h2>
+    <h3 class="subsection">§ La industria que la usa sin restricciones</h3>
+
+    <div class="body-text fade-in">
+      <p>Si alguien usa la IA generativa a plenitud, sin las restricciones que el usuario doméstico experimenta a diario, no son los artistas digitales ni los diseñadores freelance ni los creadores de contenido. Son los gobiernos, las fuerzas armadas y las corporaciones financieras. Y esto no es especulación: son contratos públicos, confirmados y documentados.</p>
+
+      <p>El Departamento de Defensa de Estados Unidos superó los $1.800 millones USD en gasto anual en IA para su presupuesto de 2025, con proyecciones de duplicarse antes de 2030. El secretario de Defensa Pete Hegseth llegó a declarar que la adopción de tecnología de IA en las fuerzas armadas era "inaceptablemente lenta" —lo que da una idea de la urgencia con que el aparato militar ve estas herramientas. No como un experimento creativo. Como infraestructura de combate.</p>
+    </div>
+
+    <div class="fact-box fade-in">
+      <div class="fact-box-label">La IA generativa en contexto militar — datos</div>
+      <p>El Pentágono lanzó la plataforma <strong>GenAi.mil</strong>, basada en Google Gemini, para uso directo de las fuerzas armadas estadounidenses. Sus usos declarados incluyen resumen de documentos, generación de listas de verificación y evaluación de riesgos operativos.</p>
+      <p><strong>Anthropic se asoció con Palantir y Amazon Web Services</strong> para dar acceso a las agencias de defensa e inteligencia de EEUU a los modelos Claude, aunque posteriormente el Pentágono canceló un contrato de $200 millones con Anthropic por desacuerdos sobre los límites de uso en redes clasificadas.</p>
+      <p><strong>Scale AI lidera un consorcio</strong> —que incluye a Microsoft y Anduril— para desarrollar herramientas que permitan a los comandantes militares "operar a la velocidad de la máquina". El despliegue inicial se realizará en el Comando Indo-Pacífico y el Comando Europeo.</p>
+      <p>Meta actualizó sus términos de uso de Llama para permitir que <strong>EEUU y sus aliados cercanos desarrollen aplicaciones militares</strong> con su modelo de código abierto, después de que China usara una versión previa para crear un chatbot con aplicaciones defensivas.</p>
+    </div>
+
+    <div class="destacado fade-in" data-word="SECTOR">
+      <div class="destacado-label">Análisis — Las industrias que sí dominan la herramienta</div>
+      <h3>No es el artista quien la usa sin límites</h3>
+      <p>La banca, los seguros, la farmacéutica y la defensa tienen acceso a versiones de estos modelos sin las restricciones de contenido que el usuario doméstico experimenta. Anthropic reportó haber ganado clientes grandes en bancos, aseguradoras y farmacéuticas durante 2025–2026, con contratos de nivel enterprise que operan bajo términos muy diferentes a los que acepta cualquier persona que paga $20 al mes.</p>
+      <p>Microsoft integró Copilot en Windows, Office 365, Excel, Word y Teams. Si trabajas en cualquier empresa mediana o grande con Microsoft 365, ya tienes IA generativa en tu flujo de trabajo —sin decisión consciente, sin un costo adicional que percibas directamente, y con acceso a datos que ningún usuario individual podría ofrecer al sistema.</p>
+      <p>La paradoja es visible: el creador independiente negocia límites de tokens y velocidad de respuesta. La corporación Fortune 500 tiene un ejecutivo de cuenta de Anthropic y un SLA garantizado. La herramienta es la misma. El acceso, radicalmente distinto.</p>
+    </div>
+
+    <h3 class="subsection">§ También critican lo que financian</h3>
+
+    <div class="body-text fade-in">
+      <p>Hay algo que merece señalarse con precisión: muchos de los que critican públicamente la IA generativa —señalando riesgos de desinformación, erosión del empleo creativo, sesgos algorítmicos— son, al mismo tiempo, los que financian su desarrollo o integran sus capacidades en sus productos. Google, Meta, Microsoft: ninguna de estas compañías es ajena a las advertencias sobre el impacto social de la IA. Y ninguna ha detenido su inversión por esas razones.</p>
+
+      <p>Esto no es hipocresía pura —es la ambigüedad estructural de cualquier tecnología transformadora. Las mismas compañías que financiaron la red social sabían de sus efectos sobre la salud mental y la polarización política. El capital no espera certidumbre ética. Va hacia donde hay demanda y escasez. Y en este momento, la IA generativa tiene ambas.</p>
+    </div>
+
+    <div class="pullquote fade-in">
+      <p>Los que critican la IA generativa con más convicción y los que más dinero han puesto en ella con frecuencia son los mismos actores. Eso no es contradicción. Es la descripción exacta de cómo funciona cualquier industria que cambia el mundo.</p>
+      <cite>— Editorial SIGNAL</cite>
+    </div>
+  </section>
+
+  <div class="divider"><span>§ III</span></div>
+
+  <!-- ── SECCIÓN III ── -->
+  <section id="lapregunta">
+    <h2 class="section-title">III. La pregunta que todos nos hacemos</h2>
+    <h3 class="subsection">§ Si ya invirtieron billones, ¿por qué nos cobran a nosotros?</h3>
+
+    <div class="body-text fade-in">
+      <p>La pregunta parece simple y casi tonta de tan obvia. Si Google pone cuarenta mil millones en Anthropic, si Microsoft lleva años inyectando capital en OpenAI, si la infraestructura ya está construida y los modelos ya están entrenados, ¿por qué el usuario que paga veinte dólares al mes —el artista, el diseñador, el escritor, el creador independiente— tiene que seguir poniendo su cuota mensual? ¿Por qué existe ese fee?</p>
+
+      <p>La respuesta honesta tiene varias capas. La primera: estas empresas no son rentables todavía. OpenAI generaba $2.000 millones al mes en ingresos en 2026 pero quema capital a una velocidad que hace de ese número una referencia relativa. Anthropic pasó de $9.000 millones anualizados a fines de 2025 a más de $30.000 millones en tasa anualizada en 2026 —crecimiento explosivo que requiere inversión igualmente explosiva en chips, centros de datos y talento. El cómputo que usa tu prompt cuesta dinero real, en tiempo real.</p>
+    </div>
+
+    <div class="fact-box fade-in">
+      <div class="fact-box-label">Lo que cuesta realmente usar la IA — contexto económico</div>
+      <p>Desde finales de 2022, las empresas de IA subsidiaron masivamente el acceso para crear hábito en los usuarios, vendiendo servicios muy por debajo de su costo real. Ese período terminó. En 2025–2026, las plataformas comenzaron a trasladar el costo real a usuarios y empresas.</p>
+      <p>Un usuario que quiera acceso completo a ChatGPT, Claude y Midjourney en 2026 paga <strong>entre $50 y $70 USD mensuales en suscripciones apiladas</strong>. El plan Pro de OpenAI, para uso intensivo, llega a $200 USD al mes.</p>
+      <p>ChatGPT superó los <strong>50 millones de suscriptores de pago</strong> en 2026, frente a 20 millones estimados a principios de 2025. OpenAI añadía aproximadamente 433.000 suscriptores de pago por semana desde julio de 2025.</p>
+      <p>A pesar de esos ingresos, los reportes financieros del sector indican que el costo de servir a cada suscriptor sigue siendo mayor que el ingreso que genera. El subsidio no ha desaparecido; se ha reducido. Los precios seguirán subiendo.</p>
+    </div>
+
+    <div class="body-text fade-in">
+      <p>La segunda capa de la respuesta es más estructural: el usuario que paga no está pagando solo por acceso a la herramienta. Está pagando por participar en el entrenamiento continuo del modelo. Cada prompt, cada corrección, cada interacción donde dices "esto estuvo bien" o "esto no era lo que quería" es dato de retroalimentación que mejora el sistema. En la jerga de la industria, se llama RLHF —Reinforcement Learning from Human Feedback. Los usuarios son, también, trabajadores no remunerados del refinamiento del producto.</p>
+
+      <p>Esto no es una acusación de mala fe. Es la economía de plataforma que ya conocemos de las redes sociales, aplicada al campo de la IA. La diferencia es que en este caso el producto final no son anuncios personalizados —es el modelo más capaz de responder preguntas, generar imágenes, escribir código o crear arte. Y tú, pagando tu suscripción y usando la herramienta, estás contribuyendo a construirlo.</p>
+
+      <p>¿Es justo? Esa es otra pregunta. Pero primero conviene entender qué es lo que está pasando.</p>
+    </div>
+
+    <div class="alert-box fade-in">
+      <div class="alert-box-label">Nota sobre señalamientos y crítica social</div>
+      <p>No solo cae presión sobre las empresas de IA: quienes usamos estas herramientas para crear también recibimos cuestionamientos sobre autoría, originalidad y ética. Esos señalamientos no van a desaparecer. Pero es útil recordar que el debate sobre si el fotógrafo era "realmente" un artista duró décadas, y lo resolvió el tiempo —no la discusión.</p>
+    </div>
+  </section>
+
+  <div class="divider"><span>§ IV</span></div>
+
+  <!-- ── SECCIÓN IV ── -->
+  <section id="curador">
+    <h2 class="section-title">IV. El curador como artista</h2>
+    <h3 class="subsection">§ Quién destacará no será quien genere más</h3>
+
+    <div class="body-text fade-in">
+      <p>La red está llena de imágenes, videos y audios generados por IA. La cantidad es incontable y crece a velocidades que no tienen precedente histórico. Spotify reportó que el volumen de tracks subidos a la plataforma se duplicó entre 2022 y 2025, con una parte significativa atribuida a contenido generado o asistido por IA. Las plataformas de imágenes, los repositorios de video, los servicios de stock visual: todos experimentan la misma presión de volumen. El prompt, en manos de cualquiera, produce.</p>
+
+      <p>Y aquí está el punto que más nos interesa en SIGNAL, el que creemos que define el próximo capítulo de la conversación: en ese océano de producción automática, quien va a destacar no será quien tenga el prompt más fino ni la técnica más pulida. Será quien tenga criterio. Quien tenga gusto. Quien sepa, de entre mil imágenes generadas, cuál es la única que vale la pena mostrar.</p>
+    </div>
+
+    <div class="destacado fade-in" data-word="CRITERIO">
+      <div class="destacado-label">La nueva función del artista</div>
+      <h3>Del hacedor al curador: el desplazamiento del valor</h3>
+      <p>Teóricos del diseño y la museografía ya tienen nombre para este fenómeno: el artista híbrido. Alguien que no se define por su destreza técnica manual, sino por su capacidad crítica de selección. Como lo describió un investigador en el campo: "De las mil iteraciones que da la máquina, 999 son ruido. El valor está en saber cuál es la que no lo es."</p>
+      <p>La curaduría —la selección informada, la edición con criterio estético e intencional— siempre fue una forma de arte en sí misma. Los grandes editores fotográficos, los directores de arte de revista, los comisarios de exposición: todos ejercían un poder creativo que no residía en producir, sino en elegir. La IA generativa no elimina ese poder. Lo vuelve más visible, más necesario, más escaso.</p>
+      <p>Cuando las barreras técnicas desaparecen —cuando cualquiera puede generar una imagen de calidad visual aceptable con tres palabras— el diseño se traslada del hacer al pensar. Del proceso al criterio. De la habilidad a la posición.</p>
+    </div>
+
+    <h3 class="subsection">§ La AI artist como categoría propia</h3>
+
+    <div class="body-text fade-in">
+      <p>La pregunta que sigue es cuándo y cómo los AI artists van a formar parte del conglomerado de artistas reconocidos. No como una categoría de segundo orden, no como "los que usan IA", sino como creadores contemporáneos cuyo medio es esta tecnología, de la misma manera que el medio de otro artista puede ser la cerámica o la instalación de luz.</p>
+
+      <p>El proceso ya está en marcha. Museos y galerías han comenzado a adaptar sus espacios para incluir obras generadas con IA. Las escuelas de arte integran asignaturas sobre algoritmos creativos y dirección de sistemas de inteligencia artificial. Universidades ofrecen especializaciones en lo que el mercado llama prompt engineering pero que, con más precisión, es una forma sofisticada de comunicación creativa: dar contexto, intención y dirección a un sistema que produce.</p>
+
+      <p>El que no sepa hacer que estas herramientas trabajen para su visión no está en desventaja técnica. Está en desventaja comunicativa. Y eso —la comunicación de lo que quieres ver en el mundo— siempre fue el núcleo de lo que hacen los artistas.</p>
+    </div>
+
+    <div class="pullquote fade-in">
+      <p>Lo que va a importar no es cuántas imágenes puedes generar por hora. Es si tienes la formación, el gusto y el ojo entrenado para reconocer, entre toda esa producción, lo que vale la pena existir.</p>
+      <cite>— Editorial SIGNAL</cite>
+    </div>
+  </section>
+
+  <div class="divider"><span>§ V</span></div>
+
+  <!-- ── OPINIÓN ── -->
+  <section id="opinion">
+    <h2 class="section-title">V. Punto de vista editorial</h2>
+    <h3 class="subsection">§ Lo que no habíamos dicho antes</h3>
+
+    <div class="opinion-block fade-in">
+      <div class="opinion-label">Posición editorial</div>
+
+      <p>Antes hablamos de la IA generativa como herramienta de expresión, como medio para quienes nunca tuvieron acceso a herramientas técnicas. Eso sigue siendo verdad. Pero en este artículo queríamos ir a donde la narrativa se pone incómoda: al dinero, al poder, a la asimetría.</p>
+
+      <p>No ignoramos que estas herramientas fueron construidas sobre millones de obras humanas sin consentimiento explícito de sus autores. Eso es un problema real, con implicaciones legales y éticas que todavía están siendo resueltas en los tribunales y en los pasillos legislativos. No tenemos una solución, pero sí una posición: el reconocimiento importa. La compensación importa. Y las empresas que construyeron estos modelos sobre el legado cultural humano tienen una deuda que aún no han cuantificado correctamente.</p>
+
+      <p>Al mismo tiempo, creemos que el uso de estas herramientas por parte de creadores individuales —con criterio, con intención, con conocimiento de lo que están haciendo— es legítimo. No porque sea perfecto. Sino porque la historia de las herramientas creativas nunca fue perfecta. La fotografía usó luz robada de la realidad. El cine usó historias que se parecían mucho a otras historias. El sampler de hip-hop usó fragmentos de otras canciones. La creatividad siempre operó en los límites de lo que ya existía.</p>
+
+      <p>Lo que sí nos preocupa —y lo decimos con claridad— es la concentración. Cinco empresas con acceso a infraestructura que ningún estado latinoamericano podría replicar están tomando decisiones sobre cómo funciona una herramienta que millones de personas usamos para crear, trabajar y pensar. Eso tiene consecuencias que van mucho más allá del arte. Y conviene no mirar para otro lado.</p>
+
+      <p>Seguimos aquí. Documentando. Preguntando. Creando con estas herramientas mientras tratamos de entender dentro de qué sistema lo estamos haciendo.</p>
+
+      <div class="opinion-author">
+        Gerardo Ventura · Editor · SIGNAL · Junio 2026
+        <a href="https://instagram.com/gfvc1978" target="_blank" class="instagram" rel="noopener" style="margin-left: 0.5rem;"><i class="fa-brands fa-instagram"></i> @gfvc1978</a>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /page -->
+
+<!-- ── CIERRE ── -->
+</article>
+
+<!-- ══ FOOTER ══ -->
+<footer class="mag-footer">
+  <div class="logo">SIGNAL<span style="color:var(--accent)">.</span></div>
+  <div>Arte generativo e inteligencia artificial</div>
+  <div class="mag-footer-social">
+    <a href="https://www.instagram.com/signal.ai.mag/" target="_blank" rel="noopener">Instagram</a>
+    <span style="color:#3a3630">·</span>
+    <a href="https://substack.com/@signalmag" target="_blank" rel="noopener">Substack</a>
+    <span style="color:#3a3630">·</span>
+    <a href="https://signalzine.rf.gd/" target="_blank" rel="noopener">Web</a>
+    <span style="color:#3a3630">·</span>
+    <a href="mailto:revista.signal@gmail.com">Email</a>
+  </div>
+</footer>
+
+<script>
+  // Fade-in con IntersectionObserver
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => {
+          e.target.classList.add('visible');
+        }, i * 80);
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08 });
+
+  document.querySelectorAll('.fade-in').forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>

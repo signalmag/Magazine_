@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGNAL — JSON: el lenguaje secreto para mejores imágenes con IA</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,900;1,9..144,400;1,9..144,600&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;1,7..72,400;1,7..72,500&family=Space+Mono:wght@400;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+  :root {
+    --ink: #1b1a1f;
+    --paper: #f6f4ee;
+    --paper-dark: #ece7d9;
+    --accent: #ff7a45;
+    --accent-light: #ffb385;
+    --teal: #2fc7ae;
+    --muted: #6b6759;
+    --rule: #ddd5bf;
+    --dusk: #131218;
+    --dusk2: #1c1a24;
+    --dusk3: #26232f;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Literata', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.7;
+    padding-top: 44px;
+  }
+
+  /* ══ SIGNAL NAV ══ */
+  .signal-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: var(--dusk); border-bottom: 2px solid var(--accent);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem; height: 44px;
+    font-family: 'Space Mono', monospace; font-size: 0.58rem;
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .signal-nav__home { display: flex; align-items: center; gap: 0.8rem; text-decoration: none; color: var(--paper); }
+  .signal-nav__logo { font-family: 'Fraunces', serif; font-size: 0.9rem; font-weight: 900; letter-spacing: 0.05em; text-transform: none; }
+  .signal-nav__ed { color: var(--accent-light); font-size: 0.55rem; border-left: 1px solid #33303c; padding-left: 0.8rem; }
+  .signal-nav__home:hover { opacity: 0.8; }
+  .signal-nav__trail { color: #726d80; font-size: 0.55rem; }
+  .signal-nav__current { color: var(--accent-light); }
+  .signal-nav__arrows { display: flex; align-items: center; gap: 0.6rem; }
+  .signal-nav__arrows a {
+    display: inline-flex; align-items: center; color: #f6f4ee; background: #232030;
+    border: 1px solid #37333f; text-decoration: none; padding: 0.3rem 0.7rem;
+    font-size: 0.55rem; letter-spacing: 0.1em; transition: background 0.2s, border-color 0.2s, color 0.2s;
+    white-space: nowrap;
+  }
+  .signal-nav__arrows a:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .signal-nav__disabled {
+    display: inline-flex; color: #4c4858; background: #17151d;
+    border: 1px solid #241f2c; padding: 0.3rem 0.7rem; font-size: 0.55rem;
+    letter-spacing: 0.1em; opacity: 0.5; cursor: not-allowed;
+  }
+  .signal-nav__sep { color: #35313e; padding: 0 0.2rem; }
+  @media (max-width: 680px) { .signal-nav__trail { display: none; } .signal-nav { padding: 0 1rem; } }
+
+  /* ── COVER ── */
+  .cover {
+    min-height: calc(100vh - 40px);
+    background:
+      radial-gradient(ellipse 60% 45% at 18% 12%, rgba(255,122,69,0.30), transparent 60%),
+      radial-gradient(ellipse 55% 50% at 88% 8%, rgba(47,199,174,0.24), transparent 65%),
+      radial-gradient(ellipse 70% 60% at 50% 100%, rgba(255,179,133,0.14), transparent 70%),
+      linear-gradient(115deg, rgba(19,18,24,1) 0%, rgba(28,26,36,0.94) 38%, rgba(38,35,47,0.15) 100%),
+      url('https://images.stockcake.com/public/9/3/4/934136a9-9895-43a6-ad25-519e796dfffe_large/coding-close-up-view-stockcake.jpg') center 35% / cover no-repeat;
+    display: grid; grid-template-rows: auto 1fr auto;
+    position: relative; overflow: hidden;
+  }
+  .cover-grain {
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+    pointer-events: none; opacity: 0.7;
+  }
+  .json-mark {
+    position: absolute; border-radius: 22px; filter: blur(1.5px); pointer-events: none;
+  }
+  .cover .json-mark--main {
+    width: 460px; height: 460px; right: -110px; top: 6%;
+    background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.14), rgba(255,122,69,0.14) 40%, transparent 72%);
+    border: 1px solid rgba(255,255,255,0.10); transform: rotate(8deg);
+    animation: breathe 7s ease-in-out infinite;
+  }
+  .cover .json-mark--small {
+    width: 170px; height: 170px; left: 6%; bottom: 16%;
+    background: radial-gradient(circle at 40% 40%, rgba(47,199,174,0.30), transparent 70%);
+    border: 1px solid rgba(255,255,255,0.08); transform: rotate(-6deg);
+    animation: breathe 9s ease-in-out infinite 1.5s;
+  }
+  @keyframes breathe { 0%,100% { transform: scale(1) rotate(6deg); opacity: 0.75; } 50% { transform: scale(1.05) rotate(4deg); opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .json-mark, .cover-logo, .cover-headline, .cover-subhead { animation: none !important; } }
+
+  .masthead { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: #8a8598; letter-spacing: 0.15em; text-transform: uppercase; line-height: 1.8; position: relative; z-index: 1; }
+  .cover-header { display: flex; justify-content: space-between; align-items: flex-start; padding: 2.5rem 3rem 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.08); position: relative; z-index: 1; }
+  .cover-logo { font-family: 'Fraunces', serif; font-size: 5rem; font-weight: 600; color: var(--paper); letter-spacing: -0.01em; line-height: 1; text-align: left; padding: 3rem 3rem 0; position: relative; z-index: 1; animation: fadeUp 0.9s ease forwards; }
+  .cover-logo span { color: var(--accent-light); }
+  .cover-tagline { font-family: 'Space Mono', monospace; font-weight: 900; font-size: 0.6rem; color: #85809a; letter-spacing: 0.3em; text-transform: uppercase; text-align:left; margin-top: 0.6rem; }
+  .cover-main { display: flex; flex-direction: column; justify-content: flex-end; padding: 2rem 3rem 3rem; position: relative; z-index: 1; }
+  .cover-issue { font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--accent-light); letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.8rem; }
+  .cover-headline { font-family: 'Fraunces', serif; font-size: clamp(2.2rem, 5vw, 3.9rem); font-weight: 500; color: var(--paper); line-height: 1.14; max-width: 780px; animation: fadeUp 0.9s 0.2s ease forwards; opacity: 0; }
+  .cover-headline em { color: var(--accent-light); font-style: italic; font-weight: 400; }
+  .cover-headline code { font-family: 'JetBrains Mono', monospace; color: var(--teal); font-style: normal; font-size: 0.82em; }
+  .cover-subhead { margin-top: 1.3rem; font-family: 'Literata', serif; font-size: 1.1rem; color: #b0aabf; max-width: 580px; line-height: 1.65; animation: fadeUp 0.9s 0.4s ease forwards; opacity: 0; }
+  .cover-footer { display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 3rem; border-top: 1px solid rgba(255,255,255,0.08); position: relative; z-index: 1; }
+  .cover-index { display: flex; gap: 2.2rem; flex-wrap: wrap; }
+  .cover-index-item { font-family: 'Space Mono', monospace; font-size: 0.56rem; color: #78738a; letter-spacing: 0.08em; text-transform: uppercase; }
+  .cover-index-item strong { display: block; color: #c2bcd1; font-size: 0.62rem; margin-bottom: 0.2rem; }
+
+  /* ── SOCIAL BAR ── */
+  .social-bar { display: flex; align-items: center; gap: 1rem; margin-top: 1.6rem; padding-top: 1.6rem; border-top: 1px solid rgba(255,255,255,0.08); flex-wrap: wrap; }
+  .social-link { display: inline-flex; align-items: center; gap: 0.5rem; font-family: 'Space Mono', monospace; font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; padding: 0.4rem 0.8rem; border: 1px solid rgba(255,255,255,0.14); color: #c2bcd1; border-radius: 30px; transition: all 0.2s ease; }
+  .social-link svg { width: 12px; height: 12px; fill: currentColor; }
+  .social-link:hover { border-color: var(--accent-light); color: var(--accent-light); }
+  .instagram { display: inline-flex; align-items: center; gap: 2px; padding: 1px 4px; border-radius: 20px; text-decoration: none; color: #fff; font-weight: 600; background: linear-gradient(45deg,#f09433,#e1306c,#833ab4); }
+  .instagram:hover { opacity: .9; }
+
+  /* ── LAYOUT ── */
+  .page { max-width: 900px; margin: 0 auto; padding: 5rem 3rem; }
+
+  /* ── INDEX PAGE ── */
+  .index-page { background: var(--paper-dark); }
+  .section-label { font-family: 'Space Mono', monospace; font-size: 0.6rem; font-weight: 500; color: var(--accent); letter-spacing: 0.3em; text-transform: uppercase; margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
+  .index-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .index-item { background: var(--paper); padding: 2rem 2.3rem; text-decoration: none; color: inherit; display: block; border: 1px solid var(--rule); border-radius: 18px; transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease; }
+  .index-item:hover { background: #fff; transform: translateY(-3px); box-shadow: 0 14px 30px -18px rgba(27,26,31,0.3); }
+  .index-num { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 600; color: var(--accent); letter-spacing: 0.02em; margin-bottom: 0.9rem; }
+  .index-title { font-family: 'Fraunces', serif; font-size: 1.2rem; font-weight: 600; line-height: 1.3; margin-bottom: 0.6rem; }
+  .index-desc { font-family: 'Space Mono', monospace; font-size: 0.58rem; color: var(--muted); letter-spacing: 0.03em; line-height: 1.6; }
+
+  /* ── ARTICLE HEADER ── */
+  .article-header { border-bottom: 1px solid var(--rule); padding-bottom: 3rem; margin-bottom: 3rem; }
+  .article-category { font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--teal); letter-spacing: 0.3em; text-transform: uppercase; margin-bottom: 1.5rem; }
+  h1.article-title { font-family: 'Fraunces', serif; font-size: clamp(2rem, 4vw, 3.1rem); font-weight: 600; line-height: 1.1; margin-bottom: 1rem; }
+  h1.article-title em { font-style: italic; color: var(--accent); font-weight: 500; }
+  .article-deck { font-family: 'Literata', serif; font-size: 1.25rem; font-weight: 400; font-style: italic; color: var(--muted); line-height: 1.6; max-width: 640px; border-left: 3px solid var(--accent); padding-left: 1.5rem; margin-top: 1.5rem; }
+  .article-meta { display: flex; gap: 2rem; margin-top: 2rem; flex-wrap: wrap; }
+  .meta-item { font-family: 'Space Mono', monospace; font-size: 0.58rem; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; }
+  .meta-item strong { display: block; color: var(--ink); font-size: 0.6rem; margin-bottom: 0.2rem; }
+
+  /* ── SECCIONES ── */
+  .phase-eyebrow { display: inline-flex; align-items: center; gap: 0.6rem; font-family: 'Space Mono', monospace; font-size: 0.6rem; color: var(--teal); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 1rem; padding: 0.35rem 0.8rem 0.35rem 0.5rem; border: 1px solid var(--rule); border-radius: 30px; }
+  .phase-eyebrow .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--teal); flex-shrink: 0; }
+  h2.section-title { font-family: 'Fraunces', serif; font-size: clamp(1.5rem, 3vw, 2.2rem); font-weight: 600; line-height: 1.2; margin-bottom: 1.5rem; }
+  h3.subsection { font-family: 'Space Mono', monospace; font-size: 0.62rem; color: var(--teal); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 2rem; }
+  .body-text p { margin-bottom: 1.5em; }
+  .body-text p:last-child { margin-bottom: 0; }
+  .body-text em { color: var(--accent); font-style: italic; }
+  .body-text code { font-family: 'JetBrains Mono', monospace; font-size: 0.85em; background: var(--paper-dark); border: 1px solid var(--rule); border-radius: 4px; padding: 0.1em 0.4em; color: var(--ink); }
+
+  /* ── DIVIDER ── */
+  .divider { display: flex; align-items: center; gap: 1.2rem; margin: 4rem 0; color: var(--rule); }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
+  .divider .divider-mark { width: 22px; height: 22px; border-radius: 6px; flex-shrink: 0; background: radial-gradient(circle at 35% 35%, #fff, var(--accent-light) 45%, transparent 75%); border: 1px solid var(--rule); transform: rotate(12deg); }
+
+  /* ── PULLQUOTE ── */
+  .pullquote { background: var(--dusk); color: var(--paper); padding: 3rem 3.5rem; margin: 3rem 0; position: relative; border-radius: 22px; overflow: hidden; }
+  .pullquote::before { content: ''; position: absolute; width: 260px; height: 260px; border-radius: 50%; right: -80px; top: -100px; background: radial-gradient(circle, rgba(255,122,69,0.32), transparent 70%); }
+  .pullquote p { font-family: 'Fraunces', serif; font-size: clamp(1.2rem, 2.5vw, 1.6rem); font-style: italic; font-weight: 400; line-height: 1.4; position: relative; z-index: 1; }
+  .pullquote cite { display: block; margin-top: 1.5rem; font-family: 'Space Mono', monospace; font-size: 0.6rem; color: #b0aabf; letter-spacing: 0.1em; font-style: normal; position: relative; z-index: 1; }
+
+  /* ── FACT BOX ── */
+  .fact-box { border: 1px solid var(--rule); border-left: 4px solid var(--accent); padding: 2rem 2.5rem; margin: 3rem 0; background: var(--paper-dark); border-radius: 0 18px 18px 0; }
+  .fact-box-label { font-family: 'Space Mono', monospace; font-size: 0.58rem; color: var(--accent); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 1.2rem; }
+  .fact-box p { margin-bottom: 1em; font-size: 0.95rem; }
+  .fact-box p:last-child { margin-bottom: 0; }
+  .fact-box.teal { border-left-color: var(--teal); }
+  .fact-box.teal .fact-box-label { color: var(--teal); }
+
+  /* ── GLOSARIO ── */
+  .glossary { background: var(--paper-dark); border: 1px solid var(--rule); border-left: 4px solid var(--teal); padding: 2rem 2.5rem; margin: 3rem 0; border-radius: 0 18px 18px 0; }
+  .glossary-label { font-family: 'Space Mono', monospace; font-size: 0.58rem; color: var(--teal); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 1.5rem; padding-bottom: 0.8rem; border-bottom: 1px solid var(--rule); }
+  .glossary-item { display: grid; grid-template-columns: 190px 1fr; gap: 1.5rem; padding: 0.9rem 0; border-bottom: 1px solid var(--rule); align-items: baseline; }
+  .glossary-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .glossary-term { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.85rem; color: var(--ink); }
+  .glossary-def { font-size: 0.9rem; color: var(--muted); line-height: 1.55; }
+
+  /* ── TABLA DE VARIABLES ── */
+  .var-table { width: 100%; border-collapse: collapse; margin: 2.5rem 0; font-size: 0.85rem; border: 1px solid var(--rule); border-radius: 14px; overflow: hidden; }
+  .var-table thead th { background: var(--dusk); color: var(--paper); font-family: 'Space Mono', monospace; font-size: 0.56rem; letter-spacing: 0.12em; text-transform: uppercase; text-align: left; padding: 0.9rem 1.1rem; }
+  .var-table tbody td { padding: 0.85rem 1.1rem; border-top: 1px solid var(--rule); vertical-align: top; background: var(--paper); }
+  .var-table tbody tr:nth-child(even) td { background: var(--paper-dark); }
+  .var-table code { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--accent); }
+  .var-table .control-tag { display: inline-block; font-family: 'Space Mono', monospace; font-size: 0.52rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.18rem 0.55rem; border-radius: 20px; border: 1px solid var(--rule); color: var(--muted); white-space: nowrap; }
+  .var-table .control-tag.dropdown { border-color: var(--teal); color: var(--teal); }
+  .var-table .control-tag.text { border-color: var(--accent); color: var(--accent); }
+  .var-table .control-tag.list { border-color: var(--muted); }
+  @media (max-width: 680px) { .var-table { font-size: 0.75rem; } .var-table thead th, .var-table tbody td { padding: 0.6rem 0.6rem; } }
+
+  /* ── GRID de herramientas ── */
+  .tool-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin: 3rem 0; }
+  .tool-card { background: var(--paper-dark); border: 1px solid var(--rule); border-radius: 16px; padding: 1.8rem 2rem; position: relative; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+  .tool-card:hover { transform: translateY(-3px); box-shadow: 0 16px 32px -20px rgba(27,26,31,0.35); }
+  .tool-card__img { width: 100%; height: 170px; object-fit: cover; display: block; border-radius: 12px; margin-bottom: 1.2rem; cursor: zoom-in; transition: opacity 0.2s ease; }
+  .tool-card__img:hover { opacity: 0.88; }
+  .tool-card--flagship .tool-card__img { height: 250px; }
+  .tool-card__tag { font-family: 'Space Mono', monospace; font-size: 0.54rem; color: var(--teal); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.6rem; }
+  .tool-card__title { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 600; line-height: 1.25; margin-bottom: 0.7rem; }
+  .tool-card__desc { font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
+  .tool-card--flagship { grid-column: 1 / -1; background: var(--dusk); color: var(--paper); border: none; }
+  .tool-card--flagship .tool-card__tag { color: var(--accent-light); }
+  .tool-card--flagship .tool-card__title { color: var(--paper); }
+  .tool-card--flagship .tool-card__desc { color: #c2bcd1; }
+  @media (max-width: 680px) { .tool-grid { grid-template-columns: 1fr; } }
+
+  /* ── IMAGEN CON PIE ── */
+  .article-image { margin: 3rem 0; position: relative; }
+  .article-image img { width: 100%; display: block; border-radius: 16px; border: 1px solid var(--rule); cursor: zoom-in; transition: opacity 0.2s ease; }
+  .article-image img:hover { opacity: 0.92; }
+  .article-image figcaption { display: flex; gap: 1.2rem; align-items: flex-start; padding: 1rem 1.2rem; background: var(--paper-dark); border: 1px solid var(--rule); border-top: none; border-radius: 0 0 16px 16px; }
+  .article-image figcaption .fig-label { font-family: 'Space Mono', monospace; font-size: 0.52rem; color: var(--accent); letter-spacing: 0.2em; text-transform: uppercase; white-space: nowrap; margin-top: 0.15rem; flex-shrink: 0; }
+  .article-image figcaption .fig-text { font-family: 'Literata', serif; font-size: 0.88rem; color: var(--muted); font-style: italic; line-height: 1.55; }
+  .article-image figcaption .fig-text strong { color: var(--ink); font-style: normal; font-weight: 600; }
+
+  /* ── LIGHTBOX ── */
+  .lightbox-overlay { position: fixed; inset: 0; z-index: 3000; background: rgba(8,7,12,0.92); display: flex; align-items: center; justify-content: center; padding: 3rem 2rem; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
+  .lightbox-overlay.active { opacity: 1; pointer-events: auto; }
+  .lightbox-overlay img { max-width: 92vw; max-height: 88vh; border-radius: 12px; box-shadow: 0 40px 100px -20px rgba(0,0,0,0.6); }
+  .lightbox-caption { position: absolute; bottom: 2rem; left: 0; right: 0; text-align: center; color: #d3cee0; font-family: 'Literata', serif; font-style: italic; font-size: 0.95rem; padding: 0 3rem; }
+  .lightbox-close { position: absolute; top: 1.8rem; right: 2rem; color: #fff; font-family: 'Space Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(255,255,255,0.3); padding: 0.5rem 1.1rem; border-radius: 30px; background: rgba(255,255,255,0.06); transition: background 0.2s ease; }
+  .lightbox-close:hover { background: rgba(255,255,255,0.14); }
+  @media (max-width: 680px) { .lightbox-close { top: 1rem; right: 1rem; } .lightbox-caption { font-size: 0.82rem; padding: 0 1.5rem; } }
+
+  /* ── HERRAMIENTA: GENERADOR JSON ── */
+  .builder { background: var(--dusk); border-radius: 24px; margin: 3rem 0; overflow: hidden; position: relative; }
+  .builder::before { content: ''; position: absolute; width: 320px; height: 320px; border-radius: 50%; right: -140px; top: -160px; background: radial-gradient(circle, rgba(47,199,174,0.22), transparent 70%); pointer-events: none; }
+  .builder-head { display: flex; align-items: center; gap: 0.9rem; padding: 1.5rem 2rem; border-bottom: 1px solid rgba(255,255,255,0.1); position: relative; z-index: 1; }
+  .builder-dots { display: flex; gap: 0.4rem; }
+  .builder-dots span { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .builder-dots span:nth-child(1) { background: #ff7a45; }
+  .builder-dots span:nth-child(2) { background: #ffd166; }
+  .builder-dots span:nth-child(3) { background: #2fc7ae; }
+  .builder-title { font-family: 'Space Mono', monospace; font-size: 0.62rem; color: #c2bcd1; letter-spacing: 0.15em; text-transform: uppercase; }
+  .builder-body { display: grid; grid-template-columns: 1fr 1fr; gap: 0; position: relative; z-index: 1; }
+  .builder-form { padding: 2rem; border-right: 1px solid rgba(255,255,255,0.08); }
+  .builder-output { padding: 2rem; background: #0e0d13; }
+  @media (max-width: 780px) { .builder-body { grid-template-columns: 1fr; } .builder-form { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); } }
+
+  .field { margin-bottom: 1.3rem; }
+  .field label { display: block; font-family: 'Space Mono', monospace; font-size: 0.55rem; color: var(--accent-light); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .field .hint { display: block; font-family: 'Literata', serif; font-size: 0.72rem; font-style: italic; color: #857f96; margin-top: 0.35rem; }
+  .field select, .field input[type="text"], .field textarea {
+    width: 100%; background: #1c1a24; border: 1px solid #35313e; color: var(--paper);
+    font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; padding: 0.65rem 0.8rem;
+    border-radius: 8px; outline: none; transition: border-color 0.15s ease;
+  }
+  .field select:focus, .field input[type="text"]:focus, .field textarea:focus { border-color: var(--accent); }
+  .field textarea { resize: vertical; min-height: 52px; font-family: 'JetBrains Mono', monospace; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .field-toggle { display: flex; align-items: center; gap: 0.6rem; }
+  .field-toggle input { width: 16px; height: 16px; accent-color: var(--accent); }
+  .field-toggle label { margin-bottom: 0; }
+
+  .output-label { font-family: 'Space Mono', monospace; font-size: 0.56rem; color: #857f96; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.9rem; display: flex; justify-content: space-between; align-items: center; }
+  .copy-btn { font-family: 'Space Mono', monospace; font-size: 0.54rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dusk); background: var(--teal); border: none; padding: 0.4rem 0.8rem; border-radius: 20px; cursor: pointer; transition: opacity 0.15s ease; }
+  .copy-btn:hover { opacity: 0.85; }
+  .copy-btn.copied { background: var(--accent); }
+  #jsonOutput { font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; line-height: 1.65; color: #e4e0ee; white-space: pre-wrap; word-break: break-word; max-height: 420px; overflow-y: auto; }
+  .json-key { color: #7fd8c9; }
+  .json-str { color: #ffb385; }
+  .json-punc { color: #6b6779; }
+  .json-num { color: #b8a4ff; }
+  .flat-output { margin-top: 1.4rem; padding-top: 1.4rem; border-top: 1px dashed #35313e; }
+  .flat-output .output-label { margin-bottom: 0.7rem; }
+  #flatOutput { font-family: 'JetBrains Mono', monospace; font-size: 0.74rem; color: #b0aabf; line-height: 1.6; }
+  .builder-note { padding: 1rem 2rem 1.6rem; font-family: 'Space Mono', monospace; font-size: 0.6rem; color: #857f96; letter-spacing: 0.03em; line-height: 1.7; border-top: 1px solid rgba(255,255,255,0.08); position: relative; z-index: 1; }
+  .builder-note strong { color: var(--accent-light); }
+
+  /* ── OPINION BLOCK ── */
+  .opinion-block { background: var(--dusk); color: var(--paper); padding: 3.5rem 4rem; margin: 2rem 0; position: relative; border-radius: 24px; overflow: hidden; }
+  .opinion-block::after { content: ''; position: absolute; width: 320px; height: 320px; border-radius: 50%; left: -140px; bottom: -160px; background: radial-gradient(circle, rgba(47,199,174,0.22), transparent 70%); }
+  .opinion-label { font-family: 'Space Mono', monospace; font-size: 0.58rem; color: var(--accent-light); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 1rem; position: relative; z-index: 1; }
+  .opinion-block p { font-size: 1.05rem; margin-bottom: 1.5em; line-height: 1.75; color: #d3cee0; position: relative; z-index: 1; }
+  .opinion-block p:last-of-type { margin-bottom: 0; }
+  .opinion-block em { color: var(--accent-light); font-style: italic; }
+  .opinion-block strong { color: var(--paper); }
+  .opinion-author { font-family: 'Space Mono', monospace; font-size: 0.6rem; color: #857f96; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.12); position: relative; z-index: 1; }
+
+  /* ── CONCLUSION / FOOTER ── */
+  .conclusion { border-top: 2px solid var(--rule); padding-top: 4rem; margin-top: 4rem; }
+  .mag-footer { background: var(--dusk); color: #78738a; padding: 3rem; text-align: center; font-family: 'Space Mono', monospace; font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; line-height: 2.2; }
+  .mag-footer .logo { font-family: 'Fraunces', serif; font-style: italic; font-size: 1.8rem; font-weight: 600; color: var(--paper); letter-spacing: -0.02em; text-transform: none; margin-bottom: 0.5rem; }
+  .mag-footer-social { margin-top: 1rem; display: flex; gap: 1.5rem; justify-content: center; align-items: center; }
+  .mag-footer-social a { color: #b0aabf; text-decoration: none; transition: color 0.2s; }
+  .mag-footer-social a:hover { color: var(--accent-light); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 680px) {
+    .cover-header { padding: 1.5rem; }
+    .cover-logo { font-size: 3.2rem; padding: 2rem 1.5rem 0; }
+    .cover-main { padding: 1.5rem; }
+    .cover-index { display: none; }
+    .page { padding: 3rem 1.5rem; }
+    .index-grid { grid-template-columns: 1fr; }
+    .glossary-item { grid-template-columns: 1fr; gap: 0.4rem; }
+    .pullquote { padding: 2rem 1.5rem; }
+    .opinion-block { padding: 2.5rem 2rem; }
+    .article-meta { flex-wrap: wrap; gap: 1rem; }
+    .json-mark--main { width: 260px; height: 260px; }
+    .builder-form, .builder-output { padding: 1.4rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ SIGNAL NAV ══ -->
+<nav class="signal-nav">
+  <a class="signal-nav__home" href="../index.html">
+    <span class="signal-nav__logo">S<span style="color:var(--accent-light)">I</span>GN<span style="color:var(--accent-light)">A</span>L<span style="color:var(--accent-light)">.</span></span>
+    <span class="signal-nav__ed">Guía práctica</span>
+  </a>
+  <div class="signal-nav__trail"><span class="signal-nav__current">JSON para imágenes IA</span></div>
+  <div class="signal-nav__arrows">
+    <a href="../index.html">Índice</a>
+    <span class="signal-nav__sep">·</span>
+    <span class="signal-nav__disabled">← Anterior</span>
+    <span class="signal-nav__sep">·</span>
+    <span class="signal-nav__disabled">Siguiente →</span>
+  </div>
+</nav>
+
+<!-- ══ COVER ══ -->
+<section class="cover">
+  <div class="cover-grain"></div>
+  <span class="json-mark json-mark--main"></span>
+  <span class="json-mark json-mark--small"></span>
+
+  <header class="cover-header">
+    <div class="masthead">SIGNAL<br>Guía práctica · IA generativa</div>
+    <div class="masthead" style="text-align:right;">Julio 2026<br>~13 min de lectura</div>
+  </header>
+
+  <div class="cover-main">
+    <div class="cover-issue">Guía práctica — Prompting estructurado</div>
+    <h1 class="cover-headline">Genera&nbsp; <em>imágenes</em> &nbsp;de manera profesional&nbsp;<br>
+ con&nbsp; <code>{ "json" }</code></h1>
+    <p class="cover-subhead">Por qué cambiar de frases sueltas a datos estructurados reduce la ambigüedad, mejora la consistencia entre generaciones — y cómo construir tu propio prompt en formato JSON con una herramienta lista para usar.</p>
+
+    <div class="social-bar">
+      <a href="https://www.instagram.com/signal.ai.mag/" target="_blank" rel="noopener" class="social-link">
+        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.209-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        @signal.ai.mag
+      </a>
+      <a href="https://signalzine.rf.gd/" target="_blank" rel="noopener" class="social-link">
+        <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm-1 17.93V16h2v1.93A8.01 8.01 0 0 1 4.07 13H6v-2H4.07A8.01 8.01 0 0 1 11 4.07V6h2V4.07A8.01 8.01 0 0 1 19.93 11H18v2h1.93A8.01 8.01 0 0 1 13 19.93z"/></svg>
+        signalzine.rf.gd
+      </a>
+      <a href="https://substack.com/@signalmag" target="_blank" rel="noopener" class="social-link">
+        <svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:currentColor"><path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11 22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z"/></svg>
+        Substack
+      </a>
+      <a href="mailto:revista.signal@gmail.com" class="social-link">
+        <svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        revista.signal@gmail.com
+      </a>
+    </div>
+  </div>
+
+  <footer class="cover-footer">
+    <div class="cover-index">
+      <div class="cover-index-item"><strong>01</strong>El problema del lenguaje natural</div>
+      <div class="cover-index-item"><strong>02</strong>Por qué funciona el JSON</div>
+      <div class="cover-index-item"><strong>03</strong>Qué herramientas lo aceptan</div>
+      <div class="cover-index-item"><strong>04</strong>Tutorial + generador</div>
+    </div>
+    <div class="masthead" style="color:#FFF;">revista signal / guía práctica / 2026</div>
+  </footer>
+</section>
+
+<!-- ══ INDEX ══ -->
+<section class="index-page">
+<div class="page">
+  <div class="section-label">Contenido — Guía práctica</div>
+  <div class="index-grid">
+    <a href="#sec-1" class="index-item">
+      <div class="index-num">01</div>
+      <div class="index-title">El problema con "más adjetivos"</div>
+      <div class="index-desc">Por qué apilar palabras en una frase no te da más control sobre el resultado</div>
+    </a>
+    <a href="#sec-2" class="index-item">
+      <div class="index-num">02</div>
+      <div class="index-title">Por qué el JSON sí funciona</div>
+      <div class="index-desc">Ambigüedad, consistencia, modularidad y depuración: las cuatro razones técnicas</div>
+    </a>
+    <a href="#sec-3" class="index-item">
+      <div class="index-num">03</div>
+      <div class="index-title">Qué modelos lo aceptan hoy</div>
+      <div class="index-desc">De Flux 2 a GPT Image 2, Nano Banana Pro y por qué Midjourney es distinto</div>
+    </a>
+    <a href="#sec-4" class="index-item">
+      <div class="index-num">04</div>
+      <div class="index-title">Tutorial + generador de JSON</div>
+      <div class="index-desc">La anatomía de un prompt estructurado y una herramienta para armar el tuyo</div>
+    </a>
+  </div>
+</div>
+</section>
+
+<!-- ══ ARTICLE ══ -->
+<article>
+<div class="page">
+
+  <header class="article-header fade-in" id="sec-1">
+    <div class="article-category">Guía práctica — IA generativa · Prompting · Herramientas</div>
+    <h1 class="article-title">JSON: el lenguaje secreto para <em>mejores</em> imágenes con IA</h1>
+    <p class="article-deck">No es una moda pasajera de X/Twitter: varios de los modelos de imagen más usados en 2026 fueron entrenados o ajustados para leer instrucciones estructuradas, no solo prosa. Esta guía explica por qué funciona y, sobre todo, te da una herramienta para construir el tuyo.</p>
+    <div class="article-meta">
+      <div class="meta-item"><strong>Publicado</strong>Julio 2026</div>
+      <div class="meta-item"><strong>Categoría</strong>Prompting · Herramientas</div>
+      <div class="meta-item"><strong>Incluye</strong>Generador de JSON interactivo</div>
+      <div class="meta-item"><strong>Tiempo de lectura</strong>~13 min</div>
+    </div>
+  </header>
+
+  <!-- SEC 1 -->
+  <section id="sec-1-body">
+    <div class="phase-eyebrow"><span class="dot"></span>01 — El problema</div>
+    <h2 class="section-title fade-in">I. Por qué "más adjetivos" no te da más control</h2>
+    <h3 class="subsection fade-in">§ 01 — La ambigüedad que nadie te explicó</h3>
+
+    <div class="body-text fade-in">
+      <p>Escribes: <em>"un zorro en un bosque al atardecer, estilo cinematográfico, colores cálidos"</em>. El modelo genera algo — casi siempre razonable, a veces sorprendente, con frecuencia no lo que tenías en mente. Vuelves a intentarlo con más palabras. El resultado cambia, pero no de la forma que esperabas: el modelo ajustó la composición cuando tú solo querías cambiar la luz, o cambió el tono de la escena entera cuando solo pediste "más cálido".</p>
+      <p>Esto no es un fallo del modelo: es una consecuencia directa de cómo funciona el lenguaje natural como instrucción. Una frase descriptiva no distingue con claridad qué palabra modifica a qué elemento de la imagen, ni en qué orden de importancia deben aplicarse los atributos. El modelo tiene que <em>inferir</em> la estructura, y esa inferencia es exactamente el punto donde se cuela la variación no deseada.</p>
+    </div>
+
+    <figure class="article-image fade-in">
+      <img class="lightbox-img" src="https://images.stockcake.com/public/6/c/6/6c6a188a-7907-4731-b713-3f1ab75e60cf_large/focused-code-work-stockcake.jpg" alt="Programador concentrado frente a varias pantallas con código, en una habitación con poca luz" loading="lazy">
+      <figcaption>
+        <span class="fig-label">Ref. visual</span>
+        <span class="fig-text"><strong>El cambio de hábito es sutil pero real.</strong> Cada vez más personas que generan imágenes de forma profesional describen su flujo de trabajo como algo más parecido a escribir una configuración que a escribir una frase.</span>
+      </figcaption>
+    </figure>
+
+    <div class="fact-box fade-in">
+      <div class="fact-box-label">La causa técnica — Ambigüedad de superficie</div>
+      <p>Un prompt como <code>"perro grande y gato pequeño jugando"</code> no le dice al modelo si "grande" y "pequeño" son tamaños relativos entre los animales o descripciones absolutas, ni qué tan prioritario es cada detalle frente al resto de la frase. El modelo resuelve esa ambigüedad con su propio criterio estadístico — que no siempre coincide con el tuyo.</p>
+    </div>
+
+    <div class="body-text fade-in">
+      <p>El prompting estructurado —escribir la instrucción como un objeto de datos, típicamente en formato JSON, en lugar de como una oración— no es una técnica nueva inventada por la comunidad: es, en el fondo, el mismo principio que usan las APIs de software desde hace décadas para comunicarse sin ambigüedad entre sistemas distintos. Lo nuevo es que ahora se aplica a la conversación entre una persona y un modelo de imagen.</p>
+    </div>
+  </section>
+
+  <div class="divider fade-in"><span class="divider-mark"></span></div>
+
+  <!-- SEC 2 -->
+  <section id="sec-2">
+    <div class="phase-eyebrow"><span class="dot"></span>02 — El porqué</div>
+    <h2 class="section-title fade-in">II. Por qué el JSON sí produce mejores resultados</h2>
+    <h3 class="subsection fade-in">§ 02 — Cuatro razones, no una</h3>
+
+    <div class="body-text fade-in">
+      <p>Conviene ser preciso aquí: el JSON no es "magia" ni convierte automáticamente un mal prompt en uno bueno. Lo que hace es eliminar una categoría entera de errores — los que vienen de la ambigüedad estructural — y a cambio te obliga a pensar tu imagen como un conjunto explícito de decisiones. Son, en concreto, cuatro ventajas medibles.</p>
+    </div>
+
+    <div class="glossary fade-in">
+      <div class="glossary-label">Las cuatro ventajas del prompting estructurado</div>
+      <div class="glossary-item">
+        <div class="glossary-term">Claridad</div>
+        <div class="glossary-def">Cada atributo vive en su propio campo — <code>lighting</code>, <code>camera</code>, <code>mood</code> — así que el modelo ya no tiene que adivinar si una palabra describe el sujeto, el fondo o el estilo general.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Consistencia</div>
+        <div class="glossary-def">Al generar variaciones o series de imágenes (por ejemplo, para un catálogo de producto), reutilizar el mismo esquema con pequeños cambios produce resultados mucho más homogéneos que reescribir la frase cada vez.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Modularidad</div>
+        <div class="glossary-def">Un prompt en JSON se puede guardar como plantilla, versionar y reutilizar entre proyectos — cambias el campo <code>subject</code> y todo lo demás (estilo, cámara, paleta) se mantiene intacto.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Depuración</div>
+        <div class="glossary-def">Si el resultado sale mal, puedes aislar qué campo específico lo causó — la iluminación, el ángulo, la paleta — en lugar de reescribir el prompt completo por ensayo y error.</div>
+      </div>
+    </div>
+
+    <div class="pullquote fade-in">
+      <p>La diferencia no es que el JSON sea más "poderoso" que el lenguaje natural. Es que convierte un prompt en un contrato explícito — algo que el modelo no tiene que interpretar, sino simplemente leer.</p>
+      <cite>— Editorial SIGNAL, sobre el consenso técnico de 2026 en torno al prompting estructurado</cite>
+    </div>
+
+    <div class="body-text fade-in">
+      <p>Vale la pena mencionar también la otra cara de la moneda, porque ningún método es gratis. El JSON añade una carga cognitiva real para quien recién empieza: hay que cuidar la sintaxis (una coma de más rompe el objeto entero), el resultado es más verboso que una frase corta, y no todos los modelos lo interpretan igual de bien. Algunos simplemente extraen el texto de los valores y descartan la estructura; otros —los diseñados específicamente para esto— sí usan la jerarquía para ponderar cada campo. Por eso la sección siguiente importa tanto como esta.</p>
+    </div>
+  </section>
+
+  <div class="divider fade-in"><span class="divider-mark"></span></div>
+
+  <!-- SEC 3 -->
+  <section id="sec-3">
+    <div class="phase-eyebrow"><span class="dot"></span>03 — El mapa</div>
+    <h2 class="section-title fade-in">III. Qué modelos lo aceptan hoy — y cuáles no</h2>
+    <h3 class="subsection fade-in">§ 03 — No todas las herramientas leen JSON de la misma forma</h3>
+
+    <div class="body-text fade-in">
+      <p>El soporte de JSON como formato de prompt es reciente y todavía desigual entre plataformas. Algunos modelos lo declaran explícitamente como formato soportado en su documentación; otros simplemente lo interpretan razonablemente bien porque su codificador de texto es lo bastante robusto como para extraer sentido de una estructura de datos, aunque no haya sido entrenado específicamente para eso.</p>
+    </div>
+
+    <figure class="article-image fade-in">
+      <img class="lightbox-img" src="https://images.stockcake.com/public/0/d/c/0dc0e0e1-fcb1-4d42-9a0a-36d21dde1ea4_large/advanced-code-interface-stockcake.jpg" alt="Interfaz de código avanzada con colores neón mostrando algoritmos y estructuras de datos complejas" loading="lazy">
+      <figcaption>
+        <span class="fig-label">Ref. visual</span>
+        <span class="fig-text"><strong>La API, no el chat, es el destino natural del JSON.</strong> La mayoría de los flujos de trabajo estructurados ocurren fuera de la caja de texto tradicional — en scripts, plantillas y llamadas directas a la API del modelo.</span>
+      </figcaption>
+    </figure>
+
+    <div class="tool-grid fade-in">
+      <div class="tool-card tool-card--flagship">
+        <img class="tool-card__img lightbox-img" src="https://images.stockcake.com/public/a/3/8/a389c5f7-beef-407b-a625-78c55b8db54e_large/colorful-abstract-art-stockcake.jpg" alt="Composición abstracta y colorida de formas onduladas en rojo, azul y amarillo">
+        <div class="tool-card__tag">Soporte nativo declarado</div>
+        <div class="tool-card__title">Flux 2 y GPT Image 2 (gpt-image-1 / API de OpenAI)</div>
+        <div class="tool-card__desc">Flux 2, de Black Forest Labs, fue uno de los primeros modelos en anunciar explícitamente soporte para prompts JSON. La API de generación de imágenes de OpenAI responde igual de bien a instrucciones estructuradas, y GPT Image 2 añadió además un paso de razonamiento previo que aprovecha esa estructura para planear la composición antes de generar.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card__tag">Buen soporte</div>
+        <div class="tool-card__title">Nano Banana Pro (Gemini)</div>
+        <div class="tool-card__desc">La interfaz de Gemini ofrece soporte nativo para entradas estructuradas, lo que la vuelve especialmente cómoda para prototipar esquemas JSON antes de llevarlos a otra plataforma.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card__tag">Vía workflow</div>
+        <div class="tool-card__title">ComfyUI / Stable Diffusion 3.5</div>
+        <div class="tool-card__desc">No interpretan JSON como texto libre, pero sus flujos de trabajo se exportan y configuran como JSON: nodos personalizados permiten mapear cada campo de tu esquema a un parámetro concreto del pipeline.</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-card__tag">No lo parsea directamente</div>
+        <div class="tool-card__title">Midjourney</div>
+        <div class="tool-card__desc">Midjourney no interpreta la estructura JSON como tal — la lee como texto plano. Para usarla ahí conviene "aplanar" el objeto a una frase descriptiva ordenada, algo que la herramienta de esta guía hace automáticamente.</div>
+      </div>
+    </div>
+
+    <div class="fact-box teal fade-in">
+      <div class="fact-box-label">Nota práctica</div>
+      <p>Si tu plataforma no soporta JSON de forma nativa, el esquema sigue siendo útil: pensar el prompt en campos separados (sujeto, estilo, cámara, luz, paleta) mejora la calidad de la frase final aunque termines escribiéndola en prosa. La estructura es una herramienta de pensamiento tanto como un formato de entrada.</p>
+    </div>
+  </section>
+
+  <div class="divider fade-in"><span class="divider-mark"></span></div>
+
+  <!-- SEC 4 -->
+  <section id="sec-4">
+    <div class="phase-eyebrow"><span class="dot"></span>04 — El tutorial</div>
+    <h2 class="section-title fade-in">IV. La anatomía de un prompt JSON — y tu generador</h2>
+    <h3 class="subsection fade-in">§ 04 — Los campos que sí importan</h3>
+
+    <div class="body-text fade-in">
+      <p>No existe un esquema único ni obligatorio — cada modelo tolera variaciones en los nombres de los campos — pero la mayoría de las guías técnicas convergen en una misma columna vertebral. Vale la pena entender qué tipo de dato espera cada campo, porque eso determina si conviene ofrecerlo como una lista cerrada de opciones (un <em>dropdown</em>) o como texto libre.</p>
+      <p>La regla práctica es esta: si el valor tiene un número razonable de opciones válidas y reconocibles por el modelo — un ángulo de cámara, un tipo de iluminación, una relación de aspecto — un desplegable evita errores de escritura y guía al usuario hacia términos que el modelo interpreta bien. Si el valor es abierto por naturaleza — la descripción del sujeto, el entorno, los elementos que no deben aparecer — solo un campo de texto libre tiene sentido.</p>
+    </div>
+
+    <table class="var-table fade-in">
+      <thead>
+        <tr><th>Campo JSON</th><th>Control recomendado</th><th>Ejemplo de valor</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>subject</code></td><td><span class="control-tag text">Texto libre</span></td><td>"zorro rojo sentado sobre una roca cubierta de musgo"</td></tr>
+        <tr><td><code>style.aesthetic</code></td><td><span class="control-tag dropdown">Dropdown</span></td><td>Fotorrealista, Ilustración digital, Anime, Acuarela…</td></tr>
+        <tr><td><code>camera.angle</code></td><td><span class="control-tag dropdown">Dropdown</span></td><td>A nivel de ojos, Picado, Contrapicado, Vista de pájaro…</td></tr>
+        <tr><td><code>camera.distance</code></td><td><span class="control-tag dropdown">Dropdown</span></td><td>Primer plano, Plano medio, Plano general…</td></tr>
+        <tr><td><code>lighting</code></td><td><span class="control-tag dropdown">Dropdown</span></td><td>Hora dorada, Luz de estudio, Neón nocturno…</td></tr>
+        <tr><td><code>mood</code></td><td><span class="control-tag dropdown">Dropdown</span></td><td>Sereno, Dramático, Nostálgico, Futurista…</td></tr>
+        <tr><td><code>color_palette</code></td><td><span class="control-tag text">Texto libre / cuadro personalizable</span></td><td>"terracota, verde salvia, marfil"</td></tr>
+        <tr><td><code>environment</code></td><td><span class="control-tag text">Texto libre</span></td><td>"bosque de pinos con niebla baja"</td></tr>
+        <tr><td><code>props</code></td><td><span class="control-tag list">Lista (texto separado por comas)</span></td><td>"hojas caídas, luz entre los árboles"</td></tr>
+        <tr><td><code>format.aspect_ratio</code></td><td><span class="control-tag dropdown">Dropdown</span></td><td>1:1, 16:9, 9:16, 4:3…</td></tr>
+        <tr><td><code>constraints.negative</code></td><td><span class="control-tag list">Lista (texto separado por comas)</span></td><td>"texto, marcas de agua, manos deformes"</td></tr>
+        <tr><td><code>constraints.no_text</code></td><td><span class="control-tag dropdown">Interruptor Sí/No</span></td><td>true / false</td></tr>
+      </tbody>
+    </table>
+
+    <div class="body-text fade-in">
+      <p>Con ese mapa de campos ya se puede construir una interfaz sencilla que traduzca selecciones de formulario en un objeto JSON válido, listo para copiar y pegar en la plataforma que uses. Eso es exactamente lo que hace la herramienta de abajo: combina desplegables para los atributos con valores cerrados y cuadros de texto para todo lo que es inherentemente abierto — y arma tanto el JSON como una versión en prosa para plataformas que no lo interpretan directamente.</p>
+    </div>
+
+    <div class="builder fade-in" id="builder">
+      <div class="builder-head">
+        <div class="builder-dots"><span></span><span></span><span></span></div>
+        <div class="builder-title">Generador de prompt JSON — SIGNAL Tools</div>
+      </div>
+
+      <div class="builder-body">
+        <div class="builder-form">
+
+          <div class="field">
+            <label for="f-subject">Sujeto principal *</label>
+            <input type="text" id="f-subject" placeholder="ej. astronauta leyendo un libro" value="astronauta leyendo un libro flotando en gravedad cero">
+          </div>
+
+          <div class="field">
+            <label for="f-action">Acción / pose (opcional)</label>
+            <input type="text" id="f-action" placeholder="ej. mirando por la ventanilla de la nave">
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="f-style">Estilo</label>
+              <select id="f-style">
+                <option>Fotorrealista</option>
+                <option>Cinematográfico</option>
+                <option>Ilustración digital</option>
+                <option>Anime</option>
+                <option>Acuarela</option>
+                <option>Render 3D</option>
+                <option>Minimalista</option>
+                <option>Fotografía de producto</option>
+                <option>Película vintage / grano análogo</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="f-mood">Atmósfera</label>
+              <select id="f-mood">
+                <option>Sereno</option>
+                <option>Dramático</option>
+                <option>Nostálgico</option>
+                <option>Futurista</option>
+                <option>Misterioso</option>
+                <option>Alegre</option>
+                <option>Melancólico</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="f-angle">Ángulo de cámara</label>
+              <select id="f-angle">
+                <option>A nivel de ojos</option>
+                <option>Picado (desde arriba)</option>
+                <option>Contrapicado (desde abajo)</option>
+                <option>Ángulo holandés</option>
+                <option>Vista de pájaro</option>
+                <option>Vista a ras de suelo</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="f-distance">Encuadre</label>
+              <select id="f-distance">
+                <option>Primer plano extremo</option>
+                <option>Primer plano</option>
+                <option>Plano medio</option>
+                <option>Plano general</option>
+                <option>Gran angular</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="f-lighting">Iluminación</label>
+            <select id="f-lighting">
+              <option>Luz natural suave</option>
+              <option>Luz de estudio</option>
+              <option>Hora dorada</option>
+              <option>Contraluz dramático</option>
+              <option>Neón nocturno</option>
+              <option>Luz difusa nublada</option>
+              <option>Luz dura de mediodía</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="f-palette">Paleta de color <span style="opacity:.6">(cuadro personalizable)</span></label>
+            <input type="text" id="f-palette" placeholder="ej. azul profundo, plata, blanco cálido" value="azul profundo, plata, blanco cálido">
+            <span class="hint">Separa los colores con comas — se convierten en una lista dentro del JSON.</span>
+          </div>
+
+          <div class="field">
+            <label for="f-environment">Entorno / fondo</label>
+            <textarea id="f-environment" placeholder="ej. interior de una estación espacial, ventanales curvos">interior de una estación espacial con ventanales curvos hacia la Tierra</textarea>
+          </div>
+
+          <div class="field">
+            <label for="f-props">Elementos adicionales <span style="opacity:.6">(separados por comas)</span></label>
+            <textarea id="f-props" placeholder="ej. partículas de polvo flotando, panel de control iluminado">partículas de polvo flotando, panel de control iluminado</textarea>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <label for="f-ratio">Relación de aspecto</label>
+              <select id="f-ratio">
+                <option>1:1</option>
+                <option selected>16:9</option>
+                <option>9:16</option>
+                <option>4:3</option>
+                <option>3:2</option>
+                <option>21:9</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="f-model">Modelo destino</label>
+              <select id="f-model">
+                <option value="generic">Genérico / API</option>
+                <option value="gpt">GPT Image 2 (gpt-image-1)</option>
+                <option value="flux">Flux 2</option>
+                <option value="nanobanana">Nano Banana Pro (Gemini)</option>
+                <option value="midjourney">Midjourney (texto plano)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="f-negative">Restricciones / prompt negativo <span style="opacity:.6">(separadas por comas)</span></label>
+            <textarea id="f-negative" placeholder="ej. texto, marcas de agua, manos deformes">texto en pantalla, marcas de agua, distorsión facial</textarea>
+          </div>
+
+          <div class="field field-toggle">
+            <input type="checkbox" id="f-notext" checked>
+            <label for="f-notext" style="text-transform:none;font-size:0.78rem;letter-spacing:0;color:#d3cee0;">No incluir texto ni logotipos en la imagen</label>
+          </div>
+        </div>
+
+        <div class="builder-output">
+          <div class="output-label">
+            <span>prompt.json</span>
+            <button class="copy-btn" id="copyJson">Copiar JSON</button>
+          </div>
+          <pre id="jsonOutput"></pre>
+
+          <div class="flat-output">
+            <div class="output-label">
+              <span>Versión en texto plano <span style="opacity:.6">(Midjourney y similares)</span></span>
+              <button class="copy-btn" id="copyFlat">Copiar texto</button>
+            </div>
+            <div id="flatOutput"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="builder-note">
+        Esta herramienta genera el objeto en tu navegador — nada se envía a ningún servidor. Copia el resultado y pégalo directamente en la API o la interfaz del modelo que uses. <strong>El campo marcado con * es obligatorio</strong>; el resto queda fuera del JSON si lo dejas vacío.
+      </div>
+    </div>
+
+    <div class="body-text fade-in">
+      <p>Un detalle que conviene repetir porque se olvida rápido: el orden de los campos dentro del objeto puede importar para algunos modelos, que tienden a dar más peso a lo que aparece primero. Por eso la herramienta coloca siempre <code>subject</code> al inicio — es, casi sin excepción, el dato más importante de cualquier prompt de imagen.</p>
+    </div>
+  </section>
+
+  <div class="divider fade-in"><span class="divider-mark"></span></div>
+
+  <!-- CONCLUSIÓN -->
+  <section id="cierre" class="conclusion">
+    <h3 class="subsection">§ Cierre — La posición del editor</h3>
+    <h2 class="section-title">Tutorial o explicación: al final, la pregunta estaba mal planteada</h2>
+
+    <div class="opinion-block fade-in">
+      <div class="opinion-label">Punto de vista editorial</div>
+      <p>Cuando planeamos esta guía, la duda inicial era si convenía más explicar por qué el JSON mejora los resultados o simplemente mostrar cómo escribir uno. Terminamos concluyendo que separar esas dos cosas es un error de origen: nadie adopta una técnica de la que no entiende el mecanismo, y nadie se queda con una explicación que no puede ejecutar de inmediato. Por eso esta guía intenta ser las dos cosas a la vez, y por eso el elemento central no es un párrafo más de texto, sino la herramienta que puedes usar ahora mismo.</p>
+      <p>Lo que sí vale la pena subrayar es que el prompting estructurado no reemplaza el criterio visual — solo elimina la fricción de traducir ese criterio en instrucciones que el modelo pueda ejecutar sin adivinar. <em>Saber qué imagen quieres</em> sigue siendo, y seguirá siendo, el trabajo humano. El JSON solo se ocupa de que esa intención llegue intacta al otro lado.</p>
+      <p>Una predicción razonable para lo que resta de 2026: a medida que más modelos incorporen un paso de razonamiento antes de generar —como ya hace GPT Image 2—, la ventaja de escribir en formato estructurado va a crecer, no a reducirse. Un modelo que "piensa" antes de dibujar necesita datos de entrada limpios para pensar bien. Vale la pena empezar a construir el hábito ahora, mientras todavía es una ventaja diferencial y no un requisito básico.</p>
+      <div class="opinion-author">
+        Gerardo Ventura · Editor · SIGNAL · 2026
+        <a href="https://instagram.com/gfvc1978" target="_blank" class="instagram" rel="noopener" style="margin-left: 0.5rem;"><i class="fa-brands fa-instagram"></i> @gfvc1978</a>
+      </div>
+    </div>
+
+    <div class="divider"><span class="divider-mark"></span></div>
+
+    <div style="font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;text-align:center;padding: 1rem 0 2rem;">
+      SIGNAL · Guía práctica · San Salvador · 2026 · IA generativa y herramientas de creación
+    </div>
+  </section>
+
+</div>
+</article>
+
+<!-- ══ FOOTER ══ -->
+<footer class="mag-footer">
+  <div class="logo">SIGNAL<span style="color:var(--accent-light)">.</span></div>
+  <div>Estéticas de internet y cultura digital</div>
+  <div class="mag-footer-social">
+    <a href="https://www.instagram.com/signal.ai.mag/" target="_blank" rel="noopener">Instagram</a>
+    <span style="color:#35313e">·</span>
+    <a href="https://substack.com/@signalmag" target="_blank" rel="noopener">Substack</a>
+    <span style="color:#35313e">·</span>
+    <a href="https://signalzine.rf.gd/" target="_blank" rel="noopener">Web</a>
+    <span style="color:#35313e">·</span>
+    <a href="mailto:revista.signal@gmail.com">Email</a>
+  </div>
+</footer>
+
+<!-- ══ LIGHTBOX ══ -->
+<div class="lightbox-overlay" id="lightboxOverlay">
+  <div class="lightbox-close" id="lightboxClose">Cerrar ✕</div>
+  <img id="lightboxImg" src="" alt="">
+  <div class="lightbox-caption" id="lightboxCaption"></div>
+</div>
+
+<script>
+  // Fade-in on scroll
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => { e.target.classList.add('visible'); }, i * 60);
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.fade-in').forEach(el => io.observe(el));
+
+  // Lightbox
+  const overlay = document.getElementById('lightboxOverlay');
+  const overlayImg = document.getElementById('lightboxImg');
+  const overlayCaption = document.getElementById('lightboxCaption');
+  const overlayClose = document.getElementById('lightboxClose');
+
+  document.querySelectorAll('.lightbox-img').forEach(img => {
+    img.addEventListener('click', () => {
+      overlayImg.src = img.src;
+      overlayImg.alt = img.alt || '';
+      overlayCaption.textContent = img.alt || '';
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+
+  function closeLightbox() {
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  overlayClose.addEventListener('click', closeLightbox);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeLightbox(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
+
+  // ══════════ GENERADOR DE PROMPT JSON ══════════
+  const $ = (id) => document.getElementById(id);
+
+  function listFromText(text) {
+    return text.split(',').map(s => s.trim()).filter(Boolean);
+  }
+
+  function syntaxHighlight(json) {
+    let out = JSON.stringify(json, null, 2);
+    out = out.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    out = out.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+      let cls = 'json-num';
+      if (/^"/.test(match)) {
+        cls = /:$/.test(match) ? 'json-key' : 'json-str';
+      } else if (/true|false/.test(match)) {
+        cls = 'json-punc';
+      }
+      return '<span class="' + cls + '">' + match + '</span>';
+    });
+    return out;
+  }
+
+  function buildPromptObject() {
+    const subject = $('f-subject').value.trim();
+    const action = $('f-action').value.trim();
+    const style = $('f-style').value;
+    const mood = $('f-mood').value;
+    const angle = $('f-angle').value;
+    const distance = $('f-distance').value;
+    const lighting = $('f-lighting').value;
+    const palette = listFromText($('f-palette').value);
+    const environment = $('f-environment').value.trim();
+    const props = listFromText($('f-props').value);
+    const ratio = $('f-ratio').value;
+    const model = $('f-model').value;
+    const negative = listFromText($('f-negative').value);
+    const noText = $('f-notext').checked;
+
+    const modelIdMap = { generic: 'generic', gpt: 'gpt-image-1', flux: 'flux-2', nanobanana: 'nano-banana-pro', midjourney: 'midjourney-v8' };
+
+    const obj = {};
+    obj.task = 'image_generation';
+    if (model !== 'generic') obj.model = modelIdMap[model];
+    obj.subject = subject || 'sujeto sin definir';
+    if (action) obj.action = action;
+    obj.style = { aesthetic: style, mood: mood };
+    obj.composition = { camera_angle: angle, shot_distance: distance };
+    obj.lighting = lighting;
+    if (palette.length) obj.color_palette = palette;
+    if (environment) obj.environment = environment;
+    if (props.length) obj.props = props;
+    obj.format = { aspect_ratio: ratio };
+    obj.constraints = {};
+    if (negative.length) obj.constraints.negative = negative;
+    obj.constraints.no_text = noText;
+
+    return obj;
+  }
+
+  function buildFlatPrompt(obj) {
+    const parts = [];
+    parts.push(obj.subject);
+    if (obj.action) parts.push(obj.action);
+    parts.push(obj.environment || '');
+    parts.push(obj.style.aesthetic + ' style');
+    parts.push(obj.lighting.toLowerCase());
+    parts.push(obj.composition.camera_angle.toLowerCase() + ', ' + obj.composition.shot_distance.toLowerCase());
+    if (obj.color_palette) parts.push('color palette: ' + obj.color_palette.join(', '));
+    if (obj.props) parts.push(obj.props.join(', '));
+    parts.push(obj.style.mood.toLowerCase() + ' mood');
+    parts.push('--ar ' + obj.format.aspect_ratio);
+    if (obj.constraints.negative) parts.push('--no ' + obj.constraints.negative.join(', '));
+    return parts.filter(Boolean).join(', ');
+  }
+
+  function renderBuilder() {
+    const obj = buildPromptObject();
+    $('jsonOutput').innerHTML = syntaxHighlight(obj);
+    $('flatOutput').textContent = buildFlatPrompt(obj);
+  }
+
+  ['f-subject','f-action','f-style','f-mood','f-angle','f-distance','f-lighting','f-palette','f-environment','f-props','f-ratio','f-model','f-negative','f-notext'].forEach(id => {
+    const el = $(id);
+    el.addEventListener('input', renderBuilder);
+    el.addEventListener('change', renderBuilder);
+  });
+
+  function flashCopied(btn) {
+    const original = btn.textContent;
+    btn.textContent = '✓ Copiado';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1600);
+  }
+
+  $('copyJson').addEventListener('click', () => {
+    const obj = buildPromptObject();
+    navigator.clipboard.writeText(JSON.stringify(obj, null, 2)).then(() => flashCopied($('copyJson')));
+  });
+  $('copyFlat').addEventListener('click', () => {
+    navigator.clipboard.writeText($('flatOutput').textContent).then(() => flashCopied($('copyFlat')));
+  });
+
+  renderBuilder();
+</script>
+
+</body>
+</html>

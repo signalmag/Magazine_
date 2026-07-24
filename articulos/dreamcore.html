@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGNAL — Dreamcore: El Sueño que Aprendimos a Fotografiar</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,900;1,9..144,400;1,9..144,600&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;1,7..72,400;1,7..72,500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+  :root {
+    --ink: #2a2140;
+    --paper: #f6f1fb;
+    --paper-dark: #ece0f7;
+    --accent: #e0629b;
+    --accent-light: #ffb3d6;
+    --teal: #4fb0a6;
+    --muted: #7d7096;
+    --rule: #d9c9ec;
+    --dusk: #191233;
+    --dusk2: #261a44;
+    --dusk3: #341f4f;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Literata', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.7;
+    padding-top: 44px;
+  }
+
+  /* ══ SIGNAL NAV — variante onírica ══ */
+  .signal-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    background: var(--dusk);
+    border-bottom: 2px solid var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    height: 44px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .signal-nav__home {
+    display: flex; align-items: center; gap: 0.8rem;
+    text-decoration: none; color: var(--paper);
+  }
+  .signal-nav__logo {
+    font-family: 'Fraunces', serif;
+    font-size: 0.9rem; font-weight: 900;
+    letter-spacing: 0.05em; text-transform: none;
+  }
+  .signal-nav__ed { color: var(--accent-light); font-size: 0.55rem; border-left: 1px solid #4a3d68; padding-left: 0.8rem; }
+  .signal-nav__home:hover { opacity: 0.8; }
+  .signal-nav__trail { color: #776a94; font-size: 0.55rem; }
+  .signal-nav__current { color: var(--accent-light); }
+  .signal-nav__arrows { display: flex; align-items: center; gap: 0.6rem; }
+  .signal-nav__arrows a {
+    display: inline-flex; align-items: center;
+    color: #f6f1fb; background: #2e2450;
+    border: 1px solid #4a3d68;
+    text-decoration: none; padding: 0.3rem 0.7rem;
+    font-size: 0.55rem; letter-spacing: 0.1em;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    white-space: nowrap;
+  }
+  .signal-nav__arrows a:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .signal-nav__disabled {
+    display: inline-flex; color: #4a3d68; background: #1e1638;
+    border: 1px solid #2c2248; padding: 0.3rem 0.7rem;
+    font-size: 0.55rem; letter-spacing: 0.1em; opacity: 0.5; cursor: not-allowed;
+  }
+  .signal-nav__sep { color: #3d3260; padding: 0 0.2rem; }
+  @media (max-width: 680px) {
+    .signal-nav__trail { display: none; }
+    .signal-nav { padding: 0 1rem; }
+  }
+
+  /* ── COVER: cielo de Dormitar ── */
+  .cover {
+    min-height: calc(100vh - 40px);
+    background:
+      radial-gradient(ellipse 60% 45% at 20% 15%, rgba(224,98,155,0.32), transparent 60%),
+      radial-gradient(ellipse 55% 50% at 85% 10%, rgba(79,176,166,0.26), transparent 65%),
+      radial-gradient(ellipse 70% 60% at 50% 100%, rgba(255,201,163,0.16), transparent 70%),
+      linear-gradient(110deg, rgba(25,18,51,1) 0%, rgba(38,26,68,0.9) 35%, rgba(52,31,79,0.05) 100%),
+      url('images/dreamcore.jpg') center 30% / cover no-repeat;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover-grain {
+    position: absolute; inset: 0;
+    background-image: url();url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+    pointer-events: none; opacity: 0.7;
+  }
+  /* Portal onírico — elemento firma, se repite a menor escala como divisor */
+  .dream-portal {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(2px);
+    pointer-events: none;
+  }
+  .cover .dream-portal--main {
+    width: 480px; height: 480px;
+    right: -120px; top: 8%;
+    background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.18), rgba(224,98,155,0.16) 40%, transparent 72%);
+    border: 1px solid rgba(255,255,255,0.12);
+    animation: breathe 7s ease-in-out infinite;
+  }
+  .cover .dream-portal--small {
+    width: 180px; height: 180px;
+    left: 6%; bottom: 18%;
+    background: radial-gradient(circle at 40% 40%, rgba(79,176,166,0.35), transparent 70%);
+    border: 1px solid rgba(255,255,255,0.08);
+    animation: breathe 9s ease-in-out infinite 1.5s;
+  }
+  @keyframes breathe {
+    0%, 100% { transform: scale(1); opacity: 0.75; }
+    50% { transform: scale(1.06); opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .dream-portal, .cover-logo, .cover-headline, .cover-subhead { animation: none !important; }
+  }
+
+  .masthead {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem; color: #9184ac;
+    letter-spacing: 0.15em; text-transform: uppercase; line-height: 1.8;
+    position: relative; z-index: 1;
+  }
+  .cover-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 2.5rem 3rem 1.2rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    position: relative; z-index: 1;
+  }
+  .cover-logo {
+     font-family: 'Fraunces', serif, bold;
+    font-size: 5rem; font-weight: 600; color: var(--paper);
+    letter-spacing: -0.01em; line-height: 1;
+    text-align: left; padding: 3rem 3rem 0;
+    position: relative; z-index: 1;
+    animation: fadeUp 0.9s ease forwards;
+  }
+  .cover-logo span { color: var(--accent-light); }
+  .cover-tagline {
+    font-family: 'Space Mono', monospace; font-weight: 900;
+    font-size: 0.6rem; color: #8a7da8;
+    letter-spacing: 0.3em; text-transform: uppercase;
+    text-align:left; margin-top: 0.6rem;
+  }
+  .cover-main {
+    display: flex; flex-direction: column;
+    justify-content: flex-end;
+    padding: 2rem 3rem 3rem; position: relative; z-index: 1;
+  }
+  .cover-issue {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem; color: var(--accent-light);
+    letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 0.8rem;
+  }
+  .cover-headline {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2.4rem, 5.4vw, 4.2rem); font-weight: 500;
+    color: var(--paper); line-height: 1.12; max-width: 760px;
+    animation: fadeUp 0.9s 0.2s ease forwards; opacity: 0;
+  }
+  .cover-headline em { color: var(--accent-light); font-style: italic; font-weight: 400; }
+  .cover-subhead {
+    margin-top: 1.3rem;
+    font-family: 'Literata', serif;
+    font-size: 1.1rem; color: #b3a6cf;
+    max-width: 560px; line-height: 1.65;
+    animation: fadeUp 0.9s 0.4s ease forwards; opacity: 0;
+  }
+  .cover-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.2rem 3rem; border-top: 1px solid rgba(255,255,255,0.08);
+    position: relative; z-index: 1;
+  }
+  .cover-index { display: flex; gap: 2.2rem; flex-wrap: wrap; }
+  .cover-index-item {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.56rem; color: #7d7096;
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .cover-index-item strong {
+    display: block; color: #c3b6dd; font-size: 0.62rem; margin-bottom: 0.2rem;
+  }
+
+  /* ── SOCIAL BAR ── */
+  .social-bar {
+    display: flex; align-items: center; gap: 1rem;
+    margin-top: 1.6rem; padding-top: 1.6rem;
+    border-top: 1px solid rgba(255,255,255,0.08); flex-wrap: wrap;
+  }
+  .social-link {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase;
+    text-decoration: none; padding: 0.4rem 0.8rem;
+    border: 1px solid rgba(255,255,255,0.14); color: #c3b6dd; border-radius: 30px;
+    transition: all 0.2s ease;
+  }
+  .social-link svg { width: 12px; height: 12px; fill: currentColor; }
+  .social-link:hover { border-color: var(--accent-light); color: var(--accent-light); }
+  .instagram {
+    display: inline-flex; align-items: center; gap: 2px;
+    padding: 1px 4px; border-radius: 20px;
+    text-decoration: none; color: #fff; font-weight: 600;
+    background: linear-gradient(45deg,#f09433,#e1306c,#833ab4);
+  }
+  .instagram:hover { opacity: .9; }
+
+  /* ── LAYOUT ── */
+  .page { max-width: 900px; margin: 0 auto; padding: 5rem 3rem; }
+
+  /* ── INDEX PAGE ── */
+  .index-page { background: var(--paper-dark); }
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem; font-weight: 500; color: var(--accent);
+    letter-spacing: 0.3em; text-transform: uppercase;
+    margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
+  .index-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .index-item {
+    background: var(--paper); padding: 2rem 2.3rem;
+    text-decoration: none; color: inherit; display: block;
+    border: 1px solid var(--rule); border-radius: 18px;
+    transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  }
+  .index-item:hover { background: #fff; transform: translateY(-3px); box-shadow: 0 14px 30px -18px rgba(42,33,64,0.35); }
+  .index-num {
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-size: 0.72rem; font-weight: 600; color: var(--accent);
+    letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.9rem;
+  }
+  .index-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1.2rem; font-weight: 600; line-height: 1.3; margin-bottom: 0.6rem;
+  }
+  .index-desc {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem; color: var(--muted);
+    letter-spacing: 0.03em; line-height: 1.6;
+  }
+
+  /* ── ARTICLE HEADER ── */
+  .article-header { border-bottom: 1px solid var(--rule); padding-bottom: 3rem; margin-bottom: 3rem; }
+  .article-category {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem; color: var(--teal);
+    letter-spacing: 0.3em; text-transform: uppercase; margin-bottom: 1.5rem;
+  }
+  h1.article-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 600;
+    line-height: 1.1; margin-bottom: 1rem;
+  }
+  h1.article-title em { font-style: italic; color: var(--accent); font-weight: 500; }
+  .article-deck {
+    font-family: 'Literata', serif;
+    font-size: 1.25rem; font-weight: 400; font-style: italic;
+    color: var(--muted); line-height: 1.6; max-width: 620px;
+    border-left: 3px solid var(--accent); padding-left: 1.5rem; margin-top: 1.5rem;
+  }
+  .article-meta { display: flex; gap: 2rem; margin-top: 2rem; flex-wrap: wrap; }
+  .meta-item { font-family: 'Space Mono', monospace; font-size: 0.58rem; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; }
+  .meta-item strong { display: block; color: var(--ink); font-size: 0.6rem; margin-bottom: 0.2rem; }
+
+  /* ── SECTIONS: fases del sueño ── */
+  .phase-eyebrow {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem; color: var(--teal);
+    letter-spacing: 0.2em; text-transform: uppercase;
+    margin-bottom: 1rem;
+    padding: 0.35rem 0.8rem 0.35rem 0.5rem;
+    border: 1px solid var(--rule); border-radius: 30px;
+  }
+  .phase-eyebrow .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--teal); flex-shrink: 0;
+  }
+  h2.section-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(1.5rem, 3vw, 2.2rem); font-weight: 600;
+    line-height: 1.2; margin-bottom: 1.5rem;
+  }
+  h3.subsection {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem; color: var(--teal);
+    letter-spacing: 0.2em; text-transform: uppercase;
+    margin-bottom: 2rem;
+  }
+  .body-text p { margin-bottom: 1.5em; }
+  .body-text p:last-child { margin-bottom: 0; }
+  .body-text em { color: var(--accent); font-style: italic; }
+
+  /* ── DIVIDER: portal pequeño ── */
+  .divider {
+    display: flex; align-items: center; gap: 1.2rem;
+    margin: 4rem 0; color: var(--rule);
+  }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
+  .divider .portal-mark {
+    width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+    background: radial-gradient(circle at 35% 35%, #fff, var(--accent-light) 45%, transparent 75%);
+    border: 1px solid var(--rule);
+  }
+
+  /* ── PULLQUOTE ── */
+  .pullquote {
+    background: var(--dusk); color: var(--paper);
+    padding: 3rem 3.5rem; margin: 3rem 0;
+    position: relative; border-radius: 22px; overflow: hidden;
+  }
+  .pullquote::before {
+    content: ''; position: absolute; width: 260px; height: 260px; border-radius: 50%;
+    right: -80px; top: -100px;
+    background: radial-gradient(circle, rgba(224,98,155,0.35), transparent 70%);
+  }
+  .pullquote p {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+    font-style: italic; font-weight: 400; line-height: 1.4;
+    position: relative; z-index: 1;
+  }
+  .pullquote cite {
+    display: block; margin-top: 1.5rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem; color: #b3a6cf;
+    letter-spacing: 0.1em; font-style: normal;
+    position: relative; z-index: 1;
+  }
+
+  /* ── FACT BOX ── */
+  .fact-box {
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--accent);
+    padding: 2rem 2.5rem; margin: 3rem 0;
+    background: var(--paper-dark); border-radius: 0 18px 18px 0;
+  }
+  .fact-box-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem; color: var(--accent);
+    letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 1.2rem;
+  }
+  .fact-box p { margin-bottom: 1em; font-size: 0.95rem; }
+  .fact-box p:last-child { margin-bottom: 0; }
+  .fact-box.teal { border-left-color: var(--teal); }
+  .fact-box.teal .fact-box-label { color: var(--teal); }
+
+  /* ── GLOSARIO ── */
+  .glossary {
+    background: var(--paper-dark); border: 1px solid var(--rule);
+    border-left: 4px solid var(--teal);
+    padding: 2rem 2.5rem; margin: 3rem 0; border-radius: 0 18px 18px 0;
+  }
+  .glossary-label {
+    font-family: 'Space Mono', monospace; font-size: 0.58rem; color: var(--teal);
+    letter-spacing: 0.2em; text-transform: uppercase;
+    margin-bottom: 1.5rem; padding-bottom: 0.8rem; border-bottom: 1px solid var(--rule);
+  }
+  .glossary-item {
+    display: grid; grid-template-columns: 170px 1fr; gap: 1.5rem;
+    padding: 0.9rem 0; border-bottom: 1px solid var(--rule); align-items: baseline;
+  }
+  .glossary-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .glossary-term {
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 600;
+    font-size: 0.92rem; color: var(--ink);
+  }
+  .glossary-def { font-size: 0.9rem; color: var(--muted); line-height: 1.55; }
+
+  /* ── TIMELINE onírica ── */
+  .timeline { border-left: 2px solid var(--rule); margin: 2rem 0 2rem 1rem; padding-left: 2.5rem; }
+  .timeline-item { position: relative; margin-bottom: 2.5rem; }
+  .timeline-item::before {
+    content: ''; position: absolute; left: -3.15rem; top: 0.4rem;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fff, var(--accent) 60%);
+    border: 2px solid var(--paper);
+    box-shadow: 0 0 0 1px var(--rule);
+  }
+  .timeline-year {
+    font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--accent);
+    letter-spacing: 0.12em; margin-bottom: 0.3rem;
+  }
+  .timeline-title { font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 600; margin-bottom: 0.5rem; }
+  .timeline-desc { font-size: 0.9rem; color: var(--muted); line-height: 1.6; }
+
+  /* ── GRID de películas ── */
+  .film-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin: 3rem 0;
+  }
+  .film-card {
+    background: var(--paper-dark); border: 1px solid var(--rule); border-radius: 16px;
+    padding: 1.8rem 2rem; position: relative; transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .film-card:hover { transform: translateY(-3px); box-shadow: 0 16px 32px -20px rgba(42,33,64,0.4); }
+  .film-card__img {
+    width: 100%; height: 170px; object-fit: cover; display: block;
+    border-radius: 12px; margin-bottom: 1.2rem; cursor: zoom-in;
+    transition: opacity 0.2s ease;
+  }
+  .film-card__img:hover { opacity: 0.88; }
+  .film-card--flagship .film-card__img { height: 260px; }
+  .film-card__year {
+    font-family: 'Space Mono', monospace; font-size: 0.54rem; color: var(--teal);
+    letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.6rem;
+  }
+  .film-card__title { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 600; line-height: 1.25; margin-bottom: 0.7rem; }
+  .film-card__desc { font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
+  .film-card--flagship {
+    grid-column: 1 / -1;
+    background: var(--dusk); color: var(--paper); border: none;
+  }
+  .film-card--flagship .film-card__year { color: var(--accent-light); }
+  .film-card--flagship .film-card__title { color: var(--paper); }
+  .film-card--flagship .film-card__desc { color: #c3b6dd; }
+
+  /* ── CUENTAS / GRID de perfiles ── */
+  .cuentas-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin: 2.5rem 0;
+  }
+  .cuenta-card {
+    background: var(--paper); border: 1px solid var(--rule); border-radius: 16px;
+    padding: 1.7rem 1.8rem; transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .cuenta-card:hover { transform: translateY(-3px); box-shadow: 0 16px 32px -20px rgba(42,33,64,0.35); }
+  .cuenta-handle { font-family: 'Space Mono', monospace; font-size: 0.62rem; color: var(--accent); letter-spacing: 0.05em; margin-bottom: 0.4rem; }
+  .cuenta-handle a { color: inherit; text-decoration: none; }
+  .cuenta-handle a:hover { text-decoration: underline; }
+  .cuenta-name { font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 600; margin-bottom: 0.6rem; }
+  .cuenta-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.55; }
+  .cuenta-tag {
+    display: inline-block; margin-top: 0.8rem;
+    font-family: 'Space Mono', monospace; font-size: 0.5rem; letter-spacing: 0.12em;
+    text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 20px;
+    border: 1px solid var(--rule); color: var(--muted);
+  }
+
+  /* ── IMAGEN CON PIE ── */
+  .article-image { margin: 3rem 0; position: relative; }
+  .article-image img { width: 100%; display: block; border-radius: 16px; border: 1px solid var(--rule); cursor: zoom-in; transition: opacity 0.2s ease; }
+  .article-image img:hover { opacity: 0.92; }
+
+  /* ── LIGHTBOX ── */
+  .lightbox-overlay {
+    position: fixed; inset: 0; z-index: 3000;
+    background: rgba(10,6,20,0.92);
+    display: flex; align-items: center; justify-content: center;
+    padding: 3rem 2rem;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  .lightbox-overlay.active { opacity: 1; pointer-events: auto; }
+  .lightbox-overlay img {
+    max-width: 92vw; max-height: 88vh;
+    border-radius: 12px;
+    box-shadow: 0 40px 100px -20px rgba(0,0,0,0.6);
+  }
+  .lightbox-caption {
+    position: absolute; bottom: 2rem; left: 0; right: 0;
+    text-align: center; color: #d4c9ea;
+    font-family: 'Literata', serif; font-style: italic; font-size: 0.95rem;
+    padding: 0 3rem;
+  }
+  .lightbox-close {
+    position: absolute; top: 1.8rem; right: 2rem;
+    color: #fff; font-family: 'Space Mono', monospace; font-size: 0.65rem;
+    letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.3); padding: 0.5rem 1.1rem;
+    border-radius: 30px; background: rgba(255,255,255,0.06);
+    transition: background 0.2s ease;
+  }
+  .lightbox-close:hover { background: rgba(255,255,255,0.14); }
+  @media (max-width: 680px) {
+    .lightbox-close { top: 1rem; right: 1rem; }
+    .lightbox-caption { font-size: 0.82rem; padding: 0 1.5rem; }
+  }
+  .article-image figcaption {
+    display: flex; gap: 1.2rem; align-items: flex-start; padding: 1rem 1.2rem;
+    background: var(--paper-dark); border: 1px solid var(--rule); border-top: none;
+    border-radius: 0 0 16px 16px;
+  }
+  .article-image figcaption .fig-label {
+    font-family: 'Space Mono', monospace; font-size: 0.52rem; color: var(--accent);
+    letter-spacing: 0.2em; text-transform: uppercase; white-space: nowrap; margin-top: 0.15rem; flex-shrink: 0;
+  }
+  .article-image figcaption .fig-text { font-family: 'Literata', serif; font-size: 0.88rem; color: var(--muted); font-style: italic; line-height: 1.55; }
+  .article-image figcaption .fig-text strong { color: var(--ink); font-style: normal; font-weight: 600; }
+
+  /* ── INSTAGRAM INSERTS ── */
+  .ig-insert {
+    margin: 3rem 0; border: 1px solid var(--rule); background: var(--paper-dark);
+    display: grid; grid-template-columns: 4px 1fr; border-radius: 18px; overflow: hidden;
+  }
+  .ig-insert__stripe { background: linear-gradient(180deg, #ffb3d6 0%, #e0629b 50%, #4fb0a6 100%); }
+  .ig-insert__body { padding: 1.6rem 2rem; }
+  .ig-insert__header { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1rem; padding-bottom: 0.8rem; border-bottom: 1px solid var(--rule); }
+  .ig-insert__icon {
+    width: 28px; height: 28px; background: linear-gradient(45deg,#f09433,#e1306c,#833ab4);
+    border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .ig-insert__icon i { color: #fff; font-size: 0.75rem; }
+  .ig-insert__handle { font-family: 'Space Mono', monospace; font-size: 0.65rem; font-weight: 500; letter-spacing: 0.05em; color: var(--ink); }
+  .ig-insert__handle span { display: block; font-size: 0.52rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; font-weight: 400; margin-top: 0.1rem; }
+  .ig-insert__handle a { color: inherit; text-decoration: none; }
+  .ig-insert__handle a:hover { color: var(--accent); }
+  .ig-insert__label {
+    margin-left: auto; font-family: 'Space Mono', monospace; font-size: 0.48rem; color: var(--muted);
+    letter-spacing: 0.2em; text-transform: uppercase; border: 1px solid var(--rule); padding: 0.2rem 0.5rem;
+    border-radius: 20px; white-space: nowrap;
+  }
+  .ig-insert__caption { font-family: 'Literata', serif; font-size: 0.92rem; color: var(--muted); font-style: italic; line-height: 1.6; }
+  .ig-insert__caption strong { color: var(--ink); font-style: normal; }
+  .ig-insert__post-ref { margin-top: 0.8rem; font-family: 'Space Mono', monospace; font-size: 0.52rem; color: var(--muted); letter-spacing: 0.08em; display: flex; align-items: center; gap: 0.5rem; }
+  .ig-insert__post-ref::before { content: ''; display: inline-block; width: 16px; height: 1px; background: var(--rule); }
+  .ig-insert__post-ref a { color: var(--accent); text-decoration: none; }
+  .ig-insert__post-ref a:hover { text-decoration: underline; }
+
+  /* ── OPINION BLOCK ── */
+  .opinion-block { background: var(--dusk); color: var(--paper); padding: 3.5rem 4rem; margin: 2rem 0; position: relative; border-radius: 24px; overflow: hidden; }
+  .opinion-block::after {
+    content: ''; position: absolute; width: 320px; height: 320px; border-radius: 50%; left: -140px; bottom: -160px;
+    background: radial-gradient(circle, rgba(79,176,166,0.25), transparent 70%);
+  }
+  .opinion-label {
+    font-family: 'Space Mono', monospace; font-size: 0.58rem; color: var(--accent-light);
+    letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(255,255,255,0.12); padding-bottom: 1rem;
+    position: relative; z-index: 1;
+  }
+  .opinion-block p { font-size: 1.05rem; margin-bottom: 1.5em; line-height: 1.75; color: #d4c9ea; position: relative; z-index: 1; }
+  .opinion-block p:last-of-type { margin-bottom: 0; }
+  .opinion-block em { color: var(--accent-light); font-style: italic; }
+  .opinion-block strong { color: var(--paper); }
+  .opinion-author {
+    font-family: 'Space Mono', monospace; font-size: 0.6rem; color: #8a7da8;
+    letter-spacing: 0.1em; text-transform: uppercase; margin-top: 2.5rem; padding-top: 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.12); position: relative; z-index: 1;
+  }
+
+  /* ── CONCLUSION ── */
+  .conclusion { border-top: 2px solid var(--rule); padding-top: 4rem; margin-top: 4rem; }
+
+  /* ── FOOTER ── */
+  .mag-footer { background: var(--dusk); color: #7d7096; padding: 3rem; text-align: center; font-family: 'Space Mono', monospace; font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; line-height: 2.2; }
+  .mag-footer .logo { font-family: 'Fraunces', serif; font-style: italic; font-size: 1.8rem; font-weight: 600; color: var(--paper); letter-spacing: -0.02em; text-transform: none; margin-bottom: 0.5rem; }
+  .mag-footer-social { margin-top: 1rem; display: flex; gap: 1.5rem; justify-content: center; align-items: center; }
+  .mag-footer-social a { color: #b3a6cf; text-decoration: none; transition: color 0.2s; }
+  .mag-footer-social a:hover { color: var(--accent-light); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 680px) {
+    .cover-header { padding: 1.5rem; }
+    .cover-logo { font-size: 3.3rem; padding: 2rem 1.5rem 0; }
+    .cover-main { padding: 1.5rem; }
+    .cover-index { display: none; }
+    .page { padding: 3rem 1.5rem; }
+    .index-grid { grid-template-columns: 1fr; }
+    .film-grid { grid-template-columns: 1fr; }
+    .cuentas-grid { grid-template-columns: 1fr; }
+    .glossary-item { grid-template-columns: 1fr; gap: 0.4rem; }
+    .pullquote { padding: 2rem 1.5rem; }
+    .opinion-block { padding: 2.5rem 2rem; }
+    .article-meta { flex-wrap: wrap; gap: 1rem; }
+    .dream-portal--main { width: 280px; height: 280px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ SIGNAL NAV ══ -->
+<nav class="signal-nav">
+  <a class="signal-nav__home" href="../index.html">
+    <span class="signal-nav__logo">S<span style="color:var(--accent-light)">I</span>GN<span style="color:var(--accent-light)">A</span>L<span style="color:var(--accent-light)">.</span></span>
+    <span class="signal-nav__ed">Perfil de Estética</span>
+  </a>
+  <div class="signal-nav__trail">
+    <span class="signal-nav__current">Dreamcore</span>
+  </div>
+  <div class="signal-nav__arrows">
+    <a href="../index.html">Índice</a>
+    <span class="signal-nav__sep">·</span>
+    <a href="estetica-del-error.html">← Anterior</a>
+    <span class="signal-nav__sep">·</span>
+    <span class="signal-nav__disabled">Siguiente →</span>
+  </div>
+</nav>
+
+<!-- ══ COVER ══ -->
+<section class="cover">
+<div class="cover-grain"></div>
+<div class="dream-portal dream-portal--main"></div>
+<div class="dream-portal dream-portal--small"></div>
+
+<header class="cover-header">
+  <div class="masthead">Revista de Arte e Inteligencia Artificial<br>2026<br>Estéticas de Internet</div>
+  <div class="masthead" style="text-align:right;">Distribución digital<br>Instagram · Substack<br>Acceso libre</div>
+</header>
+
+<div class="cover-logo">S<span>I</span>GN<span>A</span>L
+  <div class="cover-tagline">Estética de internet · Memoria · Sueño</div>
+</div>
+
+<div class="cover-main">
+  <div class="cover-issue">
+    Por: Gerardo Ventura
+    <a href="https://instagram.com/gfvc1978" target="_blank" class="instagram" rel="noopener">
+      <i class="fa-brands fa-instagram"></i> @gfvc1978
+    </a>
+  </div>
+  <div class="cover-issue">Perfil de Estética</div>
+  <h1 class="cover-headline">Dreamcore: el sueño<br>que aprendimos a <em>fotografiar</em></h1>
+  <p class="cover-subhead">Qué es, cuándo nació y por qué una estética de internet sobre pesadillas de nostalgia acaba de resucitar gracias a una película de A24. Un mapa de sus orígenes, su lógica visual y sus cuentas más activas.</p>
+
+  <div class="social-bar">
+    <a href="https://www.instagram.com/signal.ai.mag/" target="_blank" rel="noopener" class="social-link">
+      <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.209-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      @signal.ai.mag
+    </a>
+    <a href="https://signalzine.rf.gd/" target="_blank" rel="noopener" class="social-link">
+      <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm-1 17.93V16h2v1.93A8.01 8.01 0 0 1 4.07 13H6v-2H4.07A8.01 8.01 0 0 1 11 4.07V6h2V4.07A8.01 8.01 0 0 1 19.93 11H18v2h1.93A8.01 8.01 0 0 1 13 19.93z"/></svg>
+      signalzine.rf.gd
+    </a>
+    <a href="https://substack.com/@signalmag" target="_blank" rel="noopener" class="social-link">
+      <svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:currentColor"><path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11 22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z"/></svg>
+      Substack
+    </a>
+    <a href="mailto:revista.signal@gmail.com" class="social-link">
+      <svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+      revista.signal@gmail.com
+    </a>
+  </div>
+</div>
+
+<footer class="cover-footer">
+  <div class="cover-index">
+    <div class="cover-index-item"><strong>Fase 1</strong>Dormitar — Qué es</div>
+    <div class="cover-index-item"><strong>Fase 2</strong>Sueño ligero — Origen</div>
+    <div class="cover-index-item"><strong>Fase 3</strong>Sueño profundo — Auge</div>
+    <div class="cover-index-item"><strong>REM</strong>Cine, Instagram y cuentas</div>
+  </div>
+  <div class="masthead" style="color:#4a3d68;">signal.mag / perfil.03 / 2026</div>
+</footer>
+</section>
+
+<!-- ══ INDEX ══ -->
+<section class="index-page">
+<div class="page">
+  <div class="section-label">Contenido — Perfil de Estética</div>
+  <div class="index-grid">
+    <a href="#fase-1" class="index-item">
+      <div class="index-num">Fase 1 — Dormitar</div>
+      <div class="index-title">¿Qué es el dreamcore?</div>
+      <div class="index-desc">La lógica de un sueño familiar y roto a la vez: definición, tono y motivos visuales</div>
+    </a>
+    <a href="#fase-2" class="index-item">
+      <div class="index-num">Fase 2 — Sueño ligero</div>
+      <div class="index-title">Cuándo y dónde surgió</div>
+      <div class="index-desc">De un canal de YouTube de 2012 a un hilo de 4chan de 2018: los orígenes disputados</div>
+    </a>
+    <a href="#fase-3" class="index-item">
+      <div class="index-num">Fase 3 — Sueño profundo</div>
+      <div class="index-title">Cómo se popularizó</div>
+      <div class="index-desc">Tumblr, la pandemia y TikTok: la ruta exacta hacia los 340 millones de vistas</div>
+    </a>
+    <a href="#fase-rem" class="index-item">
+      <div class="index-num">Fase REM</div>
+      <div class="index-title">Cine, Instagram y sus cuentas activas</div>
+      <div class="index-desc">Las películas que la comunidad adoptó, el regreso vía A24 y quién sigue publicando</div>
+    </a>
+  </div>
+</div>
+</section>
+
+<!-- ══ ARTICLE ══ -->
+<article>
+<div class="page">
+
+  <!-- ARTICLE HEADER -->
+  <header class="article-header fade-in" id="fase-1">
+    <div class="article-category">Perfil de Estética — Internet · Cine · Comunidad</div>
+    <h1 class="article-title">Dreamcore: el sueño que aprendimos a <em>fotografiar</em></h1>
+    <p class="article-deck">Una estética nacida en foros y blogs de imágenes que convirtió la sensación de estar soñando en un lenguaje visual reconocible — y que, tras años de aparente declive, acaba de volver a ocupar el centro de la conversación gracias a una película.</p>
+    <div class="article-meta">
+      <div class="meta-item"><strong>Publicado</strong>2026</div>
+      <div class="meta-item"><strong>Serie</strong>Perfil de Estética 03</div>
+      <div class="meta-item"><strong>Categoría</strong>Cultura de internet</div>
+      <div class="meta-item"><strong>Tiempo de lectura</strong>~11 min</div>
+    </div>
+  </header>
+
+  <!-- FASE 1 -->
+  <section id="fase-1-body">
+    <div class="phase-eyebrow"><span class="dot"></span>Fase 1 — Dormitar</div>
+    <h2 class="section-title fade-in">I. ¿Qué es exactamente el dreamcore?</h2>
+    <h3 class="subsection fade-in">§ 01 — Una habitación que reconoces sin haber estado nunca</h3>
+
+    <div class="body-text fade-in">
+      <p>Hay una sensación muy específica que casi todo el mundo ha tenido alguna vez al despertar: la certeza, durante unos segundos, de haber estado en un lugar que no existe pero que se siente completamente familiar. Un pasillo con la luz equivocada. Una piscina vacía a media tarde. Un patio de colegio sin nadie, iluminado como si fuera las cuatro de la madrugada. El dreamcore es el intento — colectivo, disperso, hecho por miles de personas sin coordinarse — de fotografiar exactamente esa sensación.</p>
+      <p>Formalmente, el dreamcore es una estética de internet centrada en representar visualmente el estado y la textura de los sueños: espacios cotidianos —pasillos, piscinas, patios, dormitorios infantiles— editados o generados para producir esa mezcla precisa de nostalgia y desubicación que caracteriza al soñar. No es solo estética de terror, aunque comparte imaginario con el horror; y no es solo nostalgia, aunque la nostalgia es uno de sus motores centrales. Es, más bien, la puesta en imagen de la <em>anemoia</em>: la añoranza por un tiempo o un lugar que nunca vivimos.</p>
+    </div>
+
+    <div class="fact-box fade-in">
+      <div class="fact-box-label">Vocabulario clave — Anemoia</div>
+      <p>El término, acuñado por John Koenig en su proyecto <em>The Dictionary of Obscure Sorrows</em>, describe la nostalgia por un momento que la persona jamás experimentó directamente. Es la palabra que la comunidad dreamcore adoptó casi de inmediato para nombrar lo que estaban produciendo: imágenes de una infancia genérica y compartida, no de una infancia personal.</p>
+    </div>
+
+    <div class="body-text fade-in">
+      <p>Visualmente, el dreamcore se apoya en un vocabulario bastante estable: paletas suaves y saturadas —pasteles que se acercan al fluorescente sin llegar a serlo—, filtros de desenfoque y bruma, arquitecturas flotantes o imposibles, y una superposición constante de símbolos oníricos: ojos, alas, arcoíris, texto en fuentes genéricas de sistema operativo, brillos y destellos digitales. La base sobre la que se monta casi todo esto es el <em>espacio liminal</em>: esos lugares de tránsito —vestíbulos, escaleras, salas de espera— que no son un destino sino un pasaje, y que ya de por sí producen una incomodidad sutil incluso sin ninguna intervención digital.</p>
+    </div>
+
+    <figure class="article-image fade-in">
+      <img class="lightbox-img" src="https://images.stockcake.com/public/0/6/3/06372898-23a5-4e7a-b934-9b98fcb62755_large/endless-carpet-dreamscape-stockcake.jpg" alt="Alfombra beige que se extiende hacia un horizonte imposible bajo un cielo nublado, en tono dreamcore" loading="lazy">
+      <figcaption>
+        <span class="fig-label">Ref. visual</span>
+        <span class="fig-text"><strong>El espacio liminal como materia prima.</strong> Antes de cualquier filtro o símbolo flotante, el dreamcore parte de esto: un pasillo, una alfombra, una arquitectura que se estira más allá de lo que un espacio interior debería permitir.</span>
+      </figcaption>
+    </figure>
+
+    <div class="glossary fade-in">
+      <div class="glossary-label">Glosario — Diferenciar estéticas hermanas</div>
+      <div class="glossary-item">
+        <div class="glossary-term">Espacio liminal</div>
+        <div class="glossary-def">Fotografías de lugares de transición —vacíos, mal iluminados, sin gente— que producen incomodidad por sí solos, sin edición añadida. Es la materia prima que el dreamcore reviste de color y símbolo.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Weirdcore</div>
+        <div class="glossary-def">El primo cercano y más áspero del dreamcore: mismo territorio de espacios liminales y nostalgia extraña, pero con una estética más cruda, de baja resolución, glitch y VHS. El dreamcore pone el énfasis en la textura onírica y la anemoia; el weirdcore, en la incomodidad y la desrealización.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Backrooms</div>
+        <div class="glossary-def">La creepypasta específica —salas amarillentas, infinitas, iluminadas con fluorescentes— que se convirtió en el ejemplo más citado del espacio liminal llevado al horror. Es la puerta de entrada de mucha gente al dreamcore.</div>
+      </div>
+      <div class="glossary-item">
+        <div class="glossary-term">Traumacore</div>
+        <div class="glossary-def">Variante más explícitamente perturbadora, que incorpora imaginario médico o de abuso infantil de forma directa. El dreamcore rara vez cruza a ese territorio: su malestar es ambiental, no explícito.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider fade-in"><span class="portal-mark"></span></div>
+
+  <!-- FASE 2 -->
+  <section id="fase-2">
+    <div class="phase-eyebrow"><span class="dot"></span>Fase 2 — Sueño ligero</div>
+    <h2 class="section-title fade-in">II. Cuándo surgió: un origen que nadie puede fechar del todo</h2>
+    <h3 class="subsection fade-in">§ 02 — Tres orígenes posibles, ninguno definitivo</h3>
+
+    <div class="body-text fade-in">
+      <p>Preguntar cuándo nació el dreamcore es, de forma casi poética, hacer una pregunta que el propio término se resiste a responder con precisión — como pedirle a alguien que feche el momento exacto en que empezó a soñar. No hay manifiesto fundacional, ni una fecha de lanzamiento, ni un autor que reclame la paternidad del término. Lo que existe es una genealogía dispersa que la propia comunidad ha reconstruido después, a partir de rastros.</p>
+    </div>
+
+    <figure class="article-image fade-in">
+      <img class="lightbox-img" src="https://images.stockcake.com/public/6/c/3/6c39b89e-f0d8-4740-8cdc-fa50f18abb7b_large/endless-digital-void-stockcake.jpg" alt="Filas de monitores CRT antiguos con brillo cian en una sala vacía envuelta en niebla" loading="lazy">
+      <figcaption>
+        <span class="fig-label">Ref. visual</span>
+        <span class="fig-text"><strong>El territorio donde se gestó.</strong> Foros de imágenes, canales de YouTube pequeños y tablones anónimos —el mismo paisaje digital de principios de los 2010 que hizo posible que una estética se acumulara sin autor ni fecha de nacimiento.</span>
+      </figcaption>
+    </figure>
+
+    <div class="timeline fade-in">
+      <div class="timeline-item">
+        <div class="timeline-year">2012</div>
+        <div class="timeline-title">El primer rastro documentado: GlassBeetles</div>
+        <div class="timeline-desc">Una cuenta de YouTube conocida como GlassBeetles subió videos que la comunidad señala hoy como el antecedente visual más temprano: montajes de imágenes cotidianas alteradas con una lógica ya reconociblemente onírica, años antes de que existiera una palabra para nombrarla.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">Abril de 2018</div>
+        <div class="timeline-title">Un hilo en el tablón /x/ de 4chan</div>
+        <div class="timeline-desc">Según registros recopilados por la propia comunidad, un hilo publicado en el foro de temática paranormal de 4chan reunió imágenes surreales de esta naturaleza y ayudó a fijar un imaginario compartido, aunque —como suele ocurrir con este tipo de foros— sin ninguna autoría clara ni forma de verificarlo con precisión total.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">2018</div>
+        <div class="timeline-title">El usuario de Tumblr "jaaaaim"</div>
+        <div class="timeline-desc">Las publicaciones de este usuario de Tumblr son consideradas por buena parte de la comunidad como el origen directo del estilo tal como se reconoce hoy: la combinación específica de fotografía cotidiana, paleta pastel y símbolos flotantes que se convertiría en la plantilla del género.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">2019 — 2020</div>
+        <div class="timeline-title">Cristaliza como categoría con nombre propio</div>
+        <div class="timeline-desc">Es en este tramo cuando "dreamcore" empieza a usarse de forma consistente como etiqueta, en paralelo al auge de "weirdcore" y a la viralización de la creepypasta de los Backrooms, con la que comparte público y muchas veces imágenes.</div>
+      </div>
+    </div>
+
+    <div class="body-text fade-in">
+      <p>Lo interesante de esta historia no es solo la imprecisión de la fecha, sino lo que esa imprecisión revela sobre cómo se forman hoy las estéticas de internet: no las inventa una sola persona, se condensan a partir de miles de publicaciones dispersas hasta que, en algún punto, alguien les pone un nombre que se pega. El dreamcore no fue "creado". Fue reconocido.</p>
+    </div>
+
+    <div class="pullquote fade-in">
+      <p>No hay una fecha de nacimiento del dreamcore porque el dreamcore no se inventó: se acumuló, hasta que alguien miró hacia atrás y le puso nombre a un sentimiento que ya llevaba años circulando sin etiqueta.</p>
+      <cite>— SIGNAL · Perfil de Estética 03</cite>
+    </div>
+  </section>
+
+  <div class="divider fade-in"><span class="portal-mark"></span></div>
+
+  <!-- FASE 3 -->
+  <section id="fase-3">
+    <div class="phase-eyebrow"><span class="dot"></span>Fase 3 — Sueño profundo</div>
+    <h2 class="section-title fade-in">III. Cómo se popularizó: de Tumblr al encierro pandémico</h2>
+    <h3 class="subsection fade-in">§ 03 — El salto de nicho a fenómeno masivo</h3>
+
+    <div class="body-text fade-in">
+      <p>El dreamcore vivió su adolescencia en Tumblr y en tableros de Pinterest, moviéndose al ritmo lento de esas plataformas: reblogueado, recopilado en carpetas, discutido en foros pequeños. Eso cambió por completo cuando la estética llegó a TikTok, a comienzos de la década. La aplicación no solo le dio un público mucho mayor: cambió su naturaleza. Lo que antes era una imagen fija —una fotografía editada, un collage— empezó a producirse también como video corto, con música, cortes y una narrativa implícita de "explorar" el espacio liminal en tiempo real.</p>
+      <p>El momento de aceleración definitivo coincidió con la pandemia de covid-19. Entre 2020 y 2022, con buena parte del mundo encerrado en sus casas, el dreamcore —y su vecino más oscuro, el imaginario de los Backrooms— encontró una audiencia especialmente receptiva a imágenes de espacios vacíos, atrapantes y a la vez extrañamente reconfortantes. El hashtag asociado a espacios liminales acumuló casi 100 millones de reproducciones en TikTok en ese periodo, y las cifras generales del dreamcore como etiqueta superaron los 340 millones de vistas.</p>
+    </div>
+
+    <figure class="article-image fade-in">
+      <img class="lightbox-img" src="https://images.stockcake.com/public/3/8/f/38f7fea4-4c99-4d5a-89d6-ce884a45b5ff_large/empty-school-memories-stockcake.jpg" alt="Pasillo de escuela primaria vacío con sillas de plástico en círculo y luces fluorescentes" loading="lazy">
+      <figcaption>
+        <span class="fig-label">Ref. visual</span>
+        <span class="fig-text"><strong>El tipo de imagen que explotó en el encierro.</strong> Pasillos escolares, gimnasios y salas de espera vacías: el repertorio visual que millones de personas encerradas en casa empezaron a asociar, casi sin querer, con el propio dreamcore.</span>
+      </figcaption>
+    </figure>
+
+    <div class="fact-box teal fade-in">
+      <div class="fact-box-label">El repertorio de símbolos que trajo TikTok</div>
+      <p>La expansión en TikTok no solo aumentó el público: añadió capas nuevas de vocabulario visual que no estaban en las imágenes originales de 2018. Ojos flotantes, personajes con cabeza de objeto y máscaras de cartón, criaturas cosidas, alas de ángel sobre fondos de nubes, hongos y motivos prestados de otras estéticas vecinas como el yami kawaii —con sus vendas y pastillas— o el kidcore.</p>
+      <p>Ese mismo proceso de expansión trajo también la primera ola de crítica seria hacia el estilo: una parte de la comunidad empezó a describir al dreamcore como una versión "descafeinada" o "cringe" del weirdcore, más preocupada por la estética bonita que por la incomodidad genuina que definía al género en sus orígenes. El músico Jack Stauber, cuyos videoclips comparten buena parte de este imaginario, se convirtió en una de las referencias culturales más citadas del periodo.</p>
+    </div>
+
+    <div class="body-text fade-in">
+      <p>Como suele pasar con las estéticas que explotan demasiado rápido, el dreamcore empezó a perder tracción hacia 2021, desplazado por nuevas tendencias visuales en la misma plataforma que lo había vuelto masivo. Durante un par de años se volvió un término más de nicho, sostenido por comunidades pequeñas en Instagram y Pinterest, pero fuera ya del centro de la conversación cultural. Ese fue su estado hasta hace muy poco.</p>
+    </div>
+  </section>
+
+  <!-- INSERTO IG: LEMON8/CURACIÓN -->
+  <div class="ig-insert fade-in">
+    <div class="ig-insert__stripe"></div>
+    <div class="ig-insert__body">
+      <div class="ig-insert__header">
+        <div class="ig-insert__icon"><i class="fa-brands fa-instagram"></i></div>
+        <div class="ig-insert__handle">
+          Páginas de curación
+          <span>Comunidad dreamcore · Instagram y Pinterest</span>
+        </div>
+        <span class="ig-insert__label">Fenómeno de comunidad</span>
+      </div>
+      <p class="ig-insert__caption">
+        <strong>Una estética sin autor único, sostenida por curadores.</strong> Buena parte de la vida del dreamcore en Instagram no ocurre en cuentas de artistas individuales sino en páginas de recopilación: perfiles dedicados enteramente a reunir, etiquetar y republicar imágenes de espacios liminales con tono onírico. Las etiquetas asociadas a la estética concentran hoy más de un millón de reels en la plataforma, repartidos entre miles de estas cuentas de curación más que centralizados en unas pocas figuras destacadas.
+      </p>
+    </div>
+  </div>
+
+  <div class="divider fade-in"><span class="portal-mark"></span></div>
+
+  <!-- FASE REM -->
+  <section id="fase-rem" class="fade-in">
+    <div class="phase-eyebrow"><span class="dot"></span>Fase REM — Sueño vívido</div>
+    <h2 class="section-title fade-in">IV. El cine, el regreso a Instagram y quién sigue publicando</h2>
+    <h3 class="subsection fade-in">§ 04 — Un canon de películas hecho por la propia comunidad</h3>
+
+    <div class="body-text fade-in">
+      <p>Conviene decir esto con claridad: el dreamcore no es un género cinematográfico oficial ni tiene un comité que certifique qué película pertenece a él. Lo que existe es un canon informal, armado por la propia comunidad en listas, videos y publicaciones, que reúne films de décadas distintas y géneros distintos por una sola razón compartida: producen esa misma sensación de espacio familiar vuelto extraño.</p>
+      <p>Dentro de ese canon de fans, tres títulos aparecen de forma recurrente. <em>El resplandor</em> (1980), de Stanley Kubrick, por la manera en que convierte un hotel vacío en un espacio que se siente simultáneamente conocido y completamente hostil. <em>Vivarium</em> (2019), de Lorcan Finnegan, por su urbanización suburbana idéntica e infinita, quizás la representación más literal de un espacio liminal llevado a la ficción. Y <em>Eduardo Manostijeras</em> (1990), de Tim Burton, citada con frecuencia por su estética de suburbio pastel y luz artificial, que anticipa buena parte de la paleta visual que el dreamcore adoptaría décadas después.</p>
+    </div>
+
+    <div class="film-grid fade-in">
+      <div class="film-card film-card--flagship">
+        <img class="film-card__img lightbox-img" src="https://images.stockcake.com/public/e/1/0/e10147aa-243a-4cf1-b853-7845230074b2_large/liminal-space-nightmare-stockcake.jpg" alt="Sala amarilla infinita con nueve puertas idénticas y suelo de linóleo a cuadros, estilo Backrooms" loading="lazy">
+        <div class="film-card__year">2026 · A24 · El título que cambió todo</div>
+        <div class="film-card__title">Backrooms</div>
+        <div class="film-card__desc">Dirigida por Kane Parsons —el creador original de la serie web homónima, conocido en YouTube como Kane Pixels— y producida por A24, la película lleva al cine el imaginario de las salas amarillentas e infinitas que definieron el subgénero. Se estrenó el 29 de mayo de 2026, recaudó más de 117 millones de dólares en todo el mundo con un presupuesto de apenas 10 millones, y convirtió a Parsons, de 20 años, en el director más joven en debutar en el primer puesto de la taquilla. Es, con diferencia, el evento que más ha hecho por devolver el dreamcore a la conversación pública en los últimos cinco años.</div>
+      </div>
+      <div class="film-card">
+        <img class="film-card__img lightbox-img" src="https://images.stockcake.com/public/7/e/c/7ecac5f5-86d2-456d-8416-7b9b04844c98_large/liminal-space-nightmare-stockcake.jpg" alt="Pasillo de hotel infinito con alfombra granate y papel tapiz floral descolorido" loading="lazy">
+        <div class="film-card__year">1980 · Terror psicológico</div>
+        <div class="film-card__title">El resplandor</div>
+        <div class="film-card__desc">Un hotel vacío como espacio liminal por excelencia: pasillos idénticos, alfombras hipnóticas, una geografía que no termina de tener sentido. Uno de los referentes más citados por la comunidad.</div>
+      </div>
+      <div class="film-card">
+        <img class="film-card__img lightbox-img" src="https://images.stockcake.com/public/6/b/9/6b9e1de9-32de-48ea-9662-f8ae3e3f6c69_large/suburban-dreamscape-spirals-stockcake.jpg" alt="Vista aérea de casas idénticas formando patrones espirales en un barrio vacío con piscinas turquesa" loading="lazy">
+        <div class="film-card__year">2019 · Terror suburbano</div>
+        <div class="film-card__title">Vivarium</div>
+        <div class="film-card__desc">Una pareja atrapada en una urbanización de casas idénticas que se repiten hasta el infinito. Probablemente la puesta en escena más directa del concepto de espacio liminal en el cine reciente.</div>
+      </div>
+      <div class="film-card">
+        <img class="film-card__img lightbox-img" src="https://images.stockcake.com/public/5/7/1/57197adf-692f-4bc8-ada0-ca18581167f4_large/endless-suburban-twilight-stockcake.jpg" alt="Casas idénticas en tonos pastel bajo un atardecer perpetuo, calle suburbana vacía" loading="lazy">
+        <div class="film-card__year">1990 · Fábula suburbana</div>
+        <div class="film-card__title">Eduardo Manostijeras</div>
+        <div class="film-card__desc">Casas idénticas pintadas en pasteles, luz artificial de atardecer perpetuo. Su paleta visual anticipa, tres décadas antes, buena parte del vocabulario cromático que el dreamcore adoptaría como propio.</div>
+      </div>
+    </div>
+
+    <div style="font-family:'Space Mono',monospace;font-size:0.5rem;color:var(--muted);letter-spacing:0.05em;text-align:center;margin-bottom:2rem;">
+      Nota: las imágenes son fotografías genéricas de espacios liminales, no fotogramas de las películas — SIGNAL no reproduce material con derechos de autor de los estudios.
+    </div>
+
+    <div class="divider fade-in"><span class="portal-mark"></span></div>
+
+    <h3 class="subsection fade-in">§ 05 — El resurgimiento: por qué volvió justo ahora</h3>
+
+    <div class="body-text fade-in">
+      <p>El declive del dreamcore después de 2021 no fue definitivo, y el motivo de su regreso tiene nombre propio: Kane Parsons. Su serie de videos de YouTube sobre los Backrooms, iniciada en enero de 2022, ya había mantenido viva la parte más oscura del imaginario liminal durante los años en que el resto de la estética perdía fuerza. Pero fue el anuncio, desarrollo y estreno de la adaptación cinematográfica de A24 —protagonizada por Chiwetel Ejiofor y Renate Reinsve, estrenada en cines el 29 de mayo de 2026— lo que empujó al dreamcore de vuelta al centro del feed.</p>
+      <p>El efecto en Instagram fue inmediato y medible. Las etiquetas genéricas de la estética —variantes como "dreamcore aesthetic" y "dream core aesthetic"— acumulan hoy más de un millón y 1,3 millones de reels respectivamente, cifras que sitúan a la plataforma, por primera vez, como un espacio tan relevante para el estilo como lo fue TikTok en su primer auge. A eso se suma un fenómeno nuevo: marcas comerciales adoptando el lenguaje visual del dreamcore de forma deliberada. La campaña de Glossier para su perfume "You Fleur" es uno de los ejemplos más citados por analistas de tendencias: tomas desenfocadas, vestidos fluidos fuera de lugar en un entorno urbano, una banda sonora ligeramente distorsionada — dreamcore convertido en herramienta publicitaria.</p>
+    </div>
+
+    <div class="fact-box fade-in">
+      <div class="fact-box-label">De creepypasta a fenómeno de taquilla</div>
+      <p>Vale la pena remarcar la escala del salto. La creepypasta original de los Backrooms circuló en foros desde 2019 como una simple imagen sin atribución y un texto breve. Seis años después, su adaptación cinematográfica abrió en el primer puesto de taquilla mundial. Pocas veces un fragmento de folclore digital anónimo ha recorrido tan rápido el camino hasta convertirse en un producto de estudio de cien millones de dólares.</p>
+    </div>
+
+    <div class="divider fade-in"><span class="portal-mark"></span></div>
+
+    <h3 class="subsection fade-in">§ 06 — Quién sigue publicando: las cuentas activas</h3>
+
+    <div class="body-text fade-in">
+      <p>A diferencia de otras estéticas de internet que sí tienen figuras centrales muy reconocibles, el dreamcore sigue siendo, en su mayoría, un fenómeno coral: miles de cuentas medianas y pequeñas sostienen el flujo de imágenes más que un puñado de nombres dominantes. Aun así, hay perfiles que vale la pena señalar por su rol específico dentro del ecosistema.</p>
+    </div>
+
+    <figure class="article-image fade-in">
+      <img class="lightbox-img" src="https://images.stockcake.com/public/d/3/2/d32f54e6-299c-41c6-87a3-2f4c80684f23_large/empty-swimming-dreamscape-stockcake.jpg" alt="Piscina interior vacía con agua turquesa perfectamente quieta bajo luces fluorescentes" loading="lazy">
+      <figcaption>
+        <span class="fig-label">Ref. visual</span>
+        <span class="fig-text"><strong>El territorio de las "poolrooms".</strong> Piscinas y balnearios interiores vacíos, renderizados en 3D con esa iluminación fluorescente particular — el subgénero visual que sostienen cuentas como @liminal_vibes_forever.</span>
+      </figcaption>
+    </figure>
+
+    <div class="cuentas-grid fade-in">
+      <div class="cuenta-card">
+        <div class="cuenta-handle"><a href="https://www.instagram.com/kanepixels/" target="_blank" rel="noopener">@kanepixels</a></div>
+        <div class="cuenta-name">Kane Parsons</div>
+        <div class="cuenta-desc">El creador original de los Backrooms y ahora director de la adaptación de A24. Su cuenta, con cerca de 470 mil seguidores, es el punto de referencia obligado para seguir de cerca el resurgimiento del imaginario liminal en el cine.</div>
+        <div class="cuenta-tag">Creador · Director · Origen del fenómeno</div>
+      </div>
+      <div class="cuenta-card">
+        <div class="cuenta-handle"><a href="https://www.instagram.com/liminal_vibes_forever/" target="_blank" rel="noopener">@liminal_vibes_forever</a></div>
+        <div class="cuenta-name">Poolrooms en Blender</div>
+        <div class="cuenta-desc">Perfil especializado en renderizados 3D hechos íntegramente en Blender de "poolrooms" — piscinas y balnearios interiores vacíos con esa iluminación dreamcore particular. Sus imágenes circulan de forma constante en compilaciones de TikTok e Instagram.</div>
+        <div class="cuenta-tag">Artista 3D · Render · Poolrooms</div>
+      </div>
+      <div class="cuenta-card">
+        <div class="cuenta-handle">Páginas de curación</div>
+        <div class="cuenta-name">El tejido de fondo del género</div>
+        <div class="cuenta-desc">Cientos de cuentas dedicadas exclusivamente a recopilar y republicar imágenes de espacios liminales con tono onírico, sin firma de autor individual. Son, en conjunto, las responsables del millón largo de reels que hoy circulan bajo las etiquetas del estilo.</div>
+        <div class="cuenta-tag">Método: curaduría colectiva</div>
+      </div>
+    </div>
+
+    <div class="body-text fade-in">
+      <p>Este equilibrio —una figura central muy visible junto a un ecosistema disperso de curadores anónimos— es, de hecho, bastante representativo de cómo funcionan hoy la mayoría de las estéticas de internet. No dependen de una sola voz autorizada. Dependen de que suficiente gente, durante suficiente tiempo, siga de acuerdo en que una imagen "se siente" de una manera específica. El dreamcore lleva más de una década demostrando que ese acuerdo tácito puede sostenerse — con altibajos, pero sin desaparecer del todo — mucho más tiempo del que cualquiera hubiera apostado en 2018.</p>
+    </div>
+  </section>
+
+  <div class="divider fade-in"><span class="portal-mark"></span></div>
+
+  <!-- CONCLUSIÓN -->
+  <section id="cierre" class="conclusion">
+    <h3 class="subsection">§ Despertar — La posición del editor</h3>
+    <h2 class="section-title">Lo que el dreamcore entendió antes que nadie</h2>
+
+    <figure class="article-image fade-in">
+      <img class="lightbox-img" src="https://images.stockcake.com/public/2/1/4/214b0fa0-e063-4602-8e70-fd87c58160d0_large/abandoned-mall-dreams-stockcake.jpg" alt="Atrio de un centro comercial de los 90 completamente vacío, con niebla y luz fluorescente verdosa" loading="lazy">
+      <figcaption>
+        <span class="fig-label">Ref. visual</span>
+        <span class="fig-text"><strong>La imagen que resume el argumento del editor.</strong> No hacía falta un monstruo: bastaba con un centro comercial vacío para que una generación entera reconociera su propia ansiedad en un espacio.</span>
+      </figcaption>
+    </figure>
+
+    <div class="opinion-block fade-in">
+      <div class="opinion-label">Punto de vista editorial</div>
+      <p>Lo más interesante del dreamcore no es su vocabulario visual —los arcoíris, los ojos flotantes, las piscinas vacías—, que envejece rápido y ya empieza a sentirse un poco anticuado incluso para quienes lo practican. Lo interesante es el instinto que hay detrás: la idea de que el malestar contemporáneo no necesitaba imágenes explícitamente perturbadoras para expresarse, sino simplemente espacios cotidianos ligeramente equivocados. Un pasillo de más. Una luz del color que no toca.</p>
+      <p>Esa fue, me parece, la intuición genuinamente adelantada del dreamcore: entender que la generación que creció con internet no necesitaba monstruos para sentir que algo no estaba del todo bien. Le bastaba con una fotografía de un centro comercial vacío. La ansiedad de esa generación no tenía forma de criatura; tenía forma de arquitectura.</p>
+      <p>Que la estética haya vuelto ahora, empujada por una película de estudio con presupuesto de diez millones de dólares y actores reconocidos, no le quita autenticidad al fenómeno original — pero sí dice algo sobre cómo se mueve la cultura de internet en 2026: incluso lo más disperso y anónimo, si dura lo suficiente, termina encontrando su versión de estudio. El reto, para quienes siguen publicando fuera de ese circuito comercial, es el mismo de siempre: seguir encontrando la habitación exacta que uno reconoce sin haber estado nunca.</p>
+      <div class="opinion-author">
+        Gerardo Ventura · Editor · SIGNAL · 2026
+        <a href="https://instagram.com/gfvc1978" target="_blank" class="instagram" rel="noopener" style="margin-left: 0.5rem;"><i class="fa-brands fa-instagram"></i> @gfvc1978</a>
+      </div>
+    </div>
+
+    <div class="divider"><span class="portal-mark"></span></div>
+
+    <div style="font-family:'Space Mono',monospace;font-size:0.6rem;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;text-align:center;padding: 1rem 0 2rem;">
+      SIGNAL · Perfil de Estética 03 · San Salvador · 2026 · Estéticas de internet y cultura digital
+    </div>
+  </section>
+
+</div>
+</article>
+
+<!-- ══ FOOTER ══ -->
+<footer class="mag-footer">
+  <div class="logo">SIGNAL<span style="color:var(--accent-light)">.</span></div>
+  <div>Estéticas de internet y cultura digital</div>
+  <div class="mag-footer-social">
+    <a href="https://www.instagram.com/signal.ai.mag/" target="_blank" rel="noopener">Instagram</a>
+    <span style="color:#3d3260">·</span>
+    <a href="https://substack.com/@signalmag" target="_blank" rel="noopener">Substack</a>
+    <span style="color:#3d3260">·</span>
+    <a href="https://signalzine.rf.gd/" target="_blank" rel="noopener">Web</a>
+    <span style="color:#3d3260">·</span>
+    <a href="mailto:revista.signal@gmail.com">Email</a>
+  </div>
+</footer>
+
+<!-- ══ LIGHTBOX ══ -->
+<div class="lightbox-overlay" id="lightboxOverlay">
+  <div class="lightbox-close" id="lightboxClose">Cerrar ✕</div>
+  <img id="lightboxImg" src="" alt="">
+  <div class="lightbox-caption" id="lightboxCaption"></div>
+</div>
+
+<script>
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => { e.target.classList.add('visible'); }, i * 60);
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.fade-in').forEach(el => io.observe(el));
+
+  // Lightbox
+  const overlay = document.getElementById('lightboxOverlay');
+  const overlayImg = document.getElementById('lightboxImg');
+  const overlayCaption = document.getElementById('lightboxCaption');
+  const overlayClose = document.getElementById('lightboxClose');
+
+  document.querySelectorAll('.lightbox-img').forEach(img => {
+    img.addEventListener('click', () => {
+      overlayImg.src = img.src;
+      overlayImg.alt = img.alt || '';
+      overlayCaption.textContent = img.alt || '';
+      overlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+
+  function closeLightbox() {
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  overlayClose.addEventListener('click', closeLightbox);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeLightbox(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
+</script>
+
+</body>
+</html>

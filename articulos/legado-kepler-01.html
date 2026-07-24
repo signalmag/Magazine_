@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legado Kepler — Entrada 004 · El ARK Horizon</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Share+Tech+Mono&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper:#f2ead8;--paper-dark:#e8ddc8;--paper-aged:#d4c9a8;
+    --ink:#2a2318;--ink-faded:#5a5040;--ink-light:#8a7a60;
+    --accent:#c47a2a;--accent-light:#e8b870;--teal:#3a7a6a;
+    --stamp-red:#8a2a1a;--rule:#c4b898;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:#1a1208;font-family:'Crimson Pro',Georgia,serif;min-height:100vh;padding:3rem 1.5rem;padding-top:calc(3rem + 44px);}
+
+  .signal-nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--ink);border-bottom:2px solid var(--accent);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:44px;font-family:'Share Tech Mono',monospace;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;}
+  .signal-nav__home{display:flex;align-items:center;gap:.8rem;text-decoration:none;color:var(--paper);transition:opacity .2s;}
+  .signal-nav__home:hover{opacity:.8;}
+  .signal-nav__logo{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:600;letter-spacing:.15em;text-transform:none;color:var(--paper);}
+  .signal-nav__logo .ia{color:var(--accent);}
+  .signal-nav__ed{color:var(--accent);font-size:.55rem;border-left:1px solid #3a2e1a;padding-left:.8rem;}
+  .signal-nav__trail{color:#4a3a20;font-size:.55rem;flex:1;text-align:center;padding:0 1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .signal-nav__current{color:var(--accent-light);}
+  .signal-nav__arrows{display:flex;align-items:center;gap:.5rem;}
+  .signal-nav__arrows a{display:inline-flex;align-items:center;color:#f2ead8;background:#3a2e1a;border:1px solid #5a4a2a;text-decoration:none;padding:.3rem .7rem;font-size:.55rem;letter-spacing:.1em;transition:background .2s,border-color .2s,color .2s;white-space:nowrap;}
+  .signal-nav__arrows a:hover{background:var(--accent);border-color:var(--accent);color:var(--ink);}
+  .signal-nav__sep{color:#3a2e1a;padding:0 .2rem;}
+  @media(max-width:640px){.signal-nav__trail{display:none;}.signal-nav{padding:0 1rem;}}
+
+  .notebook{max-width:820px;margin:0 auto;background:var(--paper);box-shadow:0 20px 80px rgba(0,0,0,.7),0 0 0 1px rgba(0,0,0,.4);position:relative;}
+  .notebook::before{content:'';position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:10;opacity:.8;}
+  .notebook::after{content:'';position:absolute;top:0;left:0;bottom:0;width:40px;background:linear-gradient(to right,rgba(0,0,0,.14),transparent);pointer-events:none;z-index:5;}
+
+  .notebook-header{background:var(--ink);padding:2rem 3rem 1.8rem;position:relative;overflow:hidden;}
+  .notebook-header::before{content:'ARK HORIZON';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Share Tech Mono',monospace;font-size:5rem;color:rgba(255,255,255,.025);letter-spacing:.3em;white-space:nowrap;pointer-events:none;}
+  .header-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.2rem;}
+  .series-title{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:var(--accent-light);letter-spacing:.3em;text-transform:uppercase;line-height:1.8;}
+  .entry-code{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:#5a5040;letter-spacing:.15em;text-align:right;line-height:1.8;}
+  .main-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2.5rem,5vw,4rem);font-weight:300;color:var(--paper);letter-spacing:.1em;line-height:1;}
+  .main-title span{color:var(--accent);}
+  .subtitle{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:#4a3a20;letter-spacing:.2em;text-transform:uppercase;margin-top:.8rem;}
+
+  .mission-bar{background:var(--paper-dark);border-bottom:1px solid var(--rule);padding:.7rem 3rem;display:flex;justify-content:space-between;font-family:'Share Tech Mono',monospace;font-size:.55rem;letter-spacing:.1em;color:var(--ink-faded);text-transform:uppercase;flex-wrap:wrap;gap:.5rem;}
+  .mission-bar .highlight{color:var(--accent);}
+
+  .field-header{padding:1.8rem 3rem;border-bottom:2px solid var(--rule);display:flex;justify-content:space-between;align-items:flex-start;gap:2rem;}
+  .vessel-name{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:600;color:var(--ink);letter-spacing:.05em;margin-bottom:.3rem;}
+  .vessel-designation{font-family:'Share Tech Mono',monospace;font-size:.58rem;color:var(--ink-light);letter-spacing:.15em;text-transform:uppercase;margin-bottom:1rem;}
+  .field-meta{display:flex;flex-wrap:wrap;gap:.8rem 2rem;}
+  .meta-field{font-family:'Share Tech Mono',monospace;font-size:.55rem;letter-spacing:.08em;color:var(--ink-faded);text-transform:uppercase;line-height:1.8;}
+  .meta-field strong{display:block;color:var(--ink-light);font-size:.5rem;letter-spacing:.15em;}
+  .field-stamp{flex-shrink:0;}
+  .stamp-box{border:2px solid var(--accent);padding:.6rem .8rem;font-family:'Share Tech Mono',monospace;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);text-align:center;line-height:1.7;}
+
+  .notebook-body{padding:2.5rem 3rem 3rem;position:relative;z-index:2;}
+
+  .section-header{display:flex;align-items:baseline;gap:1rem;margin:2.5rem 0 1.5rem;padding-bottom:.6rem;border-bottom:1px solid var(--rule);}
+  .section-num{font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--accent);letter-spacing:.2em;}
+  .section-name{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-style:italic;color:var(--ink-faded);}
+
+  .image-block{margin:2rem -3rem;position:relative;overflow:hidden;}
+  .image-block img{width:100%;display:block;filter:sepia(.12) contrast(1.02);}
+  .image-caption{background:var(--ink);padding:.8rem 3rem;display:flex;justify-content:space-between;align-items:flex-start;gap:2rem;flex-wrap:wrap;}
+  .caption-text{font-family:'Share Tech Mono',monospace;font-size:.55rem;color:#6a5a40;letter-spacing:.08em;line-height:1.8;flex:1;}
+  .caption-ref{font-family:'Share Tech Mono',monospace;font-size:.5rem;color:#3a2e1a;letter-spacing:.1em;white-space:nowrap;text-transform:uppercase;}
+
+  .image-inline{float:right;width:300px;margin:0 0 1.5rem 2rem;clear:right;}
+  .image-inline img{width:100%;display:block;filter:sepia(.12) contrast(1.02);border:1px solid var(--rule);}
+  .caption-inline{font-family:'Share Tech Mono',monospace;font-size:.52rem;color:var(--ink-light);letter-spacing:.06em;line-height:1.7;padding:.5rem;background:var(--paper-dark);border:1px solid var(--rule);border-top:none;}
+
+  .entry-text{margin:1.5rem 0;}
+  .entry-text p{font-size:1.05rem;color:var(--ink);line-height:1.82;margin-bottom:1.2rem;}
+  .entry-text p:first-child::first-letter{font-family:'Cormorant Garamond',serif;font-size:4.5rem;font-weight:600;float:left;line-height:.78;margin:.06em .1em 0 0;color:var(--accent);}
+
+  .ruled-section{background-image:repeating-linear-gradient(to bottom,transparent,transparent 1.81rem,rgba(196,184,152,.3) 1.81rem,rgba(196,184,152,.3) calc(1.81rem + 1px));padding:.2rem 0;}
+
+  .field-note{margin:1.8rem 0;padding:1rem 1.5rem;background:var(--paper-dark);border-left:3px solid var(--accent);position:relative;}
+  .field-note::before{content:attr(data-label);display:block;font-family:'Share Tech Mono',monospace;font-size:.5rem;color:var(--accent);letter-spacing:.15em;text-transform:uppercase;margin-bottom:.6rem;}
+  .field-note p{font-family:'Crimson Pro',Georgia,serif;font-size:.95rem;font-style:italic;color:var(--ink-faded);line-height:1.75;}
+
+  .tech-aside{margin:2rem 0;padding:1rem 1.5rem;border:1px solid var(--rule);background:var(--paper-dark);display:grid;grid-template-columns:3px 1fr;gap:1.2rem;}
+  .tech-aside-bar{background:var(--teal);}
+  .tech-aside-content{font-family:'Share Tech Mono',monospace;font-size:.62rem;color:var(--ink-faded);letter-spacing:.05em;line-height:1.8;}
+  .tech-aside-content strong{color:var(--teal);display:block;margin-bottom:.3rem;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;}
+
+  .divider{display:flex;align-items:center;gap:1rem;margin:2.5rem 0;clear:both;}
+  .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--rule);}
+  .divider-sym{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--rule);}
+
+  .image-inline{float:right;width:300px;margin:0 0 1.5rem 2rem;clear:right;}
+
+  .vessel-data{margin:2rem 0;background:var(--ink);padding:1.5rem 2rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
+  .vessel-stat{border-right:1px solid #3a2e1a;padding-right:1.5rem;}
+  .vessel-stat:last-child{border-right:none;}
+  .vessel-stat__num{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:600;color:var(--accent-light);line-height:1;}
+  .vessel-stat__label{font-family:'Share Tech Mono',monospace;font-size:.5rem;letter-spacing:.15em;text-transform:uppercase;color:burlywood;margin-top:.3rem;}
+  .vessel-stat__desc{font-family:'Share Tech Mono',monospace;font-size:.5rem;color:beige ;letter-spacing:.05em;line-height:1.6;margin-top:.4rem;}
+
+  .signature-block{margin-top:3rem;padding-top:2rem;border-top:1px solid var(--rule);display:flex;justify-content:space-between;align-items:flex-end;}
+  .sig-left{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;color:var(--ink-faded);line-height:1.8;}
+  .sig-name{font-size:1.4rem;font-weight:600;color:var(--ink);font-style:normal;}
+  .sig-right{font-family:'Share Tech Mono',monospace;font-size:.55rem;color:var(--ink-light);letter-spacing:.1em;text-transform:uppercase;text-align:right;line-height:1.8;}
+
+  .nav-entries{background:var(--paper-dark);border-top:1px solid var(--rule);padding:1rem 3rem;display:flex;justify-content:space-between;align-items:center;}
+  .nav-link{font-family:'Share Tech Mono',monospace;font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-light);text-decoration:none;transition:color .2s;}
+  .nav-link:hover{color:var(--accent);}
+
+  .notebook-footer{background:var(--ink);padding:1rem 3rem;display:flex;justify-content:space-between;align-items:center;}
+  .footer-series{font-family:'Share Tech Mono',monospace;font-size:.55rem;color:#3a3020;letter-spacing:.15em;text-transform:uppercase;}
+  .footer-page{font-family:'Cormorant Garamond',serif;font-size:.9rem;color:#3a3020;}
+
+  @media(max-width:640px){
+    body{padding:0;padding-top:44px;}
+    .notebook-header,.notebook-body,.field-header{padding-left:1.5rem;padding-right:1.5rem;}
+    .mission-bar{padding:.6rem 1.5rem;}
+    .image-block{margin:2rem -1.5rem;}
+    .image-caption{padding:.8rem 1.5rem;}
+    .image-inline{float:none;width:100%;margin:1.5rem 0;}
+    .field-meta{flex-wrap:wrap;gap:1rem;}
+    .main-title{font-size:2.2rem;}
+    .signature-block{flex-direction:column;gap:1.5rem;}
+    .vessel-data{grid-template-columns:1fr;}
+    .vessel-stat{border-right:none;border-bottom:1px solid #3a2e1a;padding-bottom:1rem;}
+    .nav-entries{padding:1rem 1.5rem;flex-direction:column;gap:.8rem;}
+  }
+</style>
+</head>
+<body>
+
+<nav class="signal-nav">
+  <a class="signal-nav__home" href="../index.html">
+    <span class="signal-nav__logo">S<span class="ia">I</span>GN<span class="ia">A</span>L<span style="color:var(--accent)">.</span></span>
+    <span class="signal-nav__ed">Serie · Legado Kepler</span>
+  </a>
+  <div class="signal-nav__trail">
+    Legado Kepler · <span class="signal-nav__current">Entrada 004 · A bordo del ARK</span>
+  </div>
+  <div class="signal-nav__arrows">
+    <a href="../index.html">Índice</a>
+    <span class="signal-nav__sep">·</span>
+    <a href="legado-kepler-entrada-003.html">← Entrada 003</a>
+    <span class="signal-nav__sep">·</span>
+    <a href="legado-kepler-02.html">Entrada 005 →</a>
+  </div>
+</nav>
+
+<div class="notebook">
+  <div class="notebook-header">
+    <div class="header-top">
+      <div class="series-title">Legado Kepler · Diario de campo · Serie II<br>En tránsito — ARK Horizon</div>
+      <div class="entry-code">Entrada N° 004<br>Clasificación: Abierta<br>Archivo: LK-ARK-004</div>
+    </div>
+    <div class="main-title">ARK<span>·</span>HORIZON</div>
+    <div class="subtitle">Nave de logística continental · En tránsito interestelar · Día 1 a bordo</div>
+  </div>
+
+  <div class="mission-bar">
+    <span>S. Nikolas Ventura A. · Técnico Sr. Sistemas Vitales — Clase IV</span>
+    <span class="highlight">En tránsito · ARK Horizon · Ciclo 7 · Año 312 EA</span>
+    <span>Puesto vitalicio de emergencia — Categoría Alfa</span>
+  </div>
+
+  <div class="field-header">
+    <div>
+      <div class="vessel-name">ARK Horizon</div>
+      <div class="vessel-designation">Nave de logística planetaria · Clase Continental · Matrícula AH-07-PROV</div>
+      <div class="field-meta">
+        <div class="meta-field"><strong>Longitud</strong>4.2 km</div>
+        <div class="meta-field"><strong>Tripulación activa</strong>~8,400 personas</div>
+        <div class="meta-field"><strong>Ruta activa</strong>Sistema Lira → Sistema Kepler-22</div>
+        <div class="meta-field"><strong>Días de tránsito</strong>34 estándar</div>
+      </div>
+    </div>
+    <div class="field-stamp">
+      <div class="stamp-box">Embarque<br>confirmado<br>Puesto<br>Alfa — 07</div>
+    </div>
+  </div>
+
+  <div class="notebook-body">
+
+    <div class="section-header">
+      <span class="section-num">§ 01</span>
+      <span class="section-name">La lanzadera que te lleva donde no puedes caminar</span>
+    </div>
+
+    <div class="image-block">
+      <img src="images/imagesB4 (6).jpg" alt="ARK Horizon — vista exterior">
+      <div class="image-caption">
+        <span class="caption-text">Planetary Warp Alignment Complex — nodo de transferencia orbital. Miles de trayectorias convergen aquí antes de abandonar el sistema. Ninguna nave salta directamente al vacío; primero debe atravesar esta inmensa maquinaria de precisión.</span>
+        <span class="caption-ref">Foto · SNV · Día 1 · 06:22h tránsito</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>Me despedí de Viridis Nova desde una ventanilla de treinta centímetros. La lanzadera de abordaje sale del Puerto Vertical 7A-19 con poca ceremonia — una sacudida suave, un cambio de presión, y de repente el planeta ya es otra cosa. Ya no es suelo que pisas. Es paisaje que se aleja.</p>
+      <p>Desde la ventana vi los campos durante los primeros minutos. Esa geometría perfecta desde la altura tiene algo que desde el suelo no se ve — el patrón completo, el trabajo de tres generaciones organizado en bloques de color que se doblan con la curvatura del planeta. El técnico de suelos que va a la plataforma A5-01 todos los días para ver eso tendría que subir aquí. Aunque supongo que él ya lo sabe. Por eso va todos los días — porque lo que se ve desde abajo es suficiente.</p>
+    </div>
+
+    <div class="field-note" data-label="Nota de tránsito · SNV · 06:45h">
+      <p>La lanzadera tardó cuarenta minutos en llegar al ARK. En ese tiempo vi a Viridis Nova pasar de planeta a esfera y de esfera a punto de referencia en el visor de navegación. Es un proceso que he vivido docenas de veces y que sigue siendo extraño. No porque sea impresionante — sino porque es el momento en que un lugar deja de ser un lugar y se convierte en un recuerdo.</p>
+    </div>
+
+    <div class="divider"><span class="divider-sym">✦</span></div>
+
+    <div class="section-header">
+      <span class="section-num">§ 02</span>
+      <span class="section-name">Cuando la nave es demasiado grande para verse entera</span>
+    </div>
+
+    <div class="image-block">
+      <img src="images/imagesB4 (7).jpg" alt="ARK Horizon — vista completa en órbita">
+      <div class="image-caption">
+        <span class="caption-text">ARK Horizon — vista completa desde punto de aproximación. 4.2 kilómetros de longitud, ocho sectores de carga activos, cuatro módulos de propulsión en configuración paralela. La pequeña nave visible es una vave carguera del tipo Bulk Continental&nbsp; parecida en tamaño a las clase HOSHI Continental pero estas se acoplan como modulos en las calse ARk y no tienen sistemas warp propios como las HOSHI .&nbsp;</span>
+        <span class="caption-ref">Foto · SNV · Día 1 · 06:55h tránsito</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>Hay naves que ves y hay naves que no puedes ver. El ARK Horizon entra en la segunda categoría. Desde el punto de aproximación de la lanzadera, la nave ocupa el campo visual completo. No puedes retroceder suficiente para verla entera. Tu cerebro la procesa como arquitectura, no como vehículo — como si hubieran construido un edificio en el espacio y simplemente le hubieran puesto motores.</p>
+      <p>La clase Bulk Continental fue diseñada para exactamente esto: mover tonelajes que ninguna otra nave en el inventario de la UEC puede manejar. No son naves rápidas. No son naves elegantes. Son naves que no se rinden. El ARK tarda treinta y cuatro días estándar en completar esta ruta — contra los ocho que tarda un crucero rápido de pasajeros. Pero un crucero rápido no puede cargar los módulos de suministro de dos sistemas planetarios y los materiales en bruto de seis colonias mineras. El ARK sí puede. Y lo hace continuamente, sin parar, desde hace once años.</p>
+    </div>
+
+    <div class="vessel-data">
+      <div class="vessel-stat">
+        <div class="vessel-stat__num">4.2<span style="font-size:1.2rem;color:chocolate"> km</span></div>
+        <div class="vessel-stat__label">Longitud total</div>
+        <div class="vessel-stat__desc">Mayor nave de clase Continental en servicio activo. Los módulos de popa pueden desprenderse para operaciones independientes.</div>
+      </div>
+      <div class="vessel-stat">
+        <div class="vessel-stat__num">8,400</div>
+        <div class="vessel-stat__label">Tripulación activa</div>
+        <div class="vessel-stat__desc">Más la población flotante de técnicos embarcados y personal de tránsito. El ARK tiene su propio sistema de registro civil.</div>
+      </div>
+      <div class="vessel-stat">
+        <div class="vessel-stat__num">11<span style="font-size:1.2rem;color:chocolate"> años</span></div>
+        <div class="vessel-stat__label">En servicio continuo</div>
+        <div class="vessel-stat__desc">Sin descanso programado mayor. Mantenimiento en ruta. El ARK no vuelve a puerto — los puertos se acercan al ARK.</div>
+      </div>
+    </div>
+
+    <div class="divider"><span class="divider-sym">✦</span></div>
+
+    <div class="section-header">
+      <span class="section-num">§ 03</span>
+      <span class="section-name">El HOSHI — la nave que me trajo hasta aquí</span>
+    </div>
+
+    <div class="image-inline">
+      <img src="images/imagesB3 (4).jpg" alt="HOSHI Carrier 7 — motores">
+      <div class="caption-inline">HOSHI Carrier 7 — módulos de propulsión en máxima potencia. Los motores generan el campo que comprime el espacio-tiempo frente a la nave. A esta potencia el calor es visible desde el exterior.</div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>Antes de llegar al ARK, hice el tránsito desde la órbita baja de Viridis Nova en un HOSHI Carrier — el modelo 7. Los HOSHI son cargueros de rango medio, la clase que conecta los puertos planetarios con las naves de logística continental. Son más pequeños, más ágiles, y tienen una reputación entre los técnicos de tránsito que oscila entre el afecto y la resignación: funcionan casi siempre, se mantienen con lo mínimo, y tienen cabinas que fueron diseñadas por alguien que claramente nunca tuvo que pasar más de doce horas seguidas en una.</p>
+      <p>El HOSHI-7 me recogió en la plataforma de tránsito orbital 7A y tardó seis horas en alcanzar la posición de encuentro con el ARK. Seis horas en una cabina del tamaño de un armario con una ventana que mira directamente a los motores del módulo de carga delantero. No es precisamente poético. Pero cuando el HOSHI giró en el punto de aproximación y el ARK apareció en el visor completo, la incomodidad de las seis horas pasó a ser un detalle menor.</p>
+    </div>
+
+    <div class="image-block">
+      <img src="images/imagesB3 (2).jpg" alt="HOSHI Carrier 7 — maniobra de acoplamiento">
+      <div class="image-caption">
+        <span class="caption-text">HOSHI Carrier 7 en maniobra de recibimiento del módulo A12,&nbsp; &nbsp; bahía de recepción 03. La apertura de la bahía tiene el tamaño de un edificio de diez pisos. En&nbsp; naranja: modulos de estabilización de carga activos.</span>
+        <span class="caption-ref">Foto · SNV · Día 1 · 07:15h tránsito</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>El acoplamiento del HOSHI con el ARK es una de esas operaciones que parecen simples en los manuales y que en práctica involucran más variables de las que puedo seguir desde una ventanilla. Vi la bahía de recepción de carga 03 abrirse — una apertura que desde adentro del HOSHI parece absurdamente grande — y el módulo A12 deslizarse hacia adentro con la precisión que solo da la automatización después de miles de repeticiones.</p>
+      <p>El personal de carga del ARK opera esas maniobras con la tranquilidad de quien lleva años haciéndolo. Para ellos una transferencia de módulo es rutina. Para mí sigue siendo espectáculo. Supongo que esa diferencia dice algo sobre cuánto tiempo llevas en un lugar.</p>
+    </div>
+
+    <div class="divider"><span class="divider-sym">✦</span></div>
+
+    <div class="section-header">
+      <span class="section-num">§ 04</span>
+      <span class="section-name">La notificación que no esperaba</span>
+    </div>
+
+    <div class="image-block">
+      <img src="images/imagesB4 (12).jpg" alt="HOSHI Carrier 7 — acoplado al ARK">
+      <div class="image-caption">
+        <span class="caption-text">HOSHI Carrier 7 acoplado a la bahía 03 del ARK Horizon para intercambio nominal.</span>
+        <span class="caption-ref">Foto · SNV · Día 1 · 07:38h tránsito</span>
+      </div>
+    </div>
+
+    <div class="entry-text ruled-section">
+      <p>Cuando el técnico de embarque del ARK verificó mis credenciales en el punto de acceso, hubo una pausa. Ese tipo de pausa que te hace pensar que algo está mal. Luego me miró y me dijo que había una actualización en mi asignación de alojamiento — que en lugar de los módulos de tránsito estándar me habían asignado un puesto de categoría Alfa. Puesto emergente vitalicio.</p>
+      <p>Le pedí que repitiera eso. Lo repitió. Le pregunté si había algún error. Me dijo que no. Que mi historial de servicio en sistemas vitales de clase IV durante once años consecutivos me ponía en la categoría de personal técnico de valor estratégico continuado — lo que en la nomenclatura de la UEC significa que mientras esté en tránsito a bordo de cualquier nave de la flota continental, tengo derecho a alojamiento y espacio de trabajo permanente de primera categoría.</p>
+      <p>En dieciséis años de trabajo en rotación interestelar, nunca me había pasado algo así. Generalmente llego, me asignan un hueco donde caber, y me conformo con que esté limpio y tenga gravedad artificial estable. Un puesto vitalicio en el ARK Horizon no es un hueco donde caber. Es otra cosa.</p>
+    </div>
+
+    <div class="field-note" data-label="Nota · SNV · Pasillo A3 · 08:12h">
+      <p>No sé qué hacer con esto. Hay una satisfacción que viene de merecerse algo después de mucho tiempo, y hay una incomodidad que viene de no saber bien si lo mereces. Hoy siento las dos cosas al mismo tiempo. Supongo que es lo correcto.</p>
+    </div>
+
+    <div class="tech-aside">
+      <div class="tech-aside-bar"></div>
+      <div class="tech-aside-content">
+        <strong>Registro de asignación — Ref. LK-ARK-004-EMBA</strong>
+        Nave: ARK Horizon · Matrícula AH-07-PROV · Puesto de embarque: Bahía 03 · Categoría asignada: ALFA — Puesto Emergente Vitalicio · Módulo: A3-042 · Sector residencial A3 · Área de trabajo exclusiva: Sector 07, nivel técnico · Acceso completo a instalaciones de primera categoría · Duración: Tránsito actual + indefinido en futuros embarques · Autorización: Oficina de Recursos Técnicos UEC — División Interestelar
+      </div>
+    </div>
+
+    <div class="signature-block">
+      <div class="sig-left">
+        <div>Registrado por</div>
+        <div class="sig-name">S. Nikolas Ventura A.</div>
+        <div>Técnico Sr. de Sistemas Vitales — Clase IV</div>
+        <div>Rotación Interestelar · UEC · División de Colonias</div>
+      </div>
+      <div class="sig-right">
+        Entrada 004 · Serie II · Inicio<br>
+        ARK Horizon · AH-07-PROV<br>
+        Ciclo 7 · Año 312 EA<br>
+        Día 1 a bordo<br>
+        "El cuaderno"
+      </div>
+    </div>
+
+  </div>
+
+  <div class="nav-entries">
+    <a class="nav-link" href="legado-kepler-entrada-003.html">← Entrada 003 · Antes de partir</a>
+    <a class="nav-link" href="legado-kepler-02.html">Entrada 005 · Mi lugar en la nave →</a>
+  </div>
+
+  <div class="notebook-footer">
+    <span class="footer-series">Legado Kepler · Diario de campo · Serie II · ARK Horizon</span>
+    <span class="footer-page">004</span>
+  </div>
+
+</div>
+</body>
+</html>

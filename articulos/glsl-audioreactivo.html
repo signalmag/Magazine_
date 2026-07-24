@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGNAL — GLSL en Vivo: Cuando el Código Escucha</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,900;1,9..144,400;1,9..144,600&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;1,7..72,400;1,7..72,500&family=Space+Mono:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+  :root {
+    --ink: #171428;
+    --paper: #f4f2fb;
+    --paper-dark: #e9e2f8;
+    --accent: #ff2ec4;
+    --accent-light: #ff9fe6;
+    --teal: #35e0c2;
+    --muted: #6d6485;
+    --rule: #ddd0ef;
+    --dusk: #0a0814;
+    --dusk2: #120f22;
+    --dusk3: #1a1530;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Literata', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.7;
+    padding-top: 44px;
+  }
+
+  /* ══ SIGNAL NAV ══ */
+  .signal-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: var(--dusk);
+    border-bottom: 2px solid var(--accent);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem; height: 44px;
+    font-family: 'Space Mono', monospace; font-size: 0.58rem;
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .signal-nav__home { display: flex; align-items: center; gap: 0.8rem; text-decoration: none; color: var(--paper); }
+  .signal-nav__logo { font-family: 'Fraunces', serif; font-size: 0.9rem; font-weight: 900; letter-spacing: 0.05em; text-transform: none; }
+  .signal-nav__ed { color: var(--accent-light); font-size: 0.55rem; border-left: 1px solid #332a4d; padding-left: 0.8rem; }
+  .signal-nav__home:hover { opacity: 0.8; }
+  .signal-nav__trail { color: #776a94; font-size: 0.55rem; }
+  .signal-nav__current { color: var(--accent-light); }
+  .signal-nav__arrows { display: flex; align-items: center; gap: 0.6rem; }
+  .signal-nav__arrows a {
+    display: inline-flex; align-items: center; color: #f6f1fb; background: #201a38;
+    border: 1px solid #332a4d; text-decoration: none; padding: 0.3rem 0.7rem;
+    font-size: 0.55rem; letter-spacing: 0.1em; transition: background 0.2s, border-color 0.2s, color 0.2s; white-space: nowrap;
+  }
+  .signal-nav__arrows a:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .signal-nav__disabled {
+    display: inline-flex; color: #3d3457; background: #120f22; border: 1px solid #221c38;
+    padding: 0.3rem 0.7rem; font-size: 0.55rem; letter-spacing: 0.1em; opacity: 0.5; cursor: not-allowed;
+  }
+  .signal-nav__sep { color: #2e2648; padding: 0 0.2rem; }
+  @media (max-width: 680px) {
+    .signal-nav__trail { display: none; }
+    .signal-nav { padding: 0 1rem; }
+  }
+
+  /* ── COVER ── */
+  .cover {
+    min-height: calc(100vh - 40px);
+    background:
+      radial-gradient(ellipse 55% 45% at 15% 20%, rgba(255,46,196,0.30), transparent 60%),
+      radial-gradient(ellipse 55% 50% at 88% 12%, rgba(53,224,194,0.26), transparent 65%),
+      radial-gradient(ellipse 70% 55% at 50% 100%, rgba(120,90,255,0.16), transparent 70%),
+      linear-gradient(180deg, rgba(10,8,20,0.92) 0%, rgba(18,15,34,0.86) 55%, rgba(26,21,48,0.90) 100%),
+      url('https://images.stockcake.com/public/9/d/1/9d194d81-88a5-4b65-90e1-b5d836f30425_large/neon-wave-pattern-stockcake.jpg') center 40% / cover no-repeat;
+    display: grid; grid-template-rows: auto 1fr auto;
+    position: relative; overflow: hidden;
+  }
+  .cover-grain {
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+    pointer-events: none; opacity: 0.7;
+  }
+  .scanlines {
+    position: absolute; inset: 0; pointer-events: none; opacity: 0.5;
+    background: repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 3px);
+  }
+  .cover-content {
+    grid-row: 2; display: flex; flex-direction: column; justify-content: center;
+    padding: 2rem 8vw; position: relative; z-index: 2;
+  }
+  .cover-kicker {
+    font-family: 'Space Mono', monospace; font-size: 0.68rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--teal); margin-bottom: 1.6rem; display: flex; align-items: center; gap: 0.8rem;
+  }
+  .cover-kicker::before { content: ''; width: 28px; height: 1px; background: var(--teal); }
+  .cover-title {
+    font-family: 'Fraunces', serif; font-weight: 600; font-style: italic;
+    font-size: clamp(2.6rem, 7vw, 5.2rem); line-height: 1.02; color: #f8f5ff; max-width: 15ch; letter-spacing: -0.01em;
+  }
+  .cover-title em { color: var(--accent-light); font-style: italic; }
+  .cover-sub {
+    font-family: 'Literata', serif; font-size: clamp(1.05rem, 2vw, 1.3rem); color: #cabfe8;
+    max-width: 46ch; margin-top: 1.6rem; line-height: 1.6;
+  }
+  .cover-meta {
+    grid-row: 3; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
+    padding: 1.6rem 8vw 2.2rem; position: relative; z-index: 2;
+    border-top: 1px solid rgba(255,255,255,0.12); font-family: 'Space Mono', monospace; font-size: 0.62rem;
+    letter-spacing: 0.1em; text-transform: uppercase; color: #9d8fc0;
+  }
+  .cover-meta span strong { color: #e8dfff; }
+
+  /* ── CUERPO ── */
+  .article-body { max-width: 700px; margin: 0 auto; padding: 5rem 1.5rem 6rem; }
+  .drop-cap::first-letter {
+    font-family: 'Fraunces', serif; font-weight: 600; font-style: italic; font-size: 4.4rem;
+    float: left; line-height: 0.8; padding-right: 0.5rem; padding-top: 0.4rem; color: var(--accent);
+  }
+  .body-text { margin-bottom: 1.6rem; font-size: 1.08rem; }
+  .body-text a { color: var(--accent); }
+  h2.section-head {
+    font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.9rem; margin: 3.5rem 0 1.4rem;
+    display: flex; align-items: baseline; gap: 0.9rem;
+  }
+  h2.section-head .num { font-family: 'Space Mono', monospace; font-size: 0.9rem; color: var(--teal); font-weight: 400; }
+
+  /* ── IMAGEN CON PIE + LIGHTBOX ── */
+  .article-image { margin: 3rem 0; }
+  .article-image img { width: 100%; display: block; border-radius: 16px; border: 1px solid var(--rule); cursor: zoom-in; transition: opacity 0.2s ease; }
+  .article-image img:hover { opacity: 0.92; }
+  .fig-label {
+    font-family: 'Space Mono', monospace; font-size: 0.55rem; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--teal); display: block; margin: 0.9rem 0 0.3rem;
+  }
+  .fig-text { font-size: 0.92rem; color: var(--muted); line-height: 1.6; }
+
+  .lightbox-overlay {
+    position: fixed; inset: 0; z-index: 3000; background: rgba(6,4,14,0.94);
+    display: flex; align-items: center; justify-content: center; padding: 3rem 2rem;
+    opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+  }
+  .lightbox-overlay.active { opacity: 1; pointer-events: auto; }
+  .lightbox-overlay img { max-width: 92vw; max-height: 88vh; border-radius: 12px; box-shadow: 0 40px 100px -20px rgba(0,0,0,0.6); }
+  .lightbox-caption { position: absolute; bottom: 2rem; left: 0; right: 0; text-align: center; color: #d8cff0; font-family: 'Literata', serif; font-style: italic; font-size: 0.95rem; padding: 0 3rem; }
+  .lightbox-close {
+    position: absolute; top: 1.8rem; right: 2rem; color: #fff; font-family: 'Space Mono', monospace; font-size: 0.65rem;
+    letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; border: 1px solid rgba(255,255,255,0.3);
+    padding: 0.5rem 1.1rem; border-radius: 30px; background: rgba(255,255,255,0.06); transition: background 0.2s ease;
+  }
+  .lightbox-close:hover { background: rgba(255,255,255,0.14); }
+
+  /* ── GLOSARIO ── */
+  .glossary { background: var(--paper-dark); border-radius: 16px; padding: 2rem 2.2rem; margin: 3rem 0; }
+  .glossary-label { font-family: 'Space Mono', monospace; font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.2rem; }
+  .glossary dl { display: grid; gap: 1rem; }
+  .glossary dt { font-family: 'JetBrains Mono', monospace; font-weight: 500; font-size: 0.95rem; color: var(--ink); }
+  .glossary dd { font-size: 0.92rem; color: var(--muted); margin-top: 0.2rem; }
+
+  /* ── PULLQUOTE ── */
+  .pullquote {
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 500; font-size: 1.6rem; line-height: 1.4;
+    color: var(--ink); padding: 0.5rem 0 0.5rem 1.6rem; border-left: 3px solid var(--accent); margin: 3rem 0;
+  }
+  .pullquote cite { display: block; font-family: 'Space Mono', monospace; font-style: normal; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 1rem; }
+
+  /* ── FACT BOX ── */
+  .fact-box { border-radius: 16px; padding: 2rem 2.2rem; margin: 3rem 0; background: var(--dusk); color: #e6dfff; }
+  .fact-box-label { font-family: 'Space Mono', monospace; font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--teal); margin-bottom: 1.2rem; }
+  .fact-box p { font-size: 0.95rem; margin-bottom: 0.8rem; color: #cabfe8; }
+  .fact-box p:last-child { margin-bottom: 0; }
+  .fact-box strong { color: #fff; }
+
+  /* ── DEMO EN VIVO ── */
+  .demo-block { margin: 3.5rem 0; border-radius: 20px; overflow: hidden; background: var(--dusk); border: 1px solid #2a2244; }
+  .demo-header { padding: 1.4rem 1.6rem 0.4rem; }
+  .demo-tag { font-family: 'Space Mono', monospace; font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent-light); display: flex; align-items: center; gap: 0.6rem; }
+  .demo-tag .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 8px var(--teal); animation: pulse-dot 1.6s ease-in-out infinite; }
+  @keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+  .demo-title { font-family: 'Fraunces', serif; font-style: italic; font-weight: 600; font-size: 1.3rem; color: #f4f0ff; margin: 0.5rem 0 0.3rem; }
+  .demo-desc { font-size: 0.88rem; color: #a89bc9; line-height: 1.5; max-width: 56ch; padding-bottom: 1.2rem; font-family: 'Literata', serif; }
+  .demo-canvas-wrap { position: relative; aspect-ratio: 16/10; background: #000; }
+  .preset-row { display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0 1.6rem 1.2rem; }
+  .preset-btn {
+    font-family: 'Space Mono', monospace; font-size: 0.6rem; letter-spacing: 0.06em;
+    background: transparent; color: #9d8fc0; border: 1px solid #2a2244; padding: 0.5rem 0.85rem;
+    border-radius: 20px; cursor: pointer; transition: all 0.2s ease; white-space: nowrap;
+  }
+  .preset-btn:hover { border-color: var(--accent-light); color: #f4f0ff; }
+  .preset-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+  @media (max-width: 600px) {
+    .preset-row { padding: 0 1rem 1rem; }
+    .preset-btn { font-size: 0.56rem; padding: 0.45rem 0.7rem; }
+  }
+  #shaderCanvas { width: 100%; height: 100%; display: block; }
+  .demo-controls { display: flex; flex-wrap: wrap; gap: 0.7rem; padding: 1.2rem 1.6rem; align-items: center; border-top: 1px solid #221c38; }
+  .demo-btn {
+    font-family: 'Space Mono', monospace; font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase;
+    background: #1d1836; color: #e6dfff; border: 1px solid #33294f; padding: 0.65rem 1.1rem; border-radius: 30px;
+    cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 0.5rem;
+  }
+  .demo-btn:hover { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .demo-btn.active { background: var(--teal); border-color: var(--teal); color: #06231d; }
+  .demo-status { font-family: 'Space Mono', monospace; font-size: 0.58rem; letter-spacing: 0.05em; color: #776a94; margin-left: auto; }
+  .demo-code-toggle {
+    font-family: 'Space Mono', monospace; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--teal); cursor: pointer; padding: 1rem 1.6rem; border-top: 1px solid #221c38; user-select: none;
+  }
+  .demo-code-toggle:hover { color: var(--accent-light); }
+  .demo-code {
+    display: none; padding: 0 1.6rem 1.6rem; font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; line-height: 1.7;
+    color: #b8f5e8; overflow-x: auto; white-space: pre;
+  }
+  .demo-code.show { display: block; }
+  .demo-code .kw { color: var(--accent-light); }
+  .demo-code .fn { color: var(--teal); }
+  .demo-code .cm { color: #5c517a; font-style: italic; }
+  @media (max-width: 600px) {
+    .demo-controls { flex-direction: column; align-items: stretch; }
+    .demo-status { margin-left: 0; }
+  }
+
+  /* ── OPINION BLOCK ── */
+  .opinion-block { border-top: 3px solid var(--accent); padding-top: 1.8rem; margin: 3.5rem 0; }
+  .opinion-label { font-family: 'Space Mono', monospace; font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
+  .opinion-block p { font-size: 1.02rem; color: var(--ink); }
+
+  /* ── FOOTER ── */
+  .mag-footer { background: var(--dusk); color: #a89bc9; padding: 3.5rem 8vw 2.5rem; margin-top: 4rem; }
+  .mag-footer .logo { font-family: 'Fraunces', serif; font-style: italic; font-weight: 600; font-size: 1.3rem; color: #fff; margin-bottom: 0.6rem; }
+  .mag-footer .tag { font-family: 'Space Mono', monospace; font-size: 0.58rem; letter-spacing: 0.15em; text-transform: uppercase; color: #6d6485; }
+
+  .fade-in { opacity: 0; transform: translateY(14px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 680px) {
+    .cover-content { padding: 1.5rem 6vw; }
+    .cover-meta { padding: 1.2rem 6vw 1.8rem; flex-direction: column; align-items: flex-start; }
+    .article-body { padding: 3.5rem 1.2rem 4rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="signal-nav">
+  <a href="#" class="signal-nav__home">
+    <span class="signal-nav__logo">SIGNAL</span>
+    <span class="signal-nav__ed">ARTE DIGITAL</span>
+  </a>
+  <div class="signal-nav__trail">
+    <span>REVISTA</span><span class="signal-nav__sep">/</span><span>ARTE DIGITAL</span><span class="signal-nav__sep">/</span><span class="signal-nav__current">GLSL EN VIVO</span>
+  </div>
+  <div class="signal-nav__arrows">
+    <span class="signal-nav__disabled">← ANTERIOR</span>
+    <a href="#">SIGUIENTE →</a>
+  </div>
+</nav>
+
+<header class="cover">
+  <div class="cover-grain"></div>
+  <div class="scanlines"></div>
+  <div class="cover-content fade-in">
+    <div class="cover-kicker">Arte digital · Código en vivo</div>
+    <h1 class="cover-title">GLSL en vivo: cuando el <em>código</em> aprende a escuchar</h1>
+    <p class="cover-sub">Cómo un puñado de líneas de matemática pura, corriendo en la tarjeta gráfica, se convirtió en el lenguaje visual de toda una escena — y por qué ahora reacciona a la música.</p>
+  </div>
+  <div class="cover-meta">
+    <span>Por <strong>Redacción SIGNAL</strong></span>
+    <span>22 jul 2026</span>
+    <span>Lectura: 9 min</span>
+  </div>
+</header>
+
+<main class="article-body">
+
+  <p class="body-text drop-cap fade-in">Antes de que existiera una palabra para nombrarlo, ya había gente escribiendo fórmulas trigonométricas en un cuadro de texto y viendo, en tiempo real, cómo esas fórmulas se convertían en túneles de luz, plasma líquido o paisajes imposibles. No hay assets, no hay modelos 3D importados, no hay fotografías de por medio. Todo lo que ves en un shader sale de una función matemática evaluada miles de veces por segundo, una vez por cada píxel de la pantalla.</p>
+
+  <p class="body-text fade-in">Eso es GLSL —<em>OpenGL Shading Language</em>—, el lenguaje en el que está escrito ese tipo de código. Y en los últimos años, ese código aprendió a escuchar: a tomar el espectro de una canción o de un micrófono abierto y usarlo para decidir qué tan rápido gira el túnel, qué tan violento es el destello, de qué color se pone todo cuando entra el bajo.</p>
+
+  <h2 class="section-head"><span class="num">§01</span> Qué es, en criollo, un shader</h2>
+
+  <p class="body-text fade-in">Pensalo así: un programa normal corre una vez, de arriba a abajo. Un shader corre <em>en paralelo</em>, una copia distinta del mismo programa por cada píxel de la imagen, todas al mismo tiempo, en la GPU. Cuando escribís algo como <code>gl_FragColor = vec4(uv.x, uv.y, 0.5, 1.0)</code>, en realidad estás escribiendo la regla que decide el color de <em>cualquier</em> píxel, dado su lugar en la pantalla. La GPU aplica esa regla a millones de píxeles, sesenta veces por segundo, y el resultado es una imagen que se mueve.</p>
+
+  <p class="body-text fade-in">No hay capas, no hay biblioteca de efectos: hay una fórmula, y toda la imagen es la fórmula. Por eso el shader art tiene esa textura tan particular —fractal, matemática, casi orgánica pese a estar hecha enteramente de números— que no se parece a nada hecho con herramientas de diseño convencionales.</p>
+
+  <figure class="article-image fade-in">
+    <img class="lightbox-img" src="https://images.stockcake.com/public/1/8/9/189cefb5-a6cf-4a8d-b293-663658cfd0c7_large/retro-code-monitor-stockcake.jpg" alt="Monitor retro flotando en un espacio digital azul, con código verde en cascada y dígitos binarios cayendo alrededor" loading="lazy">
+    <span class="fig-label">Ref. visual</span>
+    <span class="fig-text"><strong>La demoscene, el origen que casi nadie menciona.</strong> Programadores escribiendo animaciones en tiempo real dentro de restricciones de tamaño absurdas —a veces menos de 64 kilobytes— ya en los años noventa. Esa cultura de sacarle arte a la matemática pura es la raíz directa de todo lo que viene después.</span>
+  </figure>
+
+  <h2 class="section-head"><span class="num">§02</span> De la demoscene a Shadertoy</h2>
+
+  <p class="body-text fade-in">El salto que hizo pública esta práctica ocurrió cuando Firefox lanzó su primera implementación de WebGL, en 2009: de golpe, un shader podía correr directo en el navegador, sin instalar nada. El programador Iñigo Quílez —que venía de la demoscene— armó el primer entorno de codificación en vivo online, y en 2012 ese esfuerzo se convirtió en Shadertoy, el sitio que hoy sigue siendo la referencia central de la comunidad. Buena parte de sus primeros aportes vino, justamente, de esos mismos autores de demos de los noventa: los mismos trucos —metaballs marchados por rayos, fractales, túneles— pero ahora abiertos a cualquiera con un navegador.</p>
+
+  <div class="glossary fade-in">
+    <div class="glossary-label">Glosario mínimo</div>
+    <dl>
+      <dt>Fragment shader</dt>
+      <dd>El programa que corre una vez por cada píxel y decide su color final. Es, en la práctica, el "shader" del que habla todo el mundo.</dd>
+      <dt>Uniform</dt>
+      <dd>Una variable que le pasás al shader desde afuera —el tiempo, el tamaño de pantalla, el volumen del bajo— y que es igual para todos los píxeles en ese frame.</dd>
+      <dt>WebGL</dt>
+      <dd>La tecnología que permite correr shaders directo en el navegador, usando la GPU de tu computadora sin instalar nada.</dd>
+      <dt>Raymarching</dt>
+      <dd>Una técnica para "dibujar" formas 3D disparando rayos matemáticos y viendo dónde chocan, sin usar polígonos ni modelos importados.</dd>
+    </dl>
+  </div>
+
+  <h2 class="section-head"><span class="num">§03</span> Vivir el código: Hydra y el live coding</h2>
+
+  <p class="body-text fade-in">En paralelo a Shadertoy creció otra rama, más performática: el live coding. Hydra, creado por la artista Olivia Jack, es un sintetizador de video que se programa en vivo, directo en el navegador, con una sintaxis pensada para encadenar transformaciones —como quien parchea un sintetizador modular analógico— en vez de escribir GLSL línea por línea. Por debajo sigue siendo WebGL puro, pero la experiencia es otra: alguien está escribiendo y remixando código en tiempo real, frente a una audiencia, y lo que se ve en pantalla cambia con cada tecla.</p>
+
+  <p class="body-text fade-in">Esa comunidad —gente como Naoto Hieda, que da talleres de Hydra abiertos a cualquiera sin experiencia previa en programación— trata al código como si fuera un instrumento más sobre el escenario, tocado junto a la música y no como una ilustración de fondo.</p>
+
+  <figure class="article-image fade-in">
+    <img class="lightbox-img" src="https://images.stockcake.com/public/e/f/6/ef6abaf2-c334-4202-8f4f-21df15acccd6_large/neon-festival-crowd-stockcake.jpg" alt="Vista aérea de una multitud masiva en un festival, iluminada por luces cian y magenta con proyecciones geométricas" loading="lazy">
+    <span class="fig-label">Ref. visual</span>
+    <span class="fig-text"><strong>El destino final de buena parte de este código.</strong> Lo que empieza como una fórmula matemática en un editor de texto termina, muchas veces, proyectado a escala de festival — reaccionando en vivo a lo que está sonando en ese momento.</span>
+  </figure>
+
+  <h2 class="section-head"><span class="num">§04</span> De la web al escenario profesional</h2>
+
+  <p class="body-text fade-in">En el circuito de VJing e instalaciones físicas, la herramienta dominante es TouchDesigner: un entorno visual por nodos donde también se puede escribir GLSL a mano y conectarlo directo a una señal de audio. No es casualidad que sigan apareciendo tutoriales enfocados específicamente en enrutar audio hacia shaders dentro de TouchDesigner —es, junto con Hydra, el puente entre el shader como curiosidad de navegador y el shader como pieza central de un show en vivo.</p>
+
+  <blockquote class="pullquote fade-in">
+    "Hydra está escrito en JavaScript y compila a WebGL por debajo, con una sintaxis inspirada en la síntesis modular analógica: encadenar transformaciones para generar un resultado visual."
+    <cite>— Documentación del proyecto Hydra</cite>
+  </blockquote>
+
+  <h2 class="section-head"><span class="num">§05</span> Cómo se arma, técnicamente, un shader que escucha</h2>
+
+  <p class="body-text fade-in">El patrón es siempre el mismo, esté hecho en Shadertoy, Hydra o a mano en un archivo HTML. Tres piezas que se hablan entre sí:</p>
+
+  <div class="fact-box fade-in">
+    <div class="fact-box-label">La receta, en tres pasos</div>
+    <p><strong>1. Un lienzo y un shader.</strong> Un <code>&lt;canvas&gt;</code> con contexto WebGL, corriendo una fórmula que dibuja algo —un túnel, un plasma, lo que sea— sesenta veces por segundo.</p>
+    <p><strong>2. Un oído digital.</strong> La Web Audio API toma el micrófono o un archivo de audio y, cuadro a cuadro, entrega el espectro de frecuencias: cuánto grave, cuánto medio, cuánto agudo hay en ese instante exacto.</p>
+    <p><strong>3. El puente entre ambos.</strong> Esos tres números se le pasan al shader como <em>uniforms</em>. El shader los usa para mover, distorsionar o cambiar de color lo que está dibujando. No hay backend, no hay servidor: todo corre en la pestaña del navegador.</p>
+  </div>
+
+  <p class="body-text fade-in">Armamos una versión mínima de esto para que lo veas —y lo escuches— andar en vivo, ahí abajo.</p>
+
+  <div class="demo-block fade-in">
+    <div class="demo-header">
+      <div class="demo-tag"><span class="dot"></span> Demo en vivo — corre en tu navegador</div>
+      <div class="demo-title" id="demoTitle">Agujero de gusano</div>
+      <p class="demo-desc" id="demoDesc">Un shader GLSL real, corriendo ahora mismo en tu pantalla. Elegí uno de los 5 presets, y activá el micrófono o cargá un tema tuyo para que reaccione al sonido.</p>
+    </div>
+    <div class="preset-row" id="presetRow">
+      <button class="preset-btn active" data-preset="0">① Agujero de gusano</button>
+      <button class="preset-btn" data-preset="1">② Partículas metálicas</button>
+      <button class="preset-btn" data-preset="2">③ Glitch realista</button>
+      <button class="preset-btn" data-preset="3">④ Fuga de luz</button>
+      <button class="preset-btn" data-preset="4">⑤ Fractal infinito</button>
+    </div>
+    <div class="demo-canvas-wrap">
+      <canvas id="shaderCanvas"></canvas>
+    </div>
+    <div class="demo-controls">
+      <button class="demo-btn" id="micBtn"><i class="fa-solid fa-microphone"></i> Activar micrófono</button>
+      <button class="demo-btn" id="fileBtn"><i class="fa-solid fa-file-audio"></i> Cargar tu audio</button>
+      <input type="file" id="audioFileInput" accept="audio/*" style="display:none">
+      <button class="demo-btn active" id="idleBtn"><i class="fa-solid fa-wand-magic-sparkles"></i> Modo automático</button>
+      <span class="demo-status" id="demoStatus">Modo automático — sin acceso a audio</span>
+    </div>
+    <audio id="audioPlayer" loop style="display:none"></audio>
+    <div class="demo-code-toggle" id="codeToggle">▸ Ver el código de este shader (GLSL)</div>
+    <pre class="demo-code" id="demoCode"></pre>
+  </div>
+
+  <p class="body-text fade-in">Los cinco parten de la misma base —un lienzo, tres números que llegan del audio (grave, medio, agudo) y una fórmula— pero cada uno decide algo distinto con esos tres números: en el túnel, el grave empuja la cámara hacia adelante; en el glitch, dispara el desplazamiento de bloques; en el fractal, controla la velocidad del zoom. Ese es, en resumen, todo el oficio: no la fórmula en sí, sino qué le hacés decidir a cada frecuencia.</p>
+
+
+  <div class="opinion-block fade-in">
+    <div class="opinion-label">Punto de vista editorial</div>
+    <p>Lo que más nos interesa de esta escena no es la proeza técnica —aunque la hay— sino lo poco que pide para arrancar: un navegador y ganas de escribir números. A diferencia de buena parte del arte generado por IA, acá no hay dataset ni modelo entrenado de por medio: solo funciones matemáticas que alguien decidió, a mano, cómo combinar. En una revista que últimamente habla mucho de IA generativa, nos pareció importante dejar constancia de que también existe —y sigue viva— esta otra forma de hacer imágenes con código.</p>
+  </div>
+
+</main>
+
+<!-- ══ LIGHTBOX ══ -->
+<div class="lightbox-overlay" id="lightboxOverlay">
+  <div class="lightbox-close" id="lightboxClose">Cerrar ✕</div>
+  <img id="lightboxImg" src="" alt="">
+  <div class="lightbox-caption" id="lightboxCaption"></div>
+</div>
+
+<footer class="mag-footer">
+  <div class="logo">SIGNAL</div>
+  <div class="tag">Revista de arte digital y cultura de internet</div>
+</footer>
+
+<script>
+  /* ── Fade-in on scroll ── */
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) { setTimeout(() => e.target.classList.add('visible'), i * 60); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.fade-in').forEach(el => io.observe(el));
+
+  /* ── Lightbox ── */
+  const overlay = document.getElementById('lightboxOverlay');
+  const overlayImg = document.getElementById('lightboxImg');
+  const overlayCaption = document.getElementById('lightboxCaption');
+  document.querySelectorAll('.lightbox-img').forEach(img => {
+    img.addEventListener('click', () => {
+      overlayImg.src = img.src; overlayImg.alt = img.alt || '';
+      overlayCaption.textContent = img.alt || '';
+      overlay.classList.add('active'); document.body.style.overflow = 'hidden';
+    });
+  });
+  function closeLightbox() { overlay.classList.remove('active'); document.body.style.overflow = ''; }
+  document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) closeLightbox(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
+
+  /* ── Code toggle ── */
+  const codeToggle = document.getElementById('codeToggle');
+  const demoCode = document.getElementById('demoCode');
+  codeToggle.addEventListener('click', () => {
+    demoCode.classList.toggle('show');
+    codeToggle.textContent = demoCode.classList.contains('show') ? '▾ Ocultar el código del shader' : '▸ Ver el código del shader (GLSL)';
+  });
+
+  /* ══════════════════════════════════════════════
+     DEMO EN VIVO — 5 shaders GLSL audio-reactivos
+     ══════════════════════════════════════════════ */
+  (function () {
+    const canvas = document.getElementById('shaderCanvas');
+    const statusEl = document.getElementById('demoStatus');
+    const micBtn = document.getElementById('micBtn');
+    const idleBtn = document.getElementById('idleBtn');
+    const demoTitleEl = document.getElementById('demoTitle');
+    const demoDescEl = document.getElementById('demoDesc');
+    const presetRow = document.getElementById('presetRow');
+    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+
+    if (!gl) {
+      statusEl.textContent = 'Tu navegador no soporta WebGL';
+      canvas.style.display = 'none';
+      return;
+    }
+
+    const vertSrc = `
+      attribute vec2 a_pos;
+      void main() { gl_Position = vec4(a_pos, 0.0, 1.0); }
+    `;
+
+    const UNIFORM_BLOCK = `
+      precision mediump float;
+      uniform vec2 u_resolution;
+      uniform float u_time;
+      uniform float u_bass;
+      uniform float u_mid;
+      uniform float u_treble;
+    `;
+
+    /* ── Los 5 presets ── */
+    const presets = [
+      {
+        name: 'Agujero de gusano',
+        desc: 'Un túnel de anillos que se traga la cámara — el bajo acelera el viaje, los medios abren o cierran los anillos, los agudos disparan destellos al pasar.',
+        frag: UNIFORM_BLOCK + `
+void main() {
+  vec2 uv = (gl_FragCoord.xy - 0.5*u_resolution) / u_resolution.y;
+  float speed = 1.0 + u_bass * 3.0;
+  float r = length(uv);
+  float a = atan(uv.y, uv.x);
+  float depth = 1.0 / (r + 0.001);
+  float z = depth + u_time * speed * 2.0;
+
+  float rings = fract(z * 0.15 - u_mid * 2.0);
+  float ringLine = smoothstep(0.0, 0.05, rings) - smoothstep(0.45, 0.5, rings);
+
+  float twist = a * 3.0 + z * 0.08;
+  float streaks = sin(twist * 8.0) * 0.5 + 0.5;
+
+  vec3 col = 0.5 + 0.5 * cos(z * 0.05 + vec3(0.0, 2.0, 4.0) + u_time * 0.3);
+  col *= mix(0.3, 1.0, ringLine);
+  col += streaks * u_treble * vec3(0.6, 0.8, 1.0);
+  col *= smoothstep(1.4, 0.05, r);
+  gl_FragColor = vec4(col, 1.0);
+}` },
+      {
+        name: 'Partículas metálicas',
+        desc: 'Una grilla de puntos con brillo metálico que orbitan su celda — el bajo los agranda y acelera la órbita, los agudos disparan destellos especulares.',
+        frag: UNIFORM_BLOCK + `
+float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+
+void main() {
+  vec2 uv = (gl_FragCoord.xy - 0.5*u_resolution) / u_resolution.y;
+  vec3 col = vec3(0.02, 0.02, 0.04);
+  float cell = 0.22 - u_mid * 0.07;
+  vec2 guv = uv / cell;
+  vec2 id = floor(guv);
+  vec2 gv = fract(guv) - 0.5;
+
+  for (int y = -1; y <= 1; y++) {
+    for (int x = -1; x <= 1; x++) {
+      vec2 offs = vec2(float(x), float(y));
+      vec2 idn = id + offs;
+      float h = hash(idn);
+      float dir = h > 0.5 ? 1.0 : -1.0;
+      float ang = h * 6.2831 + u_time * (0.5 + u_bass * 1.6) * dir;
+      vec2 pos = offs + vec2(cos(ang), sin(ang)) * 0.35 - gv;
+      float d = length(pos);
+      float size = 0.045 + 0.05 * u_bass * hash(idn + 1.0);
+      float glow = size / (d + 0.001);
+      vec3 metallic = 0.5 + 0.5 * cos(h * 6.2831 + vec3(0.0, 2.1, 4.2) + u_time * 0.4);
+      float spec = pow(max(0.0, 1.0 - d * 8.0), 8.0) * u_treble * 2.0;
+      col += metallic * glow * 0.15 + spec;
+    }
+  }
+  col = pow(col, vec3(0.85));
+  gl_FragColor = vec4(col, 1.0);
+}` },
+      {
+        name: 'Glitch realista',
+        desc: 'Bloques que saltan, canales de color separados, estática en ráfagas — el bajo rompe la imagen en bloques, los agudos disparan ruido tipo señal perdida.',
+        frag: UNIFORM_BLOCK + `
+float hash(float n) { return fract(sin(n) * 43758.5453); }
+float hash2(vec2 p) { return fract(sin(dot(p, vec2(41.3, 289.1))) * 43758.5453); }
+
+void main() {
+  vec2 uv = gl_FragCoord.xy / u_resolution;
+  vec2 p = uv;
+
+  float blockY = floor(p.y * (8.0 + u_mid * 10.0));
+  float seed = blockY + floor(u_time * 6.0);
+  float glitchAmt = u_bass * 0.9;
+  float trigger = step(0.72, hash(seed + 50.0));
+  p.x += (hash(seed) - 0.5) * glitchAmt * trigger;
+
+  float split = 0.004 + u_treble * 0.012;
+  float r = 0.5 + 0.5 * cos(u_time * 0.2 + (p.x + split) * 3.0 + p.y * 2.0);
+  float g = 0.5 + 0.5 * cos(u_time * 0.2 + p.x * 3.0 + p.y * 2.0 + 2.0);
+  float b = 0.5 + 0.5 * cos(u_time * 0.2 + (p.x - split) * 3.0 + p.y * 2.0 + 4.0);
+  vec3 col = vec3(r, g, b);
+
+  col *= 0.85 + 0.15 * sin(uv.y * u_resolution.y * 1.5);
+
+  float staticNoise = hash2(floor(gl_FragCoord.xy * 0.6) + u_time * 60.0);
+  float burst = step(0.985, hash(floor(u_time * 10.0)));
+  col = mix(col, vec3(staticNoise), burst * 0.6 * (0.3 + u_treble));
+
+  gl_FragColor = vec4(col, 1.0);
+}` },
+      {
+        name: 'Fuga de luz',
+        desc: 'Un destello cálido que barre el cuadro como en un rollo de película expuesto — el bajo mueve el recorrido, los medios cambian el tono, los agudos encienden el centro.',
+        frag: UNIFORM_BLOCK + `
+void main() {
+  vec2 uv = gl_FragCoord.xy / u_resolution;
+  vec2 p = uv - 0.5;
+  p.x *= u_resolution.x / u_resolution.y;
+
+  vec3 col = vec3(0.03, 0.02, 0.05);
+
+  float sweep = fract(u_time * 0.08 + u_bass * 0.3);
+  vec2 leakCenter = vec2(mix(-0.8, 1.4, sweep), mix(0.6, -0.5, sweep));
+  float d = length(p - leakCenter);
+  float leak = 0.25 / (d + 0.05);
+  vec3 leakColor = mix(vec3(1.0, 0.55, 0.2), vec3(1.0, 0.2, 0.6), 0.5 + 0.5 * sin(u_mid * 6.0 + u_time * 0.3));
+  col += leak * leakColor * 0.6;
+
+  float rings = sin(d * 20.0 - u_time * 2.0) * 0.5 + 0.5;
+  col += rings * leakColor * 0.05 * smoothstep(0.6, 0.0, d);
+
+  float hotspot = smoothstep(0.15, 0.0, length(p - leakCenter));
+  col += hotspot * vec3(1.0, 0.95, 0.85) * (0.5 + u_treble * 1.5);
+
+  float grain = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
+  col += (grain - 0.5) * 0.03;
+
+  gl_FragColor = vec4(col, 1.0);
+}` },
+      {
+        name: 'Fractal infinito',
+        desc: 'Un conjunto de Julia en zoom continuo — el bajo acelera la caída, los medios deforman la constante del fractal, los agudos ciclan el color.',
+        frag: UNIFORM_BLOCK + `
+void main() {
+  vec2 uv = (gl_FragCoord.xy - 0.5*u_resolution) / u_resolution.y;
+
+  float zoom = exp(-mod(u_time * (0.15 + u_bass * 0.4), 6.0));
+  vec2 z = uv * zoom * 1.5;
+  z += vec2(0.28, 0.0);
+
+  vec2 c = vec2(0.355 + 0.02 * sin(u_time * 0.1), 0.355 + 0.02 * cos(u_time * 0.13)) + vec2(u_mid * 0.05, 0.0);
+
+  float it = 0.0;
+  const float MAX_IT = 60.0;
+  for (int i = 0; i < 60; i++) {
+    if (dot(z, z) > 4.0) break;
+    z = vec2(z.x*z.x - z.y*z.y, 2.0*z.x*z.y) + c;
+    it += 1.0;
+  }
+  float t = it / MAX_IT;
+  vec3 col = 0.5 + 0.5 * cos(6.2831 * (t * 2.0 + u_time * 0.05) + vec3(0.0, 2.0, 4.0) + u_treble * 3.0);
+  col *= smoothstep(0.0, 0.08, t);
+  gl_FragColor = vec4(col, 1.0);
+}` }
+    ];
+
+    function compileShader(type, src) {
+      const s = gl.createShader(type);
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(s));
+      return s;
+    }
+
+    const sharedVert = compileShader(gl.VERTEX_SHADER, vertSrc);
+
+    presets.forEach(p => {
+      const prog = gl.createProgram();
+      gl.attachShader(prog, sharedVert);
+      gl.attachShader(prog, compileShader(gl.FRAGMENT_SHADER, p.frag));
+      gl.bindAttribLocation(prog, 0, 'a_pos'); // misma ubicación de atributo en los 5 programas
+      gl.linkProgram(prog);
+      if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) console.error(gl.getProgramInfoLog(prog));
+      p.program = prog;
+      p.u_res = gl.getUniformLocation(prog, 'u_resolution');
+      p.u_time = gl.getUniformLocation(prog, 'u_time');
+      p.u_bass = gl.getUniformLocation(prog, 'u_bass');
+      p.u_mid = gl.getUniformLocation(prog, 'u_mid');
+      p.u_treble = gl.getUniformLocation(prog, 'u_treble');
+    });
+
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, -1,1, 1,-1, 1,1]), gl.STATIC_DRAW);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+
+    let currentPreset = 0;
+
+    /* ── Resaltado simple de sintaxis para mostrar el código ── */
+    function highlightGLSL(src) {
+      let out = src.trim()
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      out = out.replace(/\/\/.*$/gm, m => `<span class="cm">${m}</span>`);
+      out = out.replace(/\b(precision|uniform|mediump|highp|float|vec2|vec3|vec4|void|int|const|for|if|break|return)\b/g, '<span class="kw">$1</span>');
+      out = out.replace(/\b(main|sin|cos|tan|atan|length|smoothstep|mix|fract|floor|abs|mod|clamp|dot|normalize|pow|exp|log|min|max|step)\b(?=\()/g, '<span class="fn">$1</span>');
+      return out;
+    }
+
+    function updatePresetUI(i) {
+      demoTitleEl.textContent = presets[i].name;
+      demoDescEl.textContent = presets[i].desc;
+      document.querySelectorAll('.preset-btn').forEach((b, bi) => b.classList.toggle('active', bi === i));
+      demoCode.innerHTML = highlightGLSL(presets[i].frag);
+    }
+
+    presetRow.addEventListener('click', (e) => {
+      const btn = e.target.closest('.preset-btn');
+      if (!btn) return;
+      currentPreset = parseInt(btn.dataset.preset, 10);
+      updatePresetUI(currentPreset);
+    });
+
+    updatePresetUI(0);
+
+    function resize() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      gl.viewport(0, 0, canvas.width, canvas.height);
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    /* ── Audio ── */
+    const fileBtn = document.getElementById('fileBtn');
+    const fileInput = document.getElementById('audioFileInput');
+    const audioPlayer = document.getElementById('audioPlayer');
+
+    let audioCtx = null, analyser = null, freqData = null;
+    let mode = 'idle'; // 'idle' | 'mic' | 'file'
+    let micStream = null, micSourceNode = null, fileSourceNode = null;
+    let bass = 0.12, mid = 0.10, treble = 0.08;
+
+    function ensureAudioCtx() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (!analyser) {
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+        analyser.smoothingTimeConstant = 0.8;
+        freqData = new Uint8Array(analyser.frequencyBinCount);
+      }
+      return audioCtx;
+    }
+
+    function setActiveButton(btn) {
+      [micBtn, fileBtn, idleBtn].forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function stopMic() {
+      if (micSourceNode) { try { micSourceNode.disconnect(); } catch (e) {} micSourceNode = null; }
+      if (micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
+    }
+
+    function goIdle() {
+      mode = 'idle';
+      stopMic();
+      audioPlayer.pause();
+      if (analyser) { try { analyser.disconnect(audioCtx.destination); } catch (e) {} }
+      setActiveButton(idleBtn);
+      statusEl.textContent = 'Modo automático — sin acceso a audio';
+    }
+
+    async function enableMic() {
+      try {
+        statusEl.textContent = 'Pidiendo permiso de micrófono…';
+        const ctx = ensureAudioCtx();
+        audioPlayer.pause();
+        if (analyser) { try { analyser.disconnect(ctx.destination); } catch (e) {} }
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        micStream = stream;
+        micSourceNode = ctx.createMediaStreamSource(stream);
+        micSourceNode.connect(analyser);
+        mode = 'mic';
+        setActiveButton(micBtn);
+        statusEl.textContent = 'Escuchando el micrófono en vivo';
+      } catch (err) {
+        statusEl.textContent = 'No se pudo acceder al micrófono — seguimos en modo automático';
+        goIdle();
+      }
+    }
+
+    function loadFile(file) {
+      const ctx = ensureAudioCtx();
+      stopMic();
+      const url = URL.createObjectURL(file);
+      audioPlayer.src = url;
+      if (!fileSourceNode) {
+        fileSourceNode = ctx.createMediaElementSource(audioPlayer);
+        fileSourceNode.connect(analyser);
+      }
+      analyser.connect(ctx.destination);
+      ctx.resume();
+      audioPlayer.play();
+      mode = 'file';
+      setActiveButton(fileBtn);
+      const name = file.name.length > 28 ? file.name.slice(0, 25) + '…' : file.name;
+      statusEl.textContent = 'Reproduciendo: ' + name;
+    }
+
+    micBtn.addEventListener('click', () => { if (mode !== 'mic') enableMic(); });
+    fileBtn.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', (e) => { if (e.target.files[0]) loadFile(e.target.files[0]); });
+    idleBtn.addEventListener('click', () => { if (mode !== 'idle') goIdle(); });
+
+    function readAudio() {
+      if ((mode === 'mic' || mode === 'file') && analyser) {
+        analyser.getByteFrequencyData(freqData);
+        const n = freqData.length;
+        const bassEnd = Math.floor(n * 0.12), midEnd = Math.floor(n * 0.5);
+        let b = 0, m = 0, tr = 0;
+        for (let i = 0; i < bassEnd; i++) b += freqData[i];
+        for (let i = bassEnd; i < midEnd; i++) m += freqData[i];
+        for (let i = midEnd; i < n; i++) tr += freqData[i];
+        bass = b / bassEnd / 255;
+        mid = m / (midEnd - bassEnd) / 255;
+        treble = tr / (n - midEnd) / 255;
+      } else {
+        const now = performance.now() * 0.001;
+        bass = 0.15 + 0.08 * Math.sin(now * 0.6);
+        mid = 0.12 + 0.06 * Math.sin(now * 0.9 + 1.0);
+        treble = 0.08 + 0.05 * Math.sin(now * 1.4 + 2.0);
+      }
+    }
+
+    let start = performance.now();
+    function frame() {
+      readAudio();
+      const t = (performance.now() - start) * 0.001;
+      const p = presets[currentPreset];
+      gl.useProgram(p.program);
+      gl.uniform2f(p.u_res, canvas.width, canvas.height);
+      gl.uniform1f(p.u_time, t);
+      gl.uniform1f(p.u_bass, bass);
+      gl.uniform1f(p.u_mid, mid);
+      gl.uniform1f(p.u_treble, treble);
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  })();
+</script>
+
+</body>
+</html>
+

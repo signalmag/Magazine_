@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGNAL — Anatomía de una Imagen Generativa</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=JetBrains+Mono:wght@300;400;500&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+  :root {
+    --ink:        #1a1814;
+    --paper:      #f5f0e8;
+    --paper-dark: #ede7d9;
+    --accent:     #c4873a;
+    --accent-light:#e8c88a;
+    --teal:       #4a8a7c;
+    --muted:      #7a7268;
+    --rule:       #c8bfb0;
+    /* aliases para compatibilidad con clases existentes */
+    --bg:         #1a1814;
+    --bg2:        #ede7d9;
+    --bg3:        #e8e2d8;
+    --bg4:        #ddd7cc;
+    --white:      #1a1814;
+    --white2:     #3a3530;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.7;
+    overflow-x: hidden;
+    padding-top: 44px;
+  }
+
+  /* ══ SIGNAL NAV ══ — mejorada */
+  .signal-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: var(--ink);
+    border-bottom: 2px solid var(--accent);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem; height: 44px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .signal-nav__home {
+    display: flex; align-items: center; gap: 0.8rem;
+    text-decoration: none; color: var(--paper); transition: opacity 0.2s;
+  }
+  .signal-nav__home:hover { opacity: 0.8; }
+  .signal-nav__logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem; font-weight: 900;
+    letter-spacing: 0.05em; text-transform: none; color: var(--paper);
+  }
+  .signal-nav__logo .ia { color: var(--accent); }
+  .signal-nav__ed {
+    color: var(--accent); font-size: 0.55rem;
+    border-left: 1px solid #3a3630; padding-left: 0.8rem;
+  }
+  .signal-nav__trail {
+    color: #8a8278; font-size: 0.55rem; flex: 1;
+    text-align: center; padding: 0 1rem;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .signal-nav__current { color: var(--paper); }
+  .signal-nav__arrows { display: flex; align-items: center; gap: 0.5rem; }
+  .signal-nav__arrows a {
+    display: inline-flex; align-items: center;
+    color: #f5f0e8; background: #2e2924;
+    border: 1px solid #4a4438;
+    text-decoration: none; padding: 0.3rem 0.7rem;
+    font-size: 0.55rem; letter-spacing: 0.1em;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    white-space: nowrap;
+  }
+  .signal-nav__arrows a:hover {
+    background: var(--accent); border-color: var(--accent); color: var(--ink);
+  }
+  .signal-nav__disabled {
+    display: inline-flex; color: #3a3630; background: #1e1c18;
+    border: 1px solid #2a2620; padding: 0.3rem 0.7rem;
+    font-size: 0.55rem; letter-spacing: 0.1em; opacity: 0.5; cursor: not-allowed;
+  }
+  .signal-nav__sep { color: #3a3630; padding: 0 0.2rem; }
+
+  /* ── TICKER ── */
+  .ticker {
+    border-bottom: 1px solid var(--rule);
+    padding: 0.6rem 0; overflow: hidden; white-space: nowrap;
+    background: var(--paper-dark);
+  }
+  .ticker-inner {
+    display: inline-flex;
+    animation: ticker 35s linear infinite;
+  }
+  .ticker-item {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem; letter-spacing: 0.2em;
+    color: var(--muted); text-transform: uppercase;
+    padding: 0 2.5rem;
+  }
+  .ticker-item span { color: var(--accent); margin-right: 0.5rem; }
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* ── COVER HERO ── */
+  .cover {
+    background: var(--ink);
+    border-bottom: 1px solid #2a2620;
+    position: relative; overflow: hidden;
+    padding: 5rem 3rem 4rem;
+    color: var(--paper);
+  }
+  .cover-noise {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n2'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n2)' opacity='0.03'/%3E%3C/svg%3E");
+    opacity: 0.8;
+  }
+  .cover::before {
+    content: '';
+    position: absolute; top: -10%; right: 10%;
+    width: 1px; height: 120%;
+    background: linear-gradient(to bottom, transparent, rgba(196,135,58,0.2) 40%, rgba(196,135,58,0.1) 70%, transparent);
+    transform: rotate(-8deg);
+  }
+  .cover::after {
+    content: '';
+    position: absolute; top: -10%; right: 22%;
+    width: 1px; height: 120%;
+    background: linear-gradient(to bottom, transparent, rgba(196,135,58,0.07) 50%, transparent);
+    transform: rotate(-8deg);
+  }
+  .cover-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 340px; gap: 4rem;
+    align-items: end; position: relative; z-index: 1;
+  }
+  .cover-meta {
+    display: flex; gap: 1rem; align-items: center; margin-bottom: 2rem;
+  }
+  .tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase;
+    background: var(--accent); color: var(--ink);
+    padding: 0.2rem 0.6rem; font-weight: 500;
+  }
+  .tag-teal {
+    background: transparent;
+    border: 1px solid var(--teal); color: var(--teal);
+  }
+  .cover-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem; letter-spacing: 0.2em;
+    color: #6a6258; text-transform: uppercase; margin-left: auto;
+  }
+  .cover-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 7vw, 5.5rem);
+    font-weight: 900;
+    line-height: 1; letter-spacing: -0.01em;
+    color: var(--paper); margin-bottom: 1.5rem;
+  }
+  .cover-title em { color: var(--accent); font-style: normal; }
+  .cover-deck {
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 1.15rem; font-style: italic;
+    color: #b8afa0; line-height: 1.65;
+    border-left: 2px solid var(--accent);
+    padding-left: 1.5rem; max-width: 560px;
+  }
+  .cover-sidebar {
+    border-left: 1px solid #3a3630;
+    padding-left: 2.5rem;
+    display: flex; flex-direction: column; gap: 2rem;
+  }
+  .cover-stat {
+    border-bottom: 1px solid #2a2620; padding-bottom: 1.5rem;
+  }
+  .cover-stat:last-child { border-bottom: none; padding-bottom: 0; }
+  .cover-stat__num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem; font-weight: 900; line-height: 1;
+    color: var(--accent); margin-bottom: 0.3rem;
+  }
+  .cover-stat__label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: #6a6258;
+  }
+  .cover-stat__desc {
+    font-size: 0.85rem; color: #8a8278; line-height: 1.4; margin-top: 0.4rem;
+  }
+
+  /* ── ARTICLE WRAPPER ── */
+  article {
+    max-width: 780px; margin: 0 auto;
+    padding: 4rem 3rem;
+  }
+
+  /* ── BODY TEXT ── */
+  .body-text p {
+    margin-bottom: 1.6rem;
+    font-size: 1.05rem; color: var(--ink); line-height: 1.75;
+  }
+  .body-text p:first-child::first-letter {
+    font-family: 'Playfair Display', serif;
+    font-size: 5rem; font-weight: 900; float: left;
+    line-height: 0.8; margin: 0.05em 0.1em 0 0;
+    color: var(--accent);
+  }
+  .body-text strong { color: var(--ink); font-weight: 600; }
+  .body-text em { color: var(--accent); font-style: italic; }
+
+  /* ── SECCIÓN ── */
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .section-label::after {
+    content: ''; flex: 1; height: 1px; background: var(--rule);
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; font-weight: 900;
+    color: var(--ink); line-height: 1.1; margin-bottom: 0.6rem;
+  }
+  .section-sub {
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 1rem; font-style: italic; color: var(--muted);
+    margin-bottom: 2rem;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    display: flex; align-items: center; gap: 1rem;
+    margin: 3.5rem 0;
+  }
+  .divider::before, .divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--rule);
+  }
+  .divider span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ── PULL QUOTE ── */
+  .pullquote {
+    margin: 3rem -1.5rem;
+    padding: 2.5rem 3rem;
+    background: var(--ink);
+    border-left: 3px solid var(--accent);
+    position: relative;
+  }
+  .pullquote::before {
+    content: '\201C';
+    font-family: 'Playfair Display', serif;
+    font-size: 7rem; color: var(--accent);
+    position: absolute; top: -0.5rem; left: 2rem;
+    line-height: 1; opacity: 0.15;
+  }
+  .pullquote p {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem; font-style: italic;
+    color: var(--paper); line-height: 1.5;
+    position: relative; z-index: 1;
+  }
+  .pullquote cite {
+    display: block; font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem; color: var(--accent);
+    letter-spacing: 0.2em; text-transform: uppercase;
+    margin-top: 1rem; font-style: normal;
+  }
+
+  /* ── FACT BOX ── */
+  .fact-box {
+    background: var(--paper-dark); border: 1px solid var(--rule);
+    border-left: 3px solid var(--teal);
+    padding: 1.5rem 2rem; margin: 2.5rem 0;
+  }
+  .fact-box__label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem; color: var(--teal);
+    letter-spacing: 0.2em; text-transform: uppercase;
+    margin-bottom: 1rem; padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .fact-box p {
+    font-size: 0.95rem; color: var(--ink); line-height: 1.65; margin-bottom: 0.6rem;
+  }
+  .fact-box p:last-child { margin-bottom: 0; }
+
+  /* ── INFOGRAPHIC WRAPPER ── */
+  .infographic {
+    margin: 3rem -1rem;
+    background: var(--ink);
+    border: 1px solid #2a2620;
+    padding: 0; overflow: hidden;
+  }
+  .infographic__label {
+    padding: 0.8rem 1.5rem;
+    border-bottom: 1px solid #2a2620;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.52rem; letter-spacing: 0.22em; text-transform: uppercase;
+    color: #6a6258;
+    display: flex; align-items: center; gap: 0.8rem;
+  }
+  .infographic__label::before {
+    content: '◆'; color: var(--accent); font-size: 0.5rem;
+  }
+  .infographic svg { display: block; width: 100%; }
+
+  /* ── FOOTER ── */
+  .mag-footer {
+    border-top: 1px solid var(--rule);
+    background: var(--ink);
+    padding: 2rem 3rem;
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase;
+    color: #6a6258; flex-wrap: wrap; gap: 1rem;
+  }
+  .mag-footer .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem; font-weight: 900;
+    color: var(--paper); letter-spacing: -0.02em; text-transform: none;
+  }
+  .mag-footer .logo .ia { color: var(--accent); }
+  .mag-footer__social { display: flex; gap: 1.2rem; align-items: center; }
+  .mag-footer__social a {
+    color: #6a6258; text-decoration: none; transition: color 0.2s;
+  }
+  .mag-footer__social a:hover { color: var(--accent); }
+
+  /* ── FADE IN ── */
+  .fade-in {
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── LIGHTBOX ── */
+  .infographic { position: relative; }
+  .infographic__label { position: relative; }
+
+  .lb-btn {
+    margin-left: auto;
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    background: transparent;
+    border: 1px solid #3a3630;
+    color: #8a8278;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.5rem; letter-spacing: 0.18em; text-transform: uppercase;
+    padding: 0.25rem 0.65rem;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+    flex-shrink: 0;
+  }
+  .lb-btn svg { width: 10px; height: 10px; fill: currentColor; }
+  .lb-btn:hover {
+    border-color: var(--accent); color: var(--accent);
+    background: rgba(196,135,58,0.06);
+  }
+
+  /* overlay */
+  #lightbox {
+    display: none;
+    position: fixed; inset: 0; z-index: 9000;
+    background: rgba(10,9,8,0.92);
+    align-items: center; justify-content: center;
+    padding: 2rem;
+    backdrop-filter: blur(4px);
+  }
+  #lightbox.lb-open { display: flex; }
+
+  .lb-inner {
+    position: relative;
+    max-width: min(96vw, 1200px);
+    width: 100%;
+    background: #141414;
+    border: 1px solid #2a2620;
+    box-shadow: 0 0 80px rgba(0,0,0,0.8);
+  }
+  .lb-header {
+    display: flex; align-items: center;
+    padding: 0.7rem 1.2rem;
+    border-bottom: 1px solid #2a2620;
+    background: #1a1814;
+  }
+  .lb-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.5rem; letter-spacing: 0.22em; text-transform: uppercase;
+    color: #6a6258; flex: 1;
+  }
+  .lb-title::before { content: '◆ '; color: var(--accent); }
+  .lb-close {
+    background: none; border: none; cursor: pointer;
+    color: #6a6258; font-size: 1.1rem; line-height: 1;
+    padding: 0.2rem 0.4rem;
+    font-family: 'JetBrains Mono', monospace;
+    transition: color 0.2s;
+  }
+  .lb-close:hover { color: var(--accent); }
+  .lb-body {
+    padding: 1.5rem;
+    overflow-x: auto;
+  }
+  .lb-body svg {
+    display: block; width: 100%; height: auto;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .cover { padding: 3rem 1.5rem; }
+    .cover-inner { grid-template-columns: 1fr; gap: 2.5rem; }
+    .cover-sidebar { border-left: none; border-top: 1px solid #2a2620; padding-left: 0; padding-top: 2rem; flex-direction: row; flex-wrap: wrap; }
+    .cover-stat { border-bottom: none; padding-bottom: 0; flex: 1; min-width: 120px; }
+    article { padding: 3rem 1.5rem; }
+    .pullquote { margin: 2rem 0; }
+    .signal-nav__trail { display: none; }
+    .signal-nav { padding: 0 1rem; }
+    .infographic { margin: 2rem 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav class="signal-nav">
+  <a class="signal-nav__home" href="../index.html">
+    <span class="signal-nav__logo">S<span class="ia">I</span>GN<span class="ia">A</span>L<span style="color:var(--accent)">.</span></span>
+    <span class="signal-nav__ed">Investigación</span>
+  </a>
+  <div class="signal-nav__trail">
+    <span class="signal-nav__current">Anatomía de la Imagen Generativa</span>
+  </div>
+  <div class="signal-nav__arrows">
+    <a href="../index.html" style="border-color:#4a8a7c;color:#4a8a7c;" onmouseover="this.style.background='#4a8a7c';this.style.color='#fff'" onmouseout="this.style.background='#2e2924';this.style.color='#4a8a7c'">Índice</a>
+    <span class="signal-nav__sep">·</span>
+    <a href="estetica-del-error.html">← Anterior</a>
+    <span class="signal-nav__sep">·</span>
+    <a href="quien-firma-la-obra.html">Siguiente →</a>
+  </div>
+</nav>
+
+<!-- ── TICKER ── -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <span class="ticker-item"><span>◆</span>Difusión latente — el proceso oculto</span>
+    <span class="ticker-item"><span>◆</span>Del ruido a la imagen: miles de pasos</span>
+    <span class="ticker-item"><span>◆</span>El espacio latente como mapa de ideas</span>
+    <span class="ticker-item"><span>◆</span>Cómo aprende una IA lo que es un árbol</span>
+    <span class="ticker-item"><span>◆</span>Video generativo: el cine del siglo XXI</span>
+    <span class="ticker-item"><span>◆</span>Agentes creativos: la próxima frontera</span>
+    <span class="ticker-item"><span>◆</span>SIGNAL · 2026</span>
+    <!-- duplicado para loop continuo -->
+    <span class="ticker-item"><span>◆</span>Difusión latente — el proceso oculto</span>
+    <span class="ticker-item"><span>◆</span>Del ruido a la imagen: miles de pasos</span>
+    <span class="ticker-item"><span>◆</span>El espacio latente como mapa de ideas</span>
+    <span class="ticker-item"><span>◆</span>Cómo aprende una IA lo que es un árbol</span>
+    <span class="ticker-item"><span>◆</span>Video generativo: el cine del siglo XXI</span>
+    <span class="ticker-item"><span>◆</span>Agentes creativos: la próxima frontera</span>
+    <span class="ticker-item"><span>◆</span>SIGNAL · 2026</span>
+  </div>
+</div>
+
+<!-- ── COVER HERO ── -->
+<header class="cover">
+  <div class="cover-noise"></div>
+  <div class="cover-inner">
+    <div class="cover-left">
+      <div class="cover-meta">
+        <span class="tag">Investigación</span>
+        <span class="tag tag-teal">Técnica accesible</span>
+        <span class="cover-num">No. 07</span>
+      </div>
+      <h1 class="cover-title">Anatomía de una<br><em>imagen</em><br>generativa</h1>
+      <p class="cover-deck">Del ruido al significado: el viaje invisible que ocurre cada vez que una IA crea una imagen. Un proceso que millones de personas activan a diario sin saber exactamente qué hay detrás.</p>
+    </div>
+    <aside class="cover-sidebar">
+      <div class="cover-stat">
+        <div class="cover-stat__num">~1000</div>
+        <div class="cover-stat__label">Pasos de cálculo</div>
+        <div class="cover-stat__desc">Iteraciones que un modelo recorre, desde ruido puro hasta imagen final</div>
+      </div>
+      <div class="cover-stat">
+        <div class="cover-stat__num">512</div>
+        <div class="cover-stat__label">Dimensiones latentes</div>
+        <div class="cover-stat__desc">Valores matemáticos que representan cada imagen en el espacio abstracto del modelo</div>
+      </div>
+      <div class="cover-stat">
+        <div class="cover-stat__num">5B+</div>
+        <div class="cover-stat__label">Imágenes de entrenamiento</div>
+        <div class="cover-stat__desc">Pares imagen-texto que algunos modelos han procesado para aprender el mundo visual</div>
+      </div>
+    </aside>
+  </div>
+</header>
+
+<!-- ── ARTÍCULO ── -->
+<article>
+
+  <!-- Introducción -->
+  <section id="intro" class="fade-in">
+    <div class="section-label">Introducción</div>
+    <div class="body-text">
+      <p>Escribes una frase. Presionas un botón. Tres segundos después, aparece una imagen que nunca existió antes. Para la mayoría de las personas, esto parece magia. Para muchos entusiastas, es simplemente "la IA haciendo su trabajo". Pero entre esas dos percepciones hay un proceso extraordinariamente complejo —y extraordinariamente elegante— que vale la pena entender.</p>
+      <p>No porque necesites ser ingeniero para usar estas herramientas. Sino porque entender <em>qué ocurre</em> cambia la manera en que interactúas con ellas. Como saber algo de música cambia la forma en que escuchas una canción.</p>
+      <p>Este artículo es una guía al interior de una imagen generativa. Sin fórmulas. Sin jerga técnica innecesaria. Solo el viaje, contado con claridad.</p>
+    </div>
+  </section>
+
+  <div class="divider fade-in"><span>§ I</span></div>
+
+  <!-- Sección 1: El mundo como datos -->
+  <section id="seccion-01" class="fade-in">
+    <div class="section-label">Primera parte</div>
+    <h2 class="section-title">El mundo como datos</h2>
+    <p class="section-sub">¿Cómo aprende una máquina lo que es un árbol, una persona o una ciudad?</p>
+
+    <div class="body-text">
+      <p>Antes de que un modelo pueda crear una imagen, tiene que aprender a ver el mundo. Ese aprendizaje no ocurre como el nuestro —no hay infancia, no hay paseos por el parque, no hay errores con consecuencias emocionales. Ocurre a través de datos: millones, a veces miles de millones de imágenes, cada una acompañada de una descripción en texto.</p>
+      <p>"Un gato naranja dormido sobre un sofá." Imagen. "Fotografía aérea de una ciudad costera al atardecer." Imagen. "Retrato en acuarela de una mujer anciana con sombrero de paja." Imagen. El modelo procesa ese volumen descomunal de pares —texto más imagen— hasta que comienza a detectar patrones: estas formas suelen aparecer cuando la descripción dice "árbol". Estos colores ocurren cuando dice "atardecer". Estas texturas corresponden a "piel humana".</p>
+      <p>No hay comprensión. No hay emoción. Pero hay algo más curioso: hay <strong>estadística muy refinada</strong>. El modelo aprende las relaciones de probabilidad entre palabras y píxeles con una precisión que, a gran escala, se parece bastante a entender.</p>
+    </div>
+
+    <!-- INFOGRAFÍA 1: Del dato al modelo -->
+    <div class="infographic fade-in">
+      <div class="infographic__label">Infografía 01 — Cómo aprende un modelo a ver el mundo<button class="lb-btn" onclick="openLightbox(this)" title="Ver en grande"><svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M1 1h5v1.5H2.5V6H1V1zm9 0h5v5h-1.5V2.5H10V1zM1 10h1.5v3.5H6V15H1v-5zm12.5 3.5H10V15h5v-5h-1.5v3.5z"/></svg>Ampliar</button></div>
+      <svg viewBox="0 0 760 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagrama de flujo: de imágenes y texto al modelo">
+        <defs>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <!-- noise subtle -->
+          <filter id="grain-sm">
+            <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" result="noise"/>
+            <feColorMatrix type="saturate" values="0" in="noise" result="gray"/>
+            <feBlend in="SourceGraphic" in2="gray" mode="overlay" result="blended"/>
+            <feComponentTransfer in="blended"><feFuncA type="linear" slope="0.04"/></feComponentTransfer>
+          </filter>
+        </defs>
+
+        <!-- Background -->
+        <rect width="760" height="320" fill="#141414"/>
+
+        <!-- Línea de flujo central -->
+        <line x1="90" y1="160" x2="670" y2="160" stroke="#2a2a2a" stroke-width="1" stroke-dasharray="4,4"/>
+
+        <!-- COLUMNA 1: IMÁGENES -->
+        <g transform="translate(60,80)">
+          <!-- Miniaturas de imágenes simuladas -->
+          <rect x="0" y="0" width="50" height="38" rx="1" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1"/>
+          <rect x="2" y="2" width="46" height="22" fill="#0d1a0d" opacity="0.8"/>
+          <!-- árbol simplificado -->
+          <circle cx="25" cy="10" r="7" fill="#2a4a2a" opacity="0.9"/>
+          <rect x="23" y="15" width="4" height="7" fill="#3a3020"/>
+          <rect x="2" y="26" width="46" height="10" rx="1" fill="#1a1814" opacity="0.7"/>
+          <text x="3" y="34" font-family="JetBrains Mono, monospace" font-size="4.5" fill="#5a5a5a">"Un árbol en verano"</text>
+
+          <rect x="0" y="45" width="50" height="38" rx="1" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1"/>
+          <rect x="2" y="47" width="46" height="22" fill="#0d0d1a" opacity="0.8"/>
+          <!-- ciudad simplificada -->
+          <rect x="6" y="56" width="8" height="12" fill="#3a3a6a" opacity="0.8"/>
+          <rect x="17" y="52" width="10" height="16" fill="#4a4a8a" opacity="0.8"/>
+          <rect x="30" y="58" width="7" height="10" fill="#3a3a6a" opacity="0.8"/>
+          <rect x="40" y="55" width="6" height="13" fill="#4a4a7a" opacity="0.8"/>
+          <rect x="2" y="71" width="46" height="10" rx="1" fill="#1a1814" opacity="0.7"/>
+          <text x="3" y="79" font-family="JetBrains Mono, monospace" font-size="4.5" fill="#5a5a5a">"Ciudad nocturna"</text>
+
+          <rect x="0" y="90" width="50" height="38" rx="1" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1"/>
+          <rect x="2" y="92" width="46" height="22" fill="#1a0d0d" opacity="0.8"/>
+          <!-- retrato simplificado -->
+          <circle cx="25" cy="102" r="8" fill="#c4873a" opacity="0.6"/>
+          <ellipse cx="25" cy="114" rx="10" ry="6" fill="#c4873a" opacity="0.4"/>
+          <rect x="2" y="116" width="46" height="10" rx="1" fill="#1a1814" opacity="0.7"/>
+          <text x="3" y="124" font-family="JetBrains Mono, monospace" font-size="4.5" fill="#5a5a5a">"Retrato, mujer"</text>
+
+          <!-- Label -->
+          <text x="25" y="145" font-family="Bebas Neue, sans-serif" font-size="14" fill="#f0ece4" text-anchor="middle" letter-spacing="1">DATOS</text>
+          <text x="25" y="157" font-family="JetBrains Mono, monospace" font-size="7" fill="#5a5a5a" text-anchor="middle" letter-spacing="1">IMÁGENES + TEXTO</text>
+          <!-- cantidad -->
+          <text x="25" y="170" font-family="Bebas Neue, sans-serif" font-size="11" fill="#e8762a" text-anchor="middle">5,000,000,000+</text>
+          <text x="25" y="180" font-family="JetBrains Mono, monospace" font-size="6" fill="#5a5a5a" text-anchor="middle">pares de entrenamiento</text>
+        </g>
+
+        <!-- Flecha 1 -->
+        <g transform="translate(148,150)">
+          <line x1="0" y1="10" x2="40" y2="10" stroke="#e8762a" stroke-width="1.5" opacity="0.6"/>
+          <polygon points="40,6 50,10 40,14" fill="#e8762a" opacity="0.6"/>
+          <text x="25" y="6" font-family="JetBrains Mono, monospace" font-size="6" fill="#5a5a5a" text-anchor="middle">detecta</text>
+        </g>
+
+        <!-- COLUMNA 2: PATRONES -->
+        <g transform="translate(210,70)">
+          <rect x="0" y="0" width="110" height="130" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1"/>
+          <!-- grid de patrones visuales -->
+          <!-- Patrón: bordes/formas -->
+          <rect x="8" y="8" width="45" height="35" fill="#0d0d0d" stroke="#2a2a2a"/>
+          <line x1="20" y1="30" x2="45" y2="15" stroke="#3a8a7a" stroke-width="1.5" opacity="0.7"/>
+          <line x1="10" y1="20" x2="50" y2="38" stroke="#3a8a7a" stroke-width="1" opacity="0.4"/>
+          <line x1="12" y1="38" x2="52" y2="12" stroke="#3a8a7a" stroke-width="0.8" opacity="0.3"/>
+          <text x="30" y="50" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#3a8a7a" text-anchor="middle">BORDES</text>
+
+          <!-- Patrón: colores -->
+          <rect x="58" y="8" width="45" height="35" fill="#0d0d0d" stroke="#2a2a2a"/>
+          <rect x="60" y="10" width="12" height="31" fill="#1a3a1a" opacity="0.9"/>
+          <rect x="73" y="10" width="12" height="31" fill="#3a6a3a" opacity="0.7"/>
+          <rect x="86" y="10" width="12" height="31" fill="#5a8a5a" opacity="0.5"/>
+          <text x="80" y="50" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#3a8a7a" text-anchor="middle">COLORES</text>
+
+          <!-- Patrón: formas -->
+          <rect x="8" y="58" width="45" height="35" fill="#0d0d0d" stroke="#2a2a2a"/>
+          <circle cx="30" cy="75" r="10" fill="none" stroke="#e8762a" stroke-width="1.5" opacity="0.6"/>
+          <rect x="13" y="67" width="16" height="16" fill="none" stroke="#e8762a" stroke-width="1" opacity="0.4"/>
+          <polygon points="42,65 52,82 32,82" fill="none" stroke="#e8762a" stroke-width="1" opacity="0.4"/>
+          <text x="30" y="100" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#3a8a7a" text-anchor="middle">FORMAS</text>
+
+          <!-- Patrón: texturas -->
+          <rect x="58" y="58" width="45" height="35" fill="#0d0d0d" stroke="#2a2a2a"/>
+          <!-- textura simulada con líneas -->
+          <line x1="60" y1="60" x2="100" y2="90" stroke="#5a5a5a" stroke-width="0.5" opacity="0.5"/>
+          <line x1="64" y1="60" x2="104" y2="88" stroke="#5a5a5a" stroke-width="0.5" opacity="0.4"/>
+          <line x1="60" y1="65" x2="100" y2="95" stroke="#5a5a5a" stroke-width="0.5" opacity="0.3"/>
+          <line x1="60" y1="70" x2="100" y2="93" stroke="#4a4a4a" stroke-width="0.5" opacity="0.4"/>
+          <line x1="60" y1="75" x2="98" y2="93" stroke="#4a4a4a" stroke-width="0.5" opacity="0.3"/>
+          <text x="80" y="100" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#3a8a7a" text-anchor="middle">TEXTURAS</text>
+
+          <!-- Label -->
+          <text x="55" y="148" font-family="Bebas Neue, sans-serif" font-size="14" fill="#f0ece4" text-anchor="middle" letter-spacing="1">PATRONES</text>
+          <text x="55" y="160" font-family="JetBrains Mono, monospace" font-size="7" fill="#5a5a5a" text-anchor="middle" letter-spacing="0.5">RECONOCIMIENTO VISUAL</text>
+        </g>
+
+        <!-- Flecha 2 -->
+        <g transform="translate(335,150)">
+          <line x1="0" y1="10" x2="40" y2="10" stroke="#e8762a" stroke-width="1.5" opacity="0.6"/>
+          <polygon points="40,6 50,10 40,14" fill="#e8762a" opacity="0.6"/>
+          <text x="25" y="6" font-family="JetBrains Mono, monospace" font-size="6" fill="#5a5a5a" text-anchor="middle">aprende</text>
+        </g>
+
+        <!-- COLUMNA 3: RELACIONES -->
+        <g transform="translate(395,75)">
+          <rect x="0" y="0" width="110" height="120" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1"/>
+          <!-- grafo de relaciones semánticas -->
+          <!-- nodos -->
+          <circle cx="55" cy="30" r="12" fill="#0d1a0d" stroke="#3a8a7a" stroke-width="1.5"/>
+          <text x="55" y="34" font-family="JetBrains Mono, monospace" font-size="6" fill="#3a8a7a" text-anchor="middle">gato</text>
+
+          <circle cx="25" cy="65" r="10" fill="#1a1a0d" stroke="#e8b870" stroke-width="1"/>
+          <text x="25" y="69" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#e8b870" text-anchor="middle">tigre</text>
+
+          <circle cx="85" cy="65" r="10" fill="#1a1a0d" stroke="#e8b870" stroke-width="1"/>
+          <text x="85" y="69" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#e8b870" text-anchor="middle">león</text>
+
+          <circle cx="25" cy="100" r="9" fill="#0d0d1a" stroke="#5a5a8a" stroke-width="0.8"/>
+          <text x="25" y="104" font-family="JetBrains Mono, monospace" font-size="5" fill="#5a5a8a" text-anchor="middle">felino</text>
+
+          <circle cx="85" cy="100" r="9" fill="#0d0d1a" stroke="#5a5a8a" stroke-width="0.8"/>
+          <text x="85" y="104" font-family="JetBrains Mono, monospace" font-size="5" fill="#5a5a8a" text-anchor="middle">pelaje</text>
+
+          <!-- conexiones -->
+          <line x1="43" y1="40" x2="34" y2="56" stroke="#3a8a7a" stroke-width="1" opacity="0.5"/>
+          <line x1="67" y1="40" x2="76" y2="56" stroke="#3a8a7a" stroke-width="1" opacity="0.5"/>
+          <line x1="25" y1="75" x2="25" y2="91" stroke="#e8b870" stroke-width="0.8" opacity="0.4"/>
+          <line x1="85" y1="75" x2="85" y2="91" stroke="#e8b870" stroke-width="0.8" opacity="0.4"/>
+          <line x1="35" y1="65" x2="75" y2="65" stroke="#5a5a5a" stroke-width="0.6" stroke-dasharray="3,2" opacity="0.4"/>
+
+          <!-- Label -->
+          <text x="55" y="138" font-family="Bebas Neue, sans-serif" font-size="14" fill="#f0ece4" text-anchor="middle" letter-spacing="1">RELACIONES</text>
+          <text x="55" y="150" font-family="JetBrains Mono, monospace" font-size="7" fill="#5a5a5a" text-anchor="middle" letter-spacing="0.5">MAPA CONCEPTUAL</text>
+        </g>
+
+        <!-- Flecha 3 -->
+        <g transform="translate(518,150)">
+          <line x1="0" y1="10" x2="40" y2="10" stroke="#e8762a" stroke-width="1.5" opacity="0.6"/>
+          <polygon points="40,6 50,10 40,14" fill="#e8762a" opacity="0.6"/>
+          <text x="25" y="6" font-family="JetBrains Mono, monospace" font-size="6" fill="#5a5a5a" text-anchor="middle">genera</text>
+        </g>
+
+        <!-- COLUMNA 4: MODELO -->
+        <g transform="translate(572,80)">
+          <!-- Hexágono / forma modelo -->
+          <polygon points="40,0 80,20 80,65 40,85 0,65 0,20" fill="#0d0d0d" stroke="#e8762a" stroke-width="1.5" opacity="0.9"/>
+          <!-- Capas internas -->
+          <polygon points="40,10 72,27 72,58 40,75 8,58 8,27" fill="none" stroke="#e8762a" stroke-width="0.6" opacity="0.3"/>
+          <polygon points="40,20 64,34 64,51 40,65 16,51 16,34" fill="none" stroke="#e8762a" stroke-width="0.5" opacity="0.2"/>
+          <!-- Pulsos de actividad -->
+          <circle cx="40" cy="42" r="5" fill="#e8762a" opacity="0.8" filter="url(#glow)"/>
+          <circle cx="40" cy="42" r="10" fill="none" stroke="#e8762a" stroke-width="0.8" opacity="0.3"/>
+          <circle cx="40" cy="42" r="16" fill="none" stroke="#e8762a" stroke-width="0.5" opacity="0.15"/>
+          <!-- Label -->
+          <text x="40" y="105" font-family="Bebas Neue, sans-serif" font-size="14" fill="#f0ece4" text-anchor="middle" letter-spacing="1">MODELO</text>
+          <text x="40" y="117" font-family="JetBrains Mono, monospace" font-size="6.5" fill="#e8762a" text-anchor="middle" letter-spacing="0.5">ENTRENADO</text>
+        </g>
+
+        <!-- Nota al pie -->
+        <text x="380" y="308" font-family="JetBrains Mono, monospace" font-size="7" fill="#3a3a3a" text-anchor="middle">El modelo no "entiende" el mundo — aprende las relaciones estadísticas entre palabras y píxeles</text>
+      </svg>
+    </div>
+
+    <div class="body-text">
+      <p>El resultado de ese aprendizaje es un modelo: un sistema matemático que ha interiorizado millones de conexiones entre conceptos visuales. No sabe <em>qué es</em> un árbol en el sentido filosófico. Pero sabe, con extraordinaria precisión, qué aspecto tiene uno —y cómo cambia ese aspecto según la época del año, el estilo artístico, la hora del día o el ángulo de la luz.</p>
+    </div>
+  </section>
+
+  <div class="divider fade-in"><span>§ II</span></div>
+
+  <!-- Sección 2: El espacio latente -->
+  <section id="seccion-02" class="fade-in">
+    <div class="section-label">Segunda parte</div>
+    <h2 class="section-title">El espacio latente</h2>
+    <p class="section-sub">¿Dónde viven las imágenes antes de existir?</p>
+
+    <div class="body-text">
+      <p>Aquí comienza la parte verdaderamente fascinante. Para poder generar imágenes, un modelo no trabaja con píxeles directamente —trabajar con millones de píxeles a la vez sería computacionalmente imposible. En cambio, trabaja con algo llamado <strong>espacio latente</strong>: una representación matemática comprimida del mundo visual.</p>
+      <p>Imagina que cada imagen posible pudiera ubicarse como un punto en un mapa enorme. Imágenes similares estarían cerca. Un retrato y otro retrato, próximos. Un paisaje invernal y otro paisaje invernal, vecinos. Un dibujo animado y una fotografía realista, separados por una gran distancia.</p>
+      <p>Ese mapa existe, y el modelo ha aprendido a navegarlo. Cuando le das un prompt —"un gato naranja dormido sobre libros viejos"— el modelo no busca una imagen guardada en ningún lugar. Calcula un punto en ese mapa que corresponde a tu descripción, y luego trabaja desde ese punto hacia afuera para construir la imagen.</p>
+    </div>
+
+    <div class="fact-box fade-in">
+      <div class="fact-box__label">Concepto clave — Espacio latente</div>
+      <p>El espacio latente es como una ciudad donde cada barrio es un estilo visual, cada calle es un concepto, y cada dirección específica es una imagen posible. Cuando describes lo que quieres, el modelo calcula a qué dirección ir en esa ciudad.</p>
+      <p>La distancia entre puntos tiene significado real: "gato" y "tigre" están más cerca que "gato" y "automóvil". "Pintura al óleo" y "acuarela" están más cerca que "pintura al óleo" y "fotografía digital". El modelo aprendió esas distancias durante su entrenamiento.</p>
+    </div>
+
+    <div class="body-text">
+      <p>La consecuencia práctica de esto es poderosa: puedes mezclar conceptos que no existen en la realidad, y el modelo encontrará el punto en el mapa que corresponde a esa mezcla. <em>"Un castillo medieval estilo Studio Ghibli con luz de atardecer"</em> no existe en ninguna base de datos. Pero el espacio latente tiene un lugar para esa combinación, y el modelo puede alcanzarlo.</p>
+    </div>
+  </section>
+
+  <div class="pullquote fade-in">
+    <p>Las imágenes generativas no son fotografías de algo que existe. Son predicciones visuales de algo que podría existir.</p>
+    <cite>— SIGNAL</cite>
+  </div>
+
+  <div class="divider fade-in"><span>§ III</span></div>
+
+  <!-- Sección 3: Del ruido a la imagen -->
+  <section id="seccion-03" class="fade-in">
+    <div class="section-label">Tercera parte</div>
+    <h2 class="section-title">Del ruido a la imagen</h2>
+    <p class="section-sub">Por qué los modelos empiezan con estática, como un televisor sin señal</p>
+
+    <div class="body-text">
+      <p>Ahora viene el proceso en sí. Una vez que el modelo sabe <em>qué</em> quiere crear —gracias a tu prompt y al espacio latente—, ¿cómo lo construye? La respuesta es contraintuitiva: comienza con ruido puro, como estática de televisor, y va eliminando ese ruido paso a paso hasta que emerge una imagen.</p>
+      <p>Este proceso se llama <strong>difusión</strong>. La idea viene de un principio matemático: si puedes aprender a añadir ruido gradualmente a una imagen hasta destruirla por completo, también puedes aprender a hacer el proceso inverso. A partir de ruido puro, deshacer el desorden poco a poco hasta revelar algo coherente.</p>
+      <p>En cada paso, el modelo hace una pregunta: <em>"¿Qué ajuste pequeño me acerca un poco más a la imagen que este prompt describe?"</em> Puede ser mil pasos. O cien, con técnicas modernas. Al final de ese proceso iterativo, lo que era caos se ha convertido en una imagen reconocible.</p>
+    </div>
+
+    <!-- INFOGRAFÍA 2: Del ruido a la imagen -->
+    <div class="infographic fade-in">
+      <div class="infographic__label">Infografía 02 — El proceso de difusión paso a paso<button class="lb-btn" onclick="openLightbox(this)" title="Ver en grande"><svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M1 1h5v1.5H2.5V6H1V1zm9 0h5v5h-1.5V2.5H10V1zM1 10h1.5v3.5H6V15H1v-5zm12.5 3.5H10V15h5v-5h-1.5v3.5z"/></svg>Ampliar</button></div>
+      <svg viewBox="0 0 760 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Proceso de difusión: de ruido puro a imagen final">
+        <defs>
+          <filter id="blurStrong">
+            <feGaussianBlur stdDeviation="3"/>
+          </filter>
+          <filter id="blurMed">
+            <feGaussianBlur stdDeviation="1.8"/>
+          </filter>
+          <filter id="blurLight">
+            <feGaussianBlur stdDeviation="0.8"/>
+          </filter>
+          <!-- Pattern: ruido/noise para cada etapa -->
+          <pattern id="noise1" patternUnits="userSpaceOnUse" width="6" height="6">
+            <rect width="6" height="6" fill="#141414"/>
+            <rect x="0" y="0" width="2" height="2" fill="#5a4a3a" opacity="0.7"/>
+            <rect x="3" y="1" width="2" height="2" fill="#2a3a4a" opacity="0.6"/>
+            <rect x="1" y="3" width="2" height="2" fill="#4a2a3a" opacity="0.6"/>
+            <rect x="4" y="4" width="2" height="2" fill="#3a4a2a" opacity="0.5"/>
+          </pattern>
+          <pattern id="noise2" patternUnits="userSpaceOnUse" width="8" height="8">
+            <rect width="8" height="8" fill="#141414"/>
+            <rect x="1" y="1" width="3" height="3" fill="#3a2a1a" opacity="0.5"/>
+            <rect x="5" y="2" width="2" height="4" fill="#1a2a3a" opacity="0.4"/>
+            <rect x="2" y="5" width="3" height="2" fill="#2a1a2a" opacity="0.4"/>
+          </pattern>
+          <pattern id="noise3" patternUnits="userSpaceOnUse" width="10" height="10">
+            <rect width="10" height="10" fill="#141414"/>
+            <circle cx="3" cy="3" r="2" fill="#2a1a0d" opacity="0.5"/>
+            <circle cx="7" cy="7" r="2" fill="#0d1a2a" opacity="0.4"/>
+            <rect x="6" y="1" width="3" height="3" fill="#1a2a1a" opacity="0.3"/>
+          </pattern>
+        </defs>
+
+        <!-- Fondo -->
+        <rect width="760" height="220" fill="#141414"/>
+
+        <!-- Etiqueta de proceso arriba -->
+        <text x="380" y="20" font-family="JetBrains Mono, monospace" font-size="7" fill="#5a5a5a" text-anchor="middle" letter-spacing="0.1em">PROCESO DE DIFUSIÓN — EL MODELO ITERA ~1000 VECES DESDE RUIDO PURO HASTA IMAGEN COHERENTE</text>
+
+        <!-- ══ PASO 1: RUIDO PURO ══ -->
+        <g transform="translate(30, 35)">
+          <rect width="90" height="90" fill="url(#noise1)" stroke="#2a2a2a" stroke-width="1"/>
+          <!-- ruido adicional aleatorio encima -->
+          <rect x="5" y="8" width="12" height="8" fill="#4a3a2a" opacity="0.5"/>
+          <rect x="20" y="15" width="8" height="12" fill="#2a4a3a" opacity="0.4"/>
+          <rect x="50" y="5" width="15" height="9" fill="#3a2a4a" opacity="0.5"/>
+          <rect x="70" y="20" width="10" height="15" fill="#4a4a2a" opacity="0.4"/>
+          <rect x="10" y="40" width="20" height="10" fill="#2a3a4a" opacity="0.4"/>
+          <rect x="60" y="50" width="18" height="12" fill="#3a4a3a" opacity="0.3"/>
+          <rect x="30" y="70" width="25" height="10" fill="#4a2a2a" opacity="0.4"/>
+          <!-- Badge paso -->
+          <rect x="0" y="93" width="90" height="16" fill="#0d0d0d" stroke="#2a2a2a" stroke-width="1"/>
+          <text x="45" y="104" font-family="JetBrains Mono, monospace" font-size="7" fill="#5a5a5a" text-anchor="middle" letter-spacing="0.1em">PASO 0</text>
+          <text x="45" y="125" font-family="Bebas Neue, sans-serif" font-size="13" fill="#f0ece4" text-anchor="middle" letter-spacing="1">RUIDO PURO</text>
+          <text x="45" y="138" font-family="JetBrains Mono, monospace" font-size="6" fill="#5a5a5a" text-anchor="middle">Estática aleatoria</text>
+          <!-- indicador de intensidad ruido -->
+          <rect x="0" y="148" width="90" height="3" fill="#2a2a2a"/>
+          <rect x="0" y="148" width="90" height="3" fill="#e8762a" opacity="0.8"/>
+          <text x="45" y="162" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#e8762a" text-anchor="middle">100% ruido</text>
+        </g>
+
+        <!-- Flecha → -->
+        <g transform="translate(127,75)">
+          <line x1="0" y1="10" x2="28" y2="10" stroke="#3a3a3a" stroke-width="1.5"/>
+          <polygon points="28,6 36,10 28,14" fill="#3a3a3a"/>
+        </g>
+
+        <!-- ══ PASO 2: ALGO EMERGE ══ -->
+        <g transform="translate(165, 35)">
+          <rect width="90" height="90" fill="url(#noise2)" stroke="#2a2a2a" stroke-width="1"/>
+          <!-- formas vagas emergiendo -->
+          <ellipse cx="45" cy="38" r="20" ry="15" fill="#1a1510" opacity="0.6" filter="url(#blurStrong)"/>
+          <ellipse cx="45" cy="68" rx="28" ry="12" fill="#0d1208" opacity="0.5" filter="url(#blurStrong)"/>
+          <rect x="0" y="93" width="90" height="16" fill="#0d0d0d" stroke="#2a2a2a" stroke-width="1"/>
+          <text x="45" y="104" font-family="JetBrains Mono, monospace" font-size="7" fill="#5a5a5a" text-anchor="middle" letter-spacing="0.1em">PASO 200</text>
+          <text x="45" y="125" font-family="Bebas Neue, sans-serif" font-size="13" fill="#f0ece4" text-anchor="middle" letter-spacing="1">EMERGENCIA</text>
+          <text x="45" y="138" font-family="JetBrains Mono, monospace" font-size="6" fill="#5a5a5a" text-anchor="middle">Formas vagas</text>
+          <rect x="0" y="148" width="90" height="3" fill="#2a2a2a"/>
+          <rect x="0" y="148" width="67" height="3" fill="#e8762a" opacity="0.7"/>
+          <text x="45" y="162" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#e8762a" text-anchor="middle">75% ruido</text>
+        </g>
+
+        <!-- Flecha → -->
+        <g transform="translate(262,75)">
+          <line x1="0" y1="10" x2="28" y2="10" stroke="#3a3a3a" stroke-width="1.5"/>
+          <polygon points="28,6 36,10 28,14" fill="#3a3a3a"/>
+        </g>
+
+        <!-- ══ PASO 3: SILUETAS ══ -->
+        <g transform="translate(300, 35)">
+          <rect width="90" height="90" fill="#111111" stroke="#2a2a2a" stroke-width="1"/>
+          <!-- silueta de árbol más reconocible -->
+          <rect x="5" y="0" width="80" height="90" fill="url(#noise3)" opacity="0.4"/>
+          <ellipse cx="45" cy="35" rx="22" ry="18" fill="#1a2a1a" opacity="0.85" filter="url(#blurMed)"/>
+          <rect x="40" y="48" width="10" height="30" fill="#2a1a0d" opacity="0.7" filter="url(#blurMed)"/>
+          <ellipse cx="45" cy="78" rx="30" ry="8" fill="#1a1a12" opacity="0.6" filter="url(#blurMed)"/>
+          <rect x="0" y="93" width="90" height="16" fill="#0d0d0d" stroke="#2a2a2a" stroke-width="1"/>
+          <text x="45" y="104" font-family="JetBrains Mono, monospace" font-size="7" fill="#5a5a5a" text-anchor="middle" letter-spacing="0.1em">PASO 500</text>
+          <text x="45" y="125" font-family="Bebas Neue, sans-serif" font-size="13" fill="#f0ece4" text-anchor="middle" letter-spacing="1">SILUETAS</text>
+          <text x="45" y="138" font-family="JetBrains Mono, monospace" font-size="6" fill="#5a5a5a" text-anchor="middle">Composición definida</text>
+          <rect x="0" y="148" width="90" height="3" fill="#2a2a2a"/>
+          <rect x="0" y="148" width="45" height="3" fill="#e8762a" opacity="0.65"/>
+          <text x="45" y="162" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#e8762a" text-anchor="middle">50% ruido</text>
+        </g>
+
+        <!-- Flecha → -->
+        <g transform="translate(397,75)">
+          <line x1="0" y1="10" x2="28" y2="10" stroke="#3a3a3a" stroke-width="1.5"/>
+          <polygon points="28,6 36,10 28,14" fill="#3a3a3a"/>
+        </g>
+
+        <!-- ══ PASO 4: DETALLES ══ -->
+        <g transform="translate(435, 35)">
+          <rect width="90" height="90" fill="#0d1208" stroke="#2a2a2a" stroke-width="1"/>
+          <!-- árbol con más detalle -->
+          <ellipse cx="45" cy="33" rx="24" ry="20" fill="#2a4a1a" opacity="0.9" filter="url(#blurLight)"/>
+          <ellipse cx="35" cy="40" rx="14" ry="12" fill="#1a3a10" opacity="0.7" filter="url(#blurLight)"/>
+          <ellipse cx="55" cy="38" rx="16" ry="13" fill="#223a15" opacity="0.7" filter="url(#blurLight)"/>
+          <rect x="41" y="52" width="8" height="28" fill="#3a2010" opacity="0.85"/>
+          <!-- raíces -->
+          <line x1="41" y1="80" x2="30" y2="88" stroke="#3a2010" stroke-width="3" opacity="0.6"/>
+          <line x1="49" y1="80" x2="58" y2="88" stroke="#3a2010" stroke-width="3" opacity="0.6"/>
+          <!-- suelo -->
+          <rect x="10" y="82" width="70" height="8" rx="1" fill="#1a1a10" opacity="0.8"/>
+          <rect x="0" y="93" width="90" height="16" fill="#0d0d0d" stroke="#2a2a2a" stroke-width="1"/>
+          <text x="45" y="104" font-family="JetBrains Mono, monospace" font-size="7" fill="#5a5a5a" text-anchor="middle" letter-spacing="0.1em">PASO 800</text>
+          <text x="45" y="125" font-family="Bebas Neue, sans-serif" font-size="13" fill="#f0ece4" text-anchor="middle" letter-spacing="1">DETALLES</text>
+          <text x="45" y="138" font-family="JetBrains Mono, monospace" font-size="6" fill="#5a5a5a" text-anchor="middle">Estructuras visibles</text>
+          <rect x="0" y="148" width="90" height="3" fill="#2a2a2a"/>
+          <rect x="0" y="148" width="22" height="3" fill="#e8762a" opacity="0.6"/>
+          <text x="45" y="162" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#e8762a" text-anchor="middle">25% ruido</text>
+        </g>
+
+        <!-- Flecha → más gruesa (final) -->
+        <g transform="translate(532,75)">
+          <line x1="0" y1="10" x2="30" y2="10" stroke="#e8762a" stroke-width="2" opacity="0.7"/>
+          <polygon points="30,5 40,10 30,15" fill="#e8762a" opacity="0.7"/>
+        </g>
+
+        <!-- ══ PASO 5: IMAGEN FINAL ══ -->
+        <g transform="translate(575, 35)">
+          <rect width="110" height="90" fill="#0d1208" stroke="#e8762a" stroke-width="1.5"/>
+          <!-- árbol final, bien definido -->
+          <!-- Cielo sutil -->
+          <rect x="0" y="0" width="110" height="55" fill="#0d1015" opacity="0.9"/>
+          <!-- Sol bajo -->
+          <circle cx="85" cy="20" r="10" fill="#e8762a" opacity="0.2"/>
+          <circle cx="85" cy="20" r="6" fill="#e8b870" opacity="0.25"/>
+          <!-- Copa del árbol -->
+          <ellipse cx="55" cy="30" rx="28" ry="23" fill="#2a5a1a" opacity="0.95"/>
+          <ellipse cx="40" cy="38" rx="18" ry="15" fill="#1a4a10" opacity="0.8"/>
+          <ellipse cx="68" cy="35" rx="20" ry="16" fill="#225a15" opacity="0.75"/>
+          <!-- Detalles hoja pequeños -->
+          <circle cx="42" cy="20" r="4" fill="#3a7a20" opacity="0.6"/>
+          <circle cx="68" cy="22" r="5" fill="#2a6a18" opacity="0.5"/>
+          <circle cx="55" cy="14" r="3" fill="#4a8a25" opacity="0.5"/>
+          <!-- Tronco -->
+          <rect x="50" y="52" width="10" height="28" fill="#4a2a10" opacity="0.95"/>
+          <rect x="53" y="52" width="2" height="28" fill="#3a1a08" opacity="0.4"/>
+          <!-- Raíces -->
+          <path d="M50,80 Q44,86 36,88" stroke="#4a2a10" stroke-width="3" fill="none" opacity="0.8"/>
+          <path d="M60,80 Q66,86 74,88" stroke="#4a2a10" stroke-width="3" fill="none" opacity="0.8"/>
+          <!-- Suelo con hierba -->
+          <rect x="0" y="80" width="110" height="10" fill="#1a2210" opacity="0.9"/>
+          <line x1="10" y1="80" x2="8" y2="75" stroke="#2a4a15" stroke-width="1.5" opacity="0.7"/>
+          <line x1="20" y1="80" x2="22" y2="74" stroke="#2a4a15" stroke-width="1.5" opacity="0.6"/>
+          <line x1="80" y1="80" x2="78" y2="74" stroke="#2a4a15" stroke-width="1.5" opacity="0.7"/>
+          <line x1="95" y1="80" x2="97" y2="75" stroke="#2a4a15" stroke-width="1.5" opacity="0.6"/>
+          <!-- Brillo de calidad final -->
+          <rect x="0" y="0" width="110" height="90" fill="none" stroke="#e8762a" stroke-width="0.5" opacity="0.3"/>
+
+          <rect x="0" y="93" width="110" height="16" fill="#0d0d0d" stroke="#e8762a" stroke-width="1"/>
+          <text x="55" y="104" font-family="JetBrains Mono, monospace" font-size="7" fill="#e8762a" text-anchor="middle" letter-spacing="0.1em">PASO 1000</text>
+          <text x="55" y="125" font-family="Bebas Neue, sans-serif" font-size="13" fill="#f0ece4" text-anchor="middle" letter-spacing="1">IMAGEN FINAL</text>
+          <text x="55" y="138" font-family="JetBrains Mono, monospace" font-size="6" fill="#e8762a" text-anchor="middle">Coherente · Detallada</text>
+          <rect x="0" y="148" width="110" height="3" fill="#2a2a2a"/>
+          <rect x="0" y="148" width="3" height="3" fill="#e8762a"/>
+          <text x="55" y="162" font-family="JetBrains Mono, monospace" font-size="5.5" fill="#3a8a7a" text-anchor="middle">0% ruido · 100% imagen</text>
+        </g>
+
+        <!-- Prompt que guía todo el proceso -->
+        <text x="380" y="200" font-family="JetBrains Mono, monospace" font-size="7.5" fill="#5a5a5a" text-anchor="middle">Prompt: </text>
+        <text x="408" y="200" font-family="JetBrains Mono, monospace" font-size="7.5" fill="#c8c0b0" text-anchor="middle">"Un árbol solitario al atardecer, pintura digital"</text>
+        <text x="380" y="213" font-family="JetBrains Mono, monospace" font-size="6.5" fill="#3a3a3a" text-anchor="middle">El prompt guía cada uno de los ~1000 pasos de eliminación de ruido, orientando el resultado hacia tu descripción</text>
+      </svg>
+    </div>
+
+    <div class="body-text">
+      <p>Lo que hace especial al proceso de difusión es que el prompt no actúa una sola vez al principio. En cada paso de la eliminación de ruido, el modelo consulta tu descripción: <em>"¿El ajuste que voy a hacer me acerca más o menos a 'árbol solitario al atardecer'?"</em> Tu texto es el faro que orienta mil micro-decisiones consecutivas.</p>
+      <p>Por eso cambiar una sola palabra en un prompt puede producir resultados radicalmente diferentes. No porque el modelo sea impredecible, sino porque cada palabra ajusta la dirección del proceso en cada uno de esos pasos.</p>
+    </div>
+  </section>
+
+  <div class="divider fade-in"><span>§ IV</span></div>
+
+  <!-- Sección 4: El papel del prompt -->
+  <section id="seccion-04" class="fade-in">
+    <div class="section-label">Cuarta parte</div>
+    <h2 class="section-title">El papel del prompt</h2>
+    <p class="section-sub">Tu texto no es una instrucción. Es una dirección artística.</p>
+
+    <div class="body-text">
+      <p>Si entiendes el proceso hasta aquí, algo cambia en cómo ves el prompt. Ya no es simplemente "escribir lo que quieres". Es <strong>navegar el espacio latente</strong>: apuntar al punto del mapa donde vive la imagen que tienes en mente, y luego guiar el proceso de difusión hacia ese punto.</p>
+      <p>Cada palabra tiene peso. "Árbol" y "árbol roble centenario" apuntan a lugares diferentes del mapa. "Atardecer" y "hora dorada con sol bajo el horizonte" también. Los prompts más efectivos no son los más largos ni los más elaborados: son los que describen con más precisión el punto exacto del espacio latente donde vive la imagen que el creador imagina.</p>
+      <p>También importa el contexto artístico: decirle al modelo <em>en qué parte del mapa estás</em> antes de pedirle que se mueva. "Fotografía de un árbol" y "pintura impresionista de un árbol" están en barrios completamente diferentes de esa ciudad imaginaria. El modelo los encuentra con igual facilidad, pero el resultado es un universo visual aparte.</p>
+    </div>
+
+    <div class="fact-box fade-in">
+      <div class="fact-box__label">Para tener en cuenta — La interpretación probabilística</div>
+      <p>El modelo no ejecuta tu prompt de forma literal y determinista. Lo interpreta probabilísticamente: dado todo lo que aprendió, ¿cuál es la imagen más probable que corresponde a esta descripción? Por eso dos generaciones del mismo prompt producen resultados diferentes. Cada vez el modelo toma un camino ligeramente distinto por el mapa hacia el mismo destino.</p>
+      <p>Esto tiene una consecuencia importante: la variedad es una característica, no un error. Si siempre obtuvieras exactamente el mismo resultado, el modelo no estaría siendo creativo, sino mecánico.</p>
+    </div>
+  </section>
+
+  <div class="divider fade-in"><span>§ V</span></div>
+
+  <!-- Sección 5: Del texto al video -->
+  <section id="seccion-05" class="fade-in">
+    <div class="section-label">Quinta parte</div>
+    <h2 class="section-title">Del texto al video</h2>
+    <p class="section-sub">La siguiente revolución ya está ocurriendo</p>
+
+    <div class="body-text">
+      <p>Si la generación de imágenes fue el primer gran impacto cultural de la IA generativa, el video es el segundo, y está sucediendo ahora mismo. Herramientas como Runway, Kling o Sora permiten hoy producir video con calidad cinematográfica desde una descripción de texto, con presupuestos que habrían parecido absurdos hace tres años.</p>
+      <p>El principio es el mismo que el de las imágenes, pero con una dimensión adicional: el tiempo. Una imagen es un punto en el espacio latente. Un video es una <strong>trayectoria a través de ese espacio</strong>: un camino que el modelo recorre de forma coherente, asegurando que los objetos se muevan de manera creíble, que la luz cambie naturalmente, que la física del mundo simulado tenga sentido interno.</p>
+    </div>
+
+    <!-- INFOGRAFÍA 3: Antes y ahora — democratización del cine -->
+    <div class="infographic fade-in">
+      <div class="infographic__label">Infografía 03 — La democratización de la producción audiovisual<button class="lb-btn" onclick="openLightbox(this)" title="Ver en grande"><svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M1 1h5v1.5H2.5V6H1V1zm9 0h5v5h-1.5V2.5H10V1zM1 10h1.5v3.5H6V15H1v-5zm12.5 3.5H10V15h5v-5h-1.5v3.5z"/></svg>Ampliar</button></div>
+      <svg viewBox="0 0 760 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Comparación: producción de video tradicional vs generativa">
+        <rect width="760" height="260" fill="#141414"/>
+
+        <!-- Título central -->
+        <line x1="0" y1="45" x2="760" y2="45" stroke="#2a2a2a" stroke-width="1"/>
+        <text x="380" y="28" font-family="Bebas Neue, sans-serif" font-size="18" fill="#f0ece4" text-anchor="middle" letter-spacing="2">PRODUCIR 3 MINUTOS DE VIDEO CON CALIDAD PROFESIONAL</text>
+
+        <!-- Divisor vertical central -->
+        <line x1="380" y1="45" x2="380" y2="230" stroke="#2a2a2a" stroke-width="1"/>
+        <rect x="360" y="125" width="40" height="20" fill="#141414"/>
+        <text x="380" y="139" font-family="Bebas Neue, sans-serif" font-size="11" fill="#e8762a" text-anchor="middle" letter-spacing="2">VS</text>
+
+        <!-- ═══ LADO IZQUIERDO: ANTES ═══ -->
+        <text x="190" y="68" font-family="Bebas Neue, sans-serif" font-size="22" fill="#c8c0b0" text-anchor="middle" letter-spacing="2">ANTES</text>
+        <text x="190" y="82" font-family="JetBrains Mono, monospace" font-size="7.5" fill="#5a5a5a" text-anchor="middle" letter-spacing="0.1em">PRODUCCIÓN TRADICIONAL · 2020</text>
+
+        <!-- Elementos del antes -->
+        <!-- Fila 1 -->
+        <g transform="translate(30, 95)">
+          <!-- Cámara -->
+          <rect x="0" y="0" width="80" height="55" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1"/>
+          <!-- icono cámara simplificado -->
+          <rect x="15" y="12" width="50" height="32" rx="2" fill="#2a2a2a" stroke="#3a3a3a"/>
+          <circle cx="40" cy="28" r="9" fill="#1a1a1a" stroke="#3a3a3a" stroke-width="1.5"/>
+          <circle cx="40" cy="28" r="5" fill="#0d0d0d" stroke="#e8762a" stroke-width="0.8"/>
+          <rect x="58" y="16" width="10" height="8" rx="1" fill="#3a3a3a"/>
+          <text x="40" y="54" font-family="JetBrains Mono, monospace" font-size="6" fill="#5a5a5a" text-anchor="middle">CÁMARA</text>
+          <text x="40" y="64" font-family="JetBrains Mono, monospace" font-size="6.5" fill="#c8c0b0" text-anchor="middle">$15,000–$50,000</text>
+        </g>
+
+        <g transform="translate(115, 95)">
+          <!-- Equipo humano -->
+          <rect x="0" y="0" width="80" height="55" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1"/>
+          <!-- personas simplificadas -->
+          <circle cx="20" cy="18" r="6" fill="#3a3a3a"/>
+          <ellipse cx="20" cy="32" rx="8" ry="10" fill="#3a3a3a"/>
+          <circle cx="40" cy="15" r="6" fill="#4a3a3a"/>
+          <ellipse cx="40" cy="29" rx="8" ry="10" fill="#4a3a3a"/>
+          <circle cx="60" cy="18" r="6" fill="#3a3a4a"/>
+          <ellipse cx="60" cy="32" rx="8" ry="10" fill="#3a3a4a"/>
+          <text x="40" y="54" font-family="JetBrains Mono, monospace" font-size="6" fill="#5a5a5a" text-anchor="middle">EQUIPO</text>
+          <text x="40" y="64" font-family="JetBrains Mono, monospace" font-size="6.5" fill="#c8c0b0" text-anchor="middle">15–30 personas</text>
+        </g>
+
+        <g transform="translate(200, 95)">
+          <!-- Locación -->
+          <rect x="0" y="0" width="80" height="55" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1"/>
+          <!-- mapa simplificado -->
+          <rect x="10" y="8" width="60" height="40" fill="#0d1a0d" opacity="0.8"/>
+          <circle cx="40" cy="28" r="5" fill="#e8762a" opacity="0.7"/>
+          <line x1="40" y1="33" x2="40" y2="48" stroke="#e8762a" stroke-width="1" opacity="0.5"/>
+          <line x1="15" y1="25" x2="65" y2="25" stroke="#2a2a2a" stroke-width="0.8" opacity="0.5"/>
+          <line x1="25" y1="15" x2="25" y2="45" stroke="#2a2a2a" stroke-width="0.8" opacity="0.4"/>
+          <line x1="55" y1="15" x2="55" y2="45" stroke="#2a2a2a" stroke-width="0.8" opacity="0.4"/>
+          <text x="40" y="54" font-family="JetBrains Mono, monospace" font-size="6" fill="#5a5a5a" text-anchor="middle">LOCACIÓN</text>
+          <text x="40" y="64" font-family="JetBrains Mono, monospace" font-size="6.5" fill="#c8c0b0" text-anchor="middle">Permisos + viajes</text>
+        </g>
+
+        <!-- Total ANTES -->
+        <rect x="30" y="172" width="330" height="45" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="1"/>
+        <line x1="30" y1="172" x2="360" y2="172" stroke="#5a5a5a" stroke-width="1" opacity="0.5"/>
+        <text x="195" y="192" font-family="JetBrains Mono, monospace" font-size="7" fill="#5a5a5a" text-anchor="middle" letter-spacing="0.1em">COSTO TOTAL ESTIMADO</text>
+        <text x="195" y="208" font-family="Bebas Neue, sans-serif" font-size="22" fill="#c8c0b0" text-anchor="middle" letter-spacing="1">$40,000 — $150,000</text>
+
+        <!-- Tiempo -->
+        <text x="195" y="235" font-family="JetBrains Mono, monospace" font-size="7" fill="#5a5a5a" text-anchor="middle" letter-spacing="0.1em">TIEMPO DE PRODUCCIÓN</text>
+        <text x="195" y="248" font-family="Bebas Neue, sans-serif" font-size="18" fill="#c8c0b0" text-anchor="middle">4–12 SEMANAS</text>
+
+        <!-- ═══ LADO DERECHO: AHORA ═══ -->
+        <text x="570" y="68" font-family="Bebas Neue, sans-serif" font-size="22" fill="#e8762a" text-anchor="middle" letter-spacing="2">AHORA</text>
+        <text x="570" y="82" font-family="JetBrains Mono, monospace" font-size="7.5" fill="#5a5a5a" text-anchor="middle" letter-spacing="0.1em">PRODUCCIÓN GENERATIVA · 2026</text>
+
+        <!-- Elementos del ahora -->
+        <g transform="translate(395, 95)">
+          <!-- Idea / prompt -->
+          <rect x="0" y="0" width="80" height="55" fill="#1a1a1a" stroke="#3a8a7a" stroke-width="1"/>
+          <!-- bombilla simplificada -->
+          <circle cx="40" cy="22" r="12" fill="#0d1a1a" stroke="#3a8a7a" stroke-width="1.2"/>
+          <line x1="35" y1="34" x2="45" y2="34" stroke="#3a8a7a" stroke-width="1.5"/>
+          <line x1="36" y1="38" x2="44" y2="38" stroke="#3a8a7a" stroke-width="1.2"/>
+          <circle cx="40" cy="22" r="5" fill="#3a8a7a" opacity="0.4"/>
+          <text x="40" y="54" font-family="JetBrains Mono, monospace" font-size="6" fill="#3a8a7a" text-anchor="middle">IDEA</text>
+          <text x="40" y="64" font-family="JetBrains Mono, monospace" font-size="6.5" fill="#c8c0b0" text-anchor="middle">Solo la tienes tú</text>
+        </g>
+
+        <g transform="translate(480, 95)">
+          <!-- Prompt / texto -->
+          <rect x="0" y="0" width="80" height="55" fill="#1a1a1a" stroke="#3a8a7a" stroke-width="1"/>
+          <!-- cursor/texto -->
+          <rect x="10" y="12" width="60" height="30" fill="#0d0d0d" stroke="#2a2a2a"/>
+          <rect x="15" y="18" width="30" height="2" fill="#e8b870" opacity="0.7"/>
+          <rect x="15" y="23" width="45" height="2" fill="#c8c0b0" opacity="0.4"/>
+          <rect x="15" y="28" width="38" height="2" fill="#c8c0b0" opacity="0.3"/>
+          <rect x="15" y="33" width="12" height="2" fill="#c8c0b0" opacity="0.3"/>
+          <rect x="28" y="31" width="2" height="8" fill="#e8762a" opacity="0.8"/>
+          <text x="40" y="54" font-family="JetBrains Mono, monospace" font-size="6" fill="#3a8a7a" text-anchor="middle">PROMPT</text>
+          <text x="40" y="64" font-family="JetBrains Mono, monospace" font-size="6.5" fill="#c8c0b0" text-anchor="middle">Descripción en texto</text>
+        </g>
+
+        <g transform="translate(565, 95)">
+          <!-- Iteración -->
+          <rect x="0" y="0" width="80" height="55" fill="#1a1a1a" stroke="#3a8a7a" stroke-width="1"/>
+          <!-- flechas circulares de iteración -->
+          <path d="M40,8 A18,18 0 1,1 22,26" stroke="#3a8a7a" stroke-width="1.5" fill="none" opacity="0.8"/>
+          <polygon points="22,18 16,28 26,30" fill="#3a8a7a" opacity="0.8"/>
+          <text x="40" y="34" font-family="Bebas Neue, sans-serif" font-size="11" fill="#e8762a" text-anchor="middle">↺</text>
+          <text x="40" y="54" font-family="JetBrains Mono, monospace" font-size="6" fill="#3a8a7a" text-anchor="middle">ITERACIÓN</text>
+          <text x="40" y="64" font-family="JetBrains Mono, monospace" font-size="6.5" fill="#c8c0b0" text-anchor="middle">Refinar el resultado</text>
+        </g>
+
+        <!-- Total AHORA -->
+        <rect x="393" y="172" width="330" height="45" fill="#0d1a0d" stroke="#3a8a7a" stroke-width="1"/>
+        <text x="558" y="192" font-family="JetBrains Mono, monospace" font-size="7" fill="#3a8a7a" text-anchor="middle" letter-spacing="0.1em">COSTO TOTAL ESTIMADO</text>
+        <text x="558" y="208" font-family="Bebas Neue, sans-serif" font-size="22" fill="#e8762a" text-anchor="middle" letter-spacing="1">$20 — $200</text>
+
+        <!-- Tiempo ahora -->
+        <text x="558" y="235" font-family="JetBrains Mono, monospace" font-size="7" fill="#3a8a7a" text-anchor="middle" letter-spacing="0.1em">TIEMPO DE PRODUCCIÓN</text>
+        <text x="558" y="248" font-family="Bebas Neue, sans-serif" font-size="18" fill="#e8762a" text-anchor="middle">1–5 DÍAS</text>
+      </svg>
+    </div>
+
+    <div class="body-text">
+      <p>Las cifras importan menos que lo que representan. El cambio no es que hacer video sea más barato. El cambio es que <strong>hacer video ya no requiere capital ni infraestructura</strong>: requiere visión. Una persona con una idea y acceso a internet puede producir hoy lo que hace cinco años exigía un equipo de producción profesional.</p>
+      <p>Lo que está emergiendo no es solo un formato más accesible. Es una nueva forma de autoría cinematográfica, donde el creador puede dirigir directamente —sin intermediar a través de un equipo técnico— con la IA ocupando simultáneamente los roles de cámara, iluminador y director de fotografía.</p>
+      <p>La pregunta ya no es quién puede producir imágenes en movimiento. La pregunta es quién tiene historias que contar.</p>
+    </div>
+  </section>
+
+  <div class="divider fade-in"><span>§ Cierre</span></div>
+
+  <!-- Conclusión -->
+  <section id="conclusion" class="fade-in">
+    <div class="section-label">Conclusión</div>
+    <h2 class="section-title">La imagen no aparece de la nada</h2>
+
+    <div class="body-text">
+      <p>Detrás de esos tres segundos entre el prompt y la imagen hay un proceso que involucra miles de millones de parámetros matemáticos, décadas de investigación en inteligencia artificial, y un modelo que ha "visto" más imágenes de las que un ser humano podría ver en mil vidas.</p>
+      <p>Entender ese proceso no hace que la experiencia sea menos mágica. La hace más interesante. Cuando sabes que el modelo navega un espacio latente, empiezas a pensar en tus prompts como coordenadas. Cuando sabes que el proceso de difusión es iterativo, entiendes por qué la paciencia y la iteración producen mejores resultados que la búsqueda del prompt perfecto desde el primer intento.</p>
+      <p>Y cuando entiendes que el modelo no "entiende" nada —que lo que parece comprensión es estadística refinada a escala masiva— puedes apreciar algo más profundo: que la creatividad genuina sigue siendo tuya. El modelo puede predecir la imagen más probable para tu descripción. Pero decidir qué descripción vale la pena escribir, qué pregunta visual merece ser explorada, qué historia tiene sentido contar: eso es, todavía, irrevocablemente humano.</p>
+    </div>
+
+    <div class="pullquote fade-in">
+      <p>La imagen es el resultado de una negociación continua entre tu lenguaje, la estadística del modelo y algo que ninguna ecuación puede formular: la decisión de qué vale la pena imaginar.</p>
+      <cite>— SIGNAL</cite>
+    </div>
+  </section>
+
+  <!-- Créditos / autor -->
+  <div style="margin-top:3rem; padding-top:2rem; border-top:1px solid var(--rule);">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:0.55rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);">
+      Gerardo Ventura · Editor · SIGNAL · 2026 ·
+      <a href="https://instagram.com/gfvc1978" target="_blank" rel="noopener"
+         style="color:var(--accent);text-decoration:none;margin-left:0.3rem;">
+        <i class="fa-brands fa-instagram"></i> @gfvc1978
+      </a>
+    </div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:0.52rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-top:0.5rem;">
+      Artículo No. 07 · Arte generativo e inteligencia artificial · San Salvador
+    </div>
+  </div>
+
+</article>
+
+<!-- ── FOOTER ── -->
+<footer class="mag-footer">
+  <div class="logo">S<span class="ia">I</span>GN<span class="ia">A</span>L<span style="color:var(--accent)">.</span></div>
+  <div>Arte generativo e inteligencia artificial</div>
+  <div class="mag-footer__social">
+    <a href="https://www.instagram.com/signal.ai.mag/" target="_blank" rel="noopener">Instagram</a>
+    <span style="color:var(--muted)">·</span>
+    <a href="https://substack.com/@signalmag" target="_blank" rel="noopener">Substack</a>
+    <span style="color:var(--muted)">·</span>
+    <a href="https://signalzine.rf.gd/" target="_blank" rel="noopener">Web</a>
+    <span style="color:var(--muted)">·</span>
+    <a href="mailto:revista.signal@gmail.com">Email</a>
+  </div>
+</footer>
+
+<!-- ── LIGHTBOX OVERLAY ── -->
+<div id="lightbox" role="dialog" aria-modal="true" aria-label="Infografía ampliada">
+  <div class="lb-inner">
+    <div class="lb-header">
+      <span class="lb-title" id="lb-title-text"></span>
+      <button class="lb-close" onclick="closeLightbox()" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="lb-body" id="lb-body"></div>
+  </div>
+</div>
+
+<script>
+  // Fade-in con IntersectionObserver
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 60);
+      }
+    });
+  }, { threshold: 0.06 });
+  document.querySelectorAll('.fade-in').forEach(el => io.observe(el));
+
+  // ── Lightbox ──
+  function openLightbox(btn) {
+    const label = btn.closest('.infographic__label');
+    const infographic = btn.closest('.infographic');
+    // Busca el SVG más grande (el de la infografía), ignorando el del ícono del botón
+    const allSvgs = infographic.querySelectorAll('svg');
+    const svg = Array.from(allSvgs).reduce((a, b) =>
+      (a.clientWidth || a.viewBox.baseVal.width) >= (b.clientWidth || b.viewBox.baseVal.width) ? a : b
+    );
+    const titleText = label.childNodes[0].textContent.trim();
+
+    document.getElementById('lb-title-text').textContent = titleText;
+    const body = document.getElementById('lb-body');
+    body.innerHTML = '';
+    body.appendChild(svg.cloneNode(true));
+
+    const lb = document.getElementById('lightbox');
+    lb.classList.add('lb-open');
+    document.body.style.overflow = 'hidden';
+
+    // foco para accesibilidad
+    lb.querySelector('.lb-close').focus();
+  }
+
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('lb-open');
+    document.body.style.overflow = '';
+  }
+
+  // Cerrar con Escape o click fuera del panel
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+  document.getElementById('lightbox').addEventListener('click', function(e) {
+    if (e.target === this) closeLightbox();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGNAL — 50 Elementos Visuales para Prompts de IA · Parte II</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500;600&family=Playfair+Display:wght@900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+  :root {
+    --ink: #1c1b19;
+    --paper: #f4f1ea;
+    --panel: #fffdf8;
+    --muted: #6f6a5c;
+    --line: #d9d2c0;
+    --orange: #ff5a1f;
+    --orange-dark: #c9430f;
+
+    --cat-comp: #6b4fa0;    --cat-comp-bg: #f1ecf9;
+    --cat-cam: #1d6fa5;     --cat-cam-bg: #eaf3f9;
+    --cat-luz: #b8791a;     --cat-luz-bg: #faf1e0;
+    --cat-color: #c23a72;   --cat-color-bg: #fbeaf1;
+    --cat-mat: #a35a35;     --cat-mat-bg: #f7ede4;
+    --cat-est: #1f8a76;     --cat-est-bg: #e7f5f1;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'IBM Plex Sans', Arial, sans-serif;
+    font-size: 16.5px;
+    line-height: 1.65;
+    padding-top: 44px;
+  }
+  a { color: inherit; }
+
+  /* ══ GRID PAPER TEXTURE ══ */
+  .grid-bg {
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 34px 34px;
+    background-position: -1px -1px;
+  }
+
+  /* ══ NAV ══ */
+  .signal-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: var(--ink); border-bottom: 2px solid var(--orange);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem; height: 44px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem;
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .signal-nav__home { display: flex; align-items: center; gap: 0.8rem; text-decoration: none; color: var(--paper); }
+  .signal-nav__logo { font-family: 'Playfair Display', serif; font-size: 0.9rem; font-weight: 900; letter-spacing: 0; text-transform: none; }
+  .signal-nav__ed { color: var(--orange); font-size: 0.55rem; border-left: 1px solid #444; padding-left: 0.8rem; }
+  .signal-nav__trail { color: #8a8578; font-size: 0.55rem; }
+  .signal-nav__current { color: var(--orange); }
+  .signal-nav__arrows { display: flex; align-items: center; gap: 0.6rem; }
+  .signal-nav__arrows a { display: inline-flex; align-items: center; color: var(--paper); background: #2b2a26; border: 1px solid #444; text-decoration: none; padding: 0.3rem 0.7rem; font-size: 0.55rem; letter-spacing: 0.08em; transition: all 0.2s; white-space: nowrap; }
+  .signal-nav__arrows a:hover { background: var(--orange); border-color: var(--orange); color: #fff; }
+  .signal-nav__sep { color: #4a483f; padding: 0 0.2rem; }
+  @media (max-width: 680px) { .signal-nav__trail { display: none; } .signal-nav { padding: 0 1rem; } }
+
+  /* ══ HERO ══ */
+  .hero {
+    background: var(--ink);
+    color: var(--paper);
+    position: relative;
+    overflow: hidden;
+    padding: 0;
+  }
+  .hero-inner { position: relative; z-index: 2; max-width: 1000px; margin: 0 auto; padding: 5.5rem 3rem 4rem; }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(255,90,31,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,90,31,0.08) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .hero-reticle {
+    position: absolute; width: 130px; height: 130px; border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 50%; top: -40px; right: 8%;
+  }
+  .hero-reticle::before, .hero-reticle::after {
+    content: ''; position: absolute; background: rgba(255,255,255,0.14);
+  }
+  .hero-reticle::before { width: 100%; height: 1px; top: 50%; left: 0; }
+  .hero-reticle::after { height: 100%; width: 1px; left: 50%; top: 0; }
+  .hero-kicker { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; letter-spacing: 0.28em; text-transform: uppercase; color: var(--orange); margin-bottom: 1.4rem; display: flex; align-items: center; gap: 0.8rem; }
+  .hero-kicker::after { content: ''; flex: 1; max-width: 120px; height: 1px; background: #444; }
+  .hero-title { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: clamp(2rem, 5vw, 3.4rem); line-height: 1.08; letter-spacing: -0.01em; max-width: 820px; }
+  .hero-title .part { color: var(--orange); }
+  .hero-deck { font-family: 'IBM Plex Sans', sans-serif; font-size: 1.05rem; color: #cfc9b8; max-width: 620px; margin-top: 1.4rem; line-height: 1.7; }
+  .hero-meta-row { display: flex; gap: 2.2rem; flex-wrap: wrap; margin-top: 2.4rem; padding-top: 1.6rem; border-top: 1px solid #3a392f; }
+  .hero-meta { font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem; letter-spacing: 0.08em; text-transform: uppercase; color: #8a8578; }
+  .hero-meta strong { display: block; color: var(--paper); font-size: 0.62rem; margin-bottom: 0.2rem; }
+
+  .social-bar { display: flex; align-items: center; gap: 1rem; margin-top: 2rem; flex-wrap: wrap; }
+  .social-link { display: inline-flex; align-items: center; gap: 0.5rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.56rem; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; padding: 0.4rem 0.8rem; border: 1px solid #444; color: #cfc9b8; border-radius: 30px; transition: all 0.2s; }
+  .social-link svg { width: 12px; height: 12px; fill: currentColor; }
+  .social-link:hover { border-color: var(--orange); color: var(--orange); }
+  .instagram { display: inline-flex; align-items: center; gap: 2px; padding: 1px 4px; border-radius: 20px; text-decoration: none; color: #fff; font-weight: 600; font-size: 0.56rem; background: linear-gradient(45deg,#f09433,#e1306c,#833ab4); }
+
+  /* ══ CATEGORY INDEX STRIP ══ */
+  .cat-index { background: var(--panel); border-bottom: 1px solid var(--line); }
+  .cat-index-inner { max-width: 1000px; margin: 0 auto; padding: 2.4rem 3rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .cat-chip { background: var(--panel); padding: 1.5rem 1.6rem; text-decoration: none; color: inherit; display: block; transition: background 0.2s; }
+  .cat-chip:hover { background: var(--paper); }
+  .cat-chip-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.6rem; }
+  .cat-chip-swatch { width: 10px; height: 10px; border-radius: 50%; }
+  .cat-chip-count { font-family: 'IBM Plex Mono', monospace; font-size: 0.56rem; color: var(--muted); letter-spacing: 0.05em; }
+  .cat-chip-name { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 1rem; margin-bottom: 0.3rem; }
+  .cat-chip-range { font-family: 'IBM Plex Mono', monospace; font-size: 0.55rem; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; }
+
+  .page { max-width: 1000px; margin: 0 auto; padding: 4.5rem 3rem; }
+
+  /* ══ INTRO TEXT ══ */
+  .intro-text p { margin-bottom: 1.4em; font-size: 1.02rem; }
+  .intro-text p:last-child { margin-bottom: 0; }
+  .intro-text strong { color: var(--ink); }
+  .intro-callout {
+    background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--orange);
+    padding: 1.8rem 2.2rem; margin: 2.5rem 0; font-family: 'IBM Plex Mono', monospace; font-size: 0.85rem; line-height: 1.75; color: #3a3830;
+  }
+  .intro-callout strong { color: var(--ink); }
+
+  /* ══ SECTION HEADER (por categoría) ══ */
+  .cat-section { margin-top: 5.5rem; }
+  .cat-section:first-of-type { margin-top: 3rem; }
+  .cat-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 2rem; padding-bottom: 1.6rem; border-bottom: 3px solid var(--cat); margin-bottom: 1.6rem; flex-wrap: wrap; }
+  .cat-header-left { display: flex; align-items: center; gap: 1rem; }
+  .cat-icon { width: 46px; height: 46px; border-radius: 10px; background: var(--cat-bg); border: 1px solid var(--cat); display: flex; align-items: center; justify-content: center; color: var(--cat); font-size: 1.15rem; flex-shrink: 0; }
+  .cat-title { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: clamp(1.5rem, 3vw, 2.1rem); }
+  .cat-title span { color: var(--cat); }
+  .cat-count-badge { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--cat); border: 1px solid var(--cat); padding: 0.4rem 0.9rem; border-radius: 20px; white-space: nowrap; }
+  .cat-intro { font-size: 0.98rem; color: var(--muted); max-width: 720px; margin-bottom: 2.2rem; }
+
+  /* ══ JUMP CHIPS (índice numérico dentro de la categoría) ══ */
+  .jump-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2.5rem; }
+  .jump-chip { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; letter-spacing: 0.03em; text-decoration: none; color: var(--cat); background: var(--cat-bg); border: 1px solid var(--cat); padding: 0.3rem 0.65rem; border-radius: 20px; transition: all 0.15s; }
+  .jump-chip:hover { background: var(--cat); color: #fff; }
+
+  /* ══ SPEC CARD ══ */
+  .spec-card { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin-bottom: 1.4rem; overflow: hidden; scroll-margin-top: 70px; }
+  .spec-card__head { display: flex; align-items: center; gap: 1rem; padding: 1.2rem 1.6rem; background: var(--cat-bg); border-bottom: 1px solid var(--line); }
+  .spec-num { font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 0.85rem; color: #fff; background: var(--cat); border-radius: 4px; padding: 0.25rem 0.55rem; flex-shrink: 0; }
+  .spec-title { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 1.2rem; flex: 1; }
+  .spec-cat-tag { font-family: 'IBM Plex Mono', monospace; font-size: 0.52rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--cat); white-space: nowrap; }
+  .spec-body { padding: 1.6rem; }
+  .spec-def { font-size: 0.96rem; margin-bottom: 1.3rem; padding-bottom: 1.3rem; border-bottom: 1px dashed var(--line); }
+  .spec-def strong { color: var(--cat); font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; display: block; margin-bottom: 0.4rem; }
+  .spec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.3rem; margin-bottom: 1.3rem; }
+  .spec-field .spec-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 0.4rem; }
+  .spec-field p { font-size: 0.88rem; line-height: 1.55; }
+  .spec-prompts { background: var(--paper); border: 1px solid var(--line); border-radius: 4px; padding: 1rem 1.2rem; margin-bottom: 1.3rem; }
+  .prompt-line { display: flex; gap: 0.8rem; align-items: baseline; font-family: 'IBM Plex Mono', monospace; font-size: 0.82rem; padding: 0.35rem 0; }
+  .prompt-line + .prompt-line { border-top: 1px dashed var(--line); }
+  .prompt-lang { flex-shrink: 0; width: 26px; font-size: 0.58rem; font-weight: 600; color: var(--cat); letter-spacing: 0.05em; }
+  .prompt-line code { color: #3a3830; font-family: 'IBM Plex Mono', monospace; }
+  .spec-footer { display: flex; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; font-size: 0.82rem; color: var(--muted); }
+  .spec-footer strong { color: var(--ink); font-weight: 600; }
+  .spec-footer .spec-combo strong { color: var(--cat); }
+
+  /* ══ FOOTER ══ */
+  .mag-footer { background: var(--ink); color: #8a8578; padding: 3rem; text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; line-height: 2.2; }
+  .mag-footer .logo { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 900; color: var(--paper); letter-spacing: -0.02em; text-transform: none; margin-bottom: 0.5rem; }
+  .mag-footer-social { margin-top: 1rem; display: flex; gap: 1.5rem; justify-content: center; align-items: center; }
+  .mag-footer-social a { color: #cfc9b8; text-decoration: none; }
+  .mag-footer-social a:hover { color: var(--orange); }
+
+  /* ══ NEXT-PART CTA ══ */
+  .next-part { background: var(--ink); color: var(--paper); border-radius: 8px; padding: 2.6rem 3rem; margin-top: 4rem; display: flex; justify-content: space-between; align-items: center; gap: 2rem; flex-wrap: wrap; }
+  .next-part-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--orange); margin-bottom: 0.6rem; }
+  .next-part-title { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.4rem; }
+  .next-part a { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; color: var(--ink); background: var(--orange); padding: 0.8rem 1.4rem; border-radius: 4px; white-space: nowrap; }
+
+  /* ══ PREV-PART CTA (banda superior) ══ */
+  .prev-part-strip { background: var(--cat-est-bg, #e7f5f1); border-bottom: 1px solid var(--line); }
+  .prev-part-strip-inner { max-width: 1000px; margin: 0 auto; padding: 0.9rem 3rem; display: flex; align-items: center; gap: 0.8rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; letter-spacing: 0.05em; }
+  .prev-part-strip-inner a { color: var(--cat-est); text-decoration: none; font-weight: 600; }
+  .prev-part-strip-inner a:hover { text-decoration: underline; }
+  .prev-part-strip-inner span { color: var(--muted); }
+
+  /* ══ PLANTILLAS DE PROMPT (nivel básico/intermedio/avanzado) ══ */
+  .template-card { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; margin-bottom: 1.2rem; overflow: hidden; }
+  .template-head { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.6rem; background: var(--paper); border-bottom: 1px solid var(--line); }
+  .template-level { font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; color: #fff; background: var(--orange); padding: 0.3rem 0.7rem; border-radius: 20px; }
+  .template-head h4 { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 1rem; }
+  .template-body { padding: 1.4rem 1.6rem; }
+  .template-body .prompt-line { font-size: 0.86rem; }
+  .template-note { font-size: 0.88rem; color: var(--muted); margin-top: 1rem; }
+  .template-note strong { color: var(--ink); }
+
+  /* ══ TIP CARDS (adaptar a modelos / A-B testing) ══ */
+  .tip-list { display: grid; gap: 0.9rem; margin: 1.5rem 0; }
+  .tip-item { display: flex; gap: 1rem; background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 1.1rem 1.4rem; align-items: flex-start; }
+  .tip-num { font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 0.75rem; color: var(--orange); flex-shrink: 0; }
+  .tip-item p { font-size: 0.92rem; }
+  .tip-item strong { color: var(--ink); }
+
+  /* ══ TABLAS DE RECURSOS ══ */
+  .table-wrap { overflow-x: auto; margin: 2rem 0; border: 1px solid var(--line); border-radius: 4px; }
+  table.data-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; background: var(--panel); min-width: 640px; }
+  table.data-table th { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; letter-spacing: 0.06em; text-transform: uppercase; text-align: left; background: var(--ink); color: var(--paper); padding: 0.8rem 1rem; position: sticky; top: 0; }
+  table.data-table td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.data-table tr:nth-child(even) td { background: var(--paper); }
+  table.data-table td.mono { font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; color: #3a3830; }
+  .impact-tag { font-family: 'IBM Plex Mono', monospace; font-size: 0.62rem; padding: 0.2rem 0.55rem; border-radius: 12px; white-space: nowrap; display: inline-block; }
+  .impact-alta { background: #fce4e0; color: #b3361a; }
+  .impact-media { background: #faf1d8; color: #96700f; }
+  .impact-baja { background: #e2f1e6; color: #217a3d; }
+
+  /* ══ MERMAID DIAGRAM CONTAINER ══ */
+  .diagram-block { background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 2rem; margin: 2rem 0; }
+  .diagram-caption { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--muted); text-align: center; margin-top: 1.2rem; padding-top: 1.2rem; border-top: 1px dashed var(--line); }
+  .mermaid { display: flex; justify-content: center; }
+
+  /* ══ CONCLUSIÓN ══ */
+  .conclusion-block { background: var(--ink); color: var(--paper); border-radius: 8px; padding: 3rem 3.2rem; margin-top: 3rem; }
+  .conclusion-block h3 { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.5rem; margin-bottom: 1.2rem; color: var(--orange); }
+  .conclusion-block p { font-size: 0.98rem; color: #d8d3c4; margin-bottom: 1.2em; line-height: 1.75; }
+  .conclusion-block p:last-of-type { margin-bottom: 0; }
+  .conclusion-sources { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: #8a8578; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #3a392f; line-height: 1.8; }
+
+  /* ══ IMAGEN DE FICHA ══ */
+  .spec-image { position: relative; width: 100%; height: 220px; overflow: hidden; border-bottom: 1px solid var(--line); background: var(--paper); }
+  .spec-image .lightbox-trigger { display: block; width: 100%; height: 100%; padding: 0; margin: 0; border: none; background: none; cursor: zoom-in; }
+  .spec-image img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.3s ease; }
+  .spec-image .lightbox-trigger:hover img { transform: scale(1.04); }
+  .spec-image-tag { position: absolute; top: 0.6rem; right: 0.6rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.5rem; letter-spacing: 0.08em; text-transform: uppercase; color: #fff; background: rgba(28,27,25,0.6); padding: 0.25rem 0.55rem; border-radius: 20px; pointer-events: none; }
+
+  /* ══ LIGHTBOX ══ */
+  .lightbox-overlay { position: fixed; inset: 0; z-index: 2000; background: rgba(20,18,15,0.92); display: none; align-items: center; justify-content: center; padding: 4vh 4vw; cursor: zoom-out; backdrop-filter: blur(6px); }
+  .lightbox-overlay.open { display: flex; animation: lightboxIn 0.2s ease; }
+  @keyframes lightboxIn { from { opacity: 0; } to { opacity: 1; } }
+  .lightbox-overlay figure { max-width: 1000px; max-height: 92vh; margin: 0; display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+  .lightbox-overlay img { max-width: 100%; max-height: 78vh; border-radius: 4px; box-shadow: 0 30px 80px -20px rgba(0,0,0,0.6); cursor: default; }
+  .lightbox-overlay figcaption { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; color: #cfc9b8; letter-spacing: 0.04em; text-align: center; max-width: 640px; line-height: 1.6; cursor: default; }
+  .lightbox-close { position: absolute; top: 24px; right: 32px; width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: var(--paper); font-size: 1.3rem; line-height: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s ease; }
+  .lightbox-close:hover { background: var(--orange); border-color: var(--orange); }
+  @media (max-width: 680px) { .lightbox-close { top: 14px; right: 14px; width: 36px; height: 36px; } }
+
+  @media (max-width: 780px) {
+    .prev-part-strip-inner { padding: 0.9rem 1.4rem; flex-wrap: wrap; }
+    .conclusion-block { padding: 2rem 1.6rem; }
+    .cat-index-inner { grid-template-columns: 1fr; }
+    .spec-grid { grid-template-columns: 1fr; }
+    .page { padding: 3rem 1.4rem; }
+    .hero-inner { padding: 4rem 1.4rem 3rem; }
+    .cat-index-inner { padding: 1.6rem 1.4rem; }
+    .next-part { padding: 2rem 1.6rem; flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="signal-nav">
+  <a class="signal-nav__home" href="../index.html">
+    <span class="signal-nav__logo">S<span style="color:var(--orange)">I</span>GNAL<span style="color:var(--orange)">.</span></span>
+    <span class="signal-nav__ed">Guía Técnica</span>
+  </a>
+  <div class="signal-nav__trail"><span class="signal-nav__current">50 Elementos Visuales · Parte II</span></div>
+  <div class="signal-nav__arrows">
+    <a href="guia-elementos-visuales-ia-parte-1.html">← Parte I</a>
+    <span class="signal-nav__sep">·</span>
+    <a href="../index.html">Índice</a>
+  </div>
+</nav>
+
+<div class="prev-part-strip">
+  <div class="prev-part-strip-inner">
+    <i class="fa-solid fa-arrow-left-long" style="color:var(--cat-est)"></i>
+    <a href="guia-elementos-visuales-ia-parte-1.html">Parte I — Composición, Cámara e Iluminación</a>
+    <span>· fichas 01–28</span>
+  </div>
+</div>
+
+<!-- ══ HERO ══ -->
+<header class="hero">
+  <div class="hero-reticle"></div>
+  <div class="hero-inner">
+    <div class="hero-kicker">Guía técnica — Prompt engineering visual</div>
+    <h1 class="hero-title">Los 50 elementos visuales que una IA puede controlar en una imagen <span class="part">— Parte II</span></h1>
+    <p class="hero-deck">Color, materiales/texturas y estilo: las 22 fichas restantes, más una sección práctica con plantillas de prompt por nivel, consejos para adaptar a cada modelo, pruebas A/B, y las dos tablas de referencia completas de los 50 elementos.</p>
+    <div class="social-bar">
+      <a href="https://www.instagram.com/signal.ai.mag/" target="_blank" rel="noopener" class="social-link">
+        <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.209-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        @signal.ai.mag
+      </a>
+      <a href="https://signalzine.rf.gd/" target="_blank" rel="noopener" class="social-link">
+        <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm-1 17.93V16h2v1.93A8.01 8.01 0 0 1 4.07 13H6v-2H4.07A8.01 8.01 0 0 1 11 4.07V6h2V4.07A8.01 8.01 0 0 1 19.93 11H18v2h1.93A8.01 8.01 0 0 1 13 19.93z"/></svg>
+        signalzine.rf.gd
+      </a>
+      <a href="mailto:revista.signal@gmail.com" class="social-link">
+        <svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        revista.signal@gmail.com
+      </a>
+    </div>
+    <div class="hero-meta-row">
+      <div class="hero-meta"><strong>Por</strong>Gerardo Ventura</div>
+      <div class="hero-meta"><strong>Serie</strong>Guía Técnica 01 · Parte II de II</div>
+      <div class="hero-meta"><strong>Cobertura</strong>Elementos 29–50 + plantillas + recursos</div>
+      <div class="hero-meta"><strong>Uso</strong>Referencia — guardar para consulta</div>
+    </div>
+  </div>
+</header>
+
+<!-- ══ CATEGORY INDEX ══ -->
+<section class="cat-index">
+  <div class="cat-index-inner">
+    <a href="#color" class="cat-chip">
+      <div class="cat-chip-top"><span class="cat-chip-swatch" style="background:var(--cat-color)"></span><span class="cat-chip-count">8 elementos</span></div>
+      <div class="cat-chip-name">Color</div>
+      <div class="cat-chip-range">Fichas 29 – 36</div>
+    </a>
+    <a href="#materiales" class="cat-chip">
+      <div class="cat-chip-top"><span class="cat-chip-swatch" style="background:var(--cat-mat)"></span><span class="cat-chip-count">6 elementos</span></div>
+      <div class="cat-chip-name">Materiales y texturas</div>
+      <div class="cat-chip-range">Fichas 37 – 42</div>
+    </a>
+    <a href="#estilo" class="cat-chip">
+      <div class="cat-chip-top"><span class="cat-chip-swatch" style="background:var(--cat-est)"></span><span class="cat-chip-count">8 elementos</span></div>
+      <div class="cat-chip-name">Estilo</div>
+      <div class="cat-chip-range">Fichas 43 – 50</div>
+    </a>
+  </div>
+  <div class="cat-index-inner" style="border-top:none; margin-top:-1px;">
+    <a href="#practica" class="cat-chip">
+      <div class="cat-chip-top"><span class="cat-chip-swatch" style="background:var(--orange)"></span><span class="cat-chip-count">3 niveles</span></div>
+      <div class="cat-chip-name">Sección práctica</div>
+      <div class="cat-chip-range">Plantillas · modelos · A/B</div>
+    </a>
+    <a href="#recursos" class="cat-chip">
+      <div class="cat-chip-top"><span class="cat-chip-swatch" style="background:var(--orange)"></span><span class="cat-chip-count">2 tablas</span></div>
+      <div class="cat-chip-name">Recursos</div>
+      <div class="cat-chip-range">Comparativa · casos de uso</div>
+    </a>
+    <a href="#diagramas" class="cat-chip">
+      <div class="cat-chip-top"><span class="cat-chip-swatch" style="background:var(--orange)"></span><span class="cat-chip-count">2 diagramas</span></div>
+      <div class="cat-chip-name">Visuales adicionales</div>
+      <div class="cat-chip-range">Flujo de decisión</div>
+    </a>
+  </div>
+</section>
+
+<article>
+<div class="page">
+
+  <!-- INTRO -->
+  <section class="intro-text">
+    <p>Esta segunda parte cierra el mapa de los 50 elementos con las tres categorías que definen la "piel" de la imagen: <strong>color</strong> (qué transmite emocionalmente la paleta), <strong>materiales y texturas</strong> (cómo se sienten las superficies) y <strong>estilo</strong> (qué técnica o medio simula el modelo). Si no leíste la Parte I, ahí quedaron composición, cámara e iluminación — el esqueleto y la luz de la escena.</p>
+    <div class="intro-callout">
+      <strong>Cómo usar esta guía →</strong> Mismo formato de ficha que en la Parte I: definición, efecto en el modelo, cuándo usarlo, cuándo evitarlo, ejemplo ES/EN, error común y combinaciones recomendadas. Después de las 22 fichas encontrarás la <strong>sección práctica</strong> (plantillas por nivel, ajustes por modelo, pruebas A/B) y los <strong>recursos</strong> finales: la tabla comparativa completa de los 50 elementos y una tabla de 10 prompts listos para casos de uso comunes.
+    </div>
+  </section>
+
+  <!-- ══ COLOR ══ -->
+  <section class="cat-section" id="color" style="--cat:var(--cat-color); --cat-bg:var(--cat-color-bg);">
+    <div class="cat-header">
+      <div class="cat-header-left">
+        <div class="cat-icon"><i class="fa-solid fa-palette"></i></div>
+        <h2 class="cat-title">04 · <span>Color</span></h2>
+      </div>
+      <span class="cat-count-badge">8 elementos</span>
+    </div>
+    <p class="cat-intro">El uso del color guía las emociones y el estilo de la imagen. Los prompts pueden especificar saturación, contraste y esquemas cromáticos para orientar la atmósfera completa de la escena.</p>
+    <div class="jump-row">
+      <a class="jump-chip" href="#el-29">29 Saturación</a>
+      <a class="jump-chip" href="#el-30">30 Contraste</a>
+      <a class="jump-chip" href="#el-31">31 Armonía</a>
+      <a class="jump-chip" href="#el-32">32 Paleta</a>
+      <a class="jump-chip" href="#el-33">33 Dominante</a>
+      <a class="jump-chip" href="#el-34">34 Complementarios</a>
+      <a class="jump-chip" href="#el-35">35 B/N</a>
+      <a class="jump-chip" href="#el-36">36 Gradación</a>
+    </div>
+
+    <article class="spec-card" id="el-29">
+      <div class="spec-card__head"><span class="spec-num">29</span><h3 class="spec-title">Saturación</h3><span class="spec-cat-tag">Color</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-29-saturacion.jpg','Saturación — banderas y colores muy vívidos en una calle festiva')">
+          <img src="images/el-29-saturacion.jpg" alt="Ejemplo visual: Saturación — banderas y colores muy vívidos en una calle festiva" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Intensidad o viveza de los colores en la imagen.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Highly saturated colors" da tonos vibrantes; "desaturated" o "muted" produce colores apagados.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Alta saturación convenga en arte fantástico o escenas alegres; baja, en ambientes sombríos o estilizados.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>La saturación sea excesiva y genere un aspecto de neón irreal no buscado.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Calle urbana en Brasil con banderas coloridas, colores muy saturados y contrastes fuertes"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Brazilian street with colorful banners, very saturated colors and strong contrasts"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> saturar rostros de forma antinatural — piel demasiado anaranjada.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #30 #22</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-30">
+      <div class="spec-card__head"><span class="spec-num">30</span><h3 class="spec-title">Contraste</h3><span class="spec-cat-tag">Color</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-30-contraste.jpg','Contraste — retrato en blanco y negro con sombras profundas')">
+          <img src="images/el-30-contraste.jpg" alt="Ejemplo visual: Contraste — retrato en blanco y negro con sombras profundas" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Diferencia entre zonas claras y oscuras, tanto en tono como en color.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"High contrast" enfatiza luces y sombras; "low contrast" produce imágenes planas y grisáceas.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Alto contraste sirva para imágenes dramáticas (blanco y negro intenso, cine noir); bajo contraste para fondos suaves.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>El sujeto tenga poco rango tonal — el contraste alto puede aplanar los detalles.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Retrato en blanco y negro con alto contraste, sombras profundas y luz brillante"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Black and white portrait with high contrast, deep shadows and bright highlights"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> mezclar "alto contraste" con "paleta pastel" en el mismo prompt — incoherente.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #22 #34</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-31">
+      <div class="spec-card__head"><span class="spec-num">31</span><h3 class="spec-title">Armonía cromática</h3><span class="spec-cat-tag">Color</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-31-armonia.jpg','Armonía cromática — paisaje neblinoso en tonos azules y verdes análogos')">
+          <img src="images/el-31-armonia.jpg" alt="Ejemplo visual: Armonía cromática — paisaje neblinoso en tonos azules y verdes análogos" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Esquema de colores coordinados: análogos (vecinos en el círculo cromático) o complementarios (opuestos).</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Analogous colors" usa tonos vecinos; "complementary" usa opuestos como violeta-naranja.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>La armonía análoga dé sensación unificada; los complementarios eleven la energía visual.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>Combines varios esquemas cromáticos saturados sin cohesión entre sí.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Imagen con paleta análoga de azules y verdes, transmitiendo calma"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Image with an analogous palette of blues and greens, conveying calm"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> colocar colores complementarios sin diferencia tonal — el resultado se ve plano.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #33 · estilo (#43–50)</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-32">
+      <div class="spec-card__head"><span class="spec-num">32</span><h3 class="spec-title">Paleta de colores</h3><span class="spec-cat-tag">Color</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-32-paleta.jpg','Paleta de colores — ilustración pastel de tono infantil y onírico')">
+          <img src="images/el-32-paleta.jpg" alt="Ejemplo visual: Paleta de colores — ilustración pastel de tono infantil y onírico" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Conjunto de colores escogido para la imagen: pastel, neón, vintage, etc.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Pastel color palette" o "neon colors" orientan al modelo hacia esas tonalidades específicas.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Pastel convenga a estilo suave; neón a lo futurista/ciberpunk; vintage a lo nostálgico.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>La paleta sea contradictoria en sí misma, como pedir "pastel neon" a la vez.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Arte digital con paleta pastel (rosas, lilas y celestes) estilo infantil"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Digital art with a pastel palette (pinks, lilacs, and baby blues) in a childlike style"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> describir "pastel" pero luego incluir elementos realistas muy saturados.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #29 · estilo (#43–50)</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-33">
+      <div class="spec-card__head"><span class="spec-num">33</span><h3 class="spec-title">Color dominante</h3><span class="spec-cat-tag">Color</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-33-color-dominante.jpg','Color dominante — arrecife de coral con tonos verde-azulados')">
+          <img src="images/el-33-color-dominante.jpg" alt="Ejemplo visual: Color dominante — arrecife de coral con tonos verde-azulados" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Predominio de un color específico a lo largo de toda la escena.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Dominant blue" hace que el azul llene la mayor parte del encuadre y el ambiente general.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Quieras enfocar el ojo o definir una atmósfera concreta, como verde dominante en bosques mágicos.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>Pidas varios colores dominantes distintos a la vez — el prompt pierde foco.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Escena submarina con verde-azulado dominante, corales de colores suaves"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Underwater scene with dominant teal color, corals in soft hues"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> solicitar varios dominantes diferentes, lo que confunde al modelo.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #30 #31</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-34">
+      <div class="spec-card__head"><span class="spec-num">34</span><h3 class="spec-title">Colores complementarios</h3><span class="spec-cat-tag">Color</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-34-complementarios.jpg','Colores complementarios — auto vintage azul con detalles naranja')">
+          <img src="images/el-34-complementarios.jpg" alt="Ejemplo visual: Colores complementarios — auto vintage azul con detalles naranja" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Pares de colores opuestos en el círculo cromático que crean contraste visual: rojo/verde, azul/naranja.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Complementary colors" sugiere el uso de pares opuestos y brillantes en la composición.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Busques energía vibrante y contraste visual, como en publicidad o arte pop.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>Necesites una armonía discreta — los complementarios sobresaltan demasiado.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Carro retro azul con detalles naranja brillante, iluminación fría para resaltar contraste"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Retro blue car with bright orange details, cool lighting to emphasize contrast"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> colocar complementarios sin suficiente saturación — el resultado se ve gris.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #30 #20</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-35">
+      <div class="spec-card__head"><span class="spec-num">35</span><h3 class="spec-title">Blanco y negro</h3><span class="spec-cat-tag">Color</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-35-blanco-negro.jpg','Blanco y negro — retrato clásico estilo años 50')">
+          <img src="images/el-35-blanco-negro.jpg" alt="Ejemplo visual: Blanco y negro — retrato clásico estilo años 50" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Imagen sin color, que acentúa la forma y la luz por encima del tono.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Black and white photo" o "monochrome" produce una escala de grises consistente en toda la imagen.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Quieras enfatizar textura o dramatismo — retratos clásicos, fotografía artística.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>La escena dependa esencialmente del color y describas tonos específicos después.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Retrato en blanco y negro al estilo años 50, enfoque agudo en ojos"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Black and white portrait in 1950s style, sharp focus on eyes"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> pedir blanco y negro y luego describir colores específicos en el mismo prompt.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #30 #45 (estilo retro)</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-36">
+      <div class="spec-card__head"><span class="spec-num">36</span><h3 class="spec-title">Gradación de color</h3><span class="spec-cat-tag">Color</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-36-gradacion.jpg','Gradación de color — callejón nocturno con gradación cian y naranja')">
+          <img src="images/el-36-gradacion.jpg" alt="Ejemplo visual: Gradación de color — callejón nocturno con gradación cian y naranja" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Tratamiento general de posproducción: tonos fríos vs. cálidos, virados cinematográficos.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Cinematic color grading" o "warm color grade" cambian la tonalidad general de toda la escena.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Quieras unificar visualmente la escena, como en cinematografía o cómics.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>La imagen sea una ilustración plana sin luz real que gradar.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Fotografía nocturna con gradación azul verdosa suave, estilo cine noir"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Night photo with soft teal color grading, in film noir style"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> ignorar la dirección de la luz al aplicar una gradación fría o cálida.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #28 #21</span>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ══ MATERIALES Y TEXTURAS ══ -->
+  <section class="cat-section" id="materiales" style="--cat:var(--cat-mat); --cat-bg:var(--cat-mat-bg);">
+    <div class="cat-header">
+      <div class="cat-header-left">
+        <div class="cat-icon"><i class="fa-solid fa-layer-group"></i></div>
+        <h2 class="cat-title">05 · <span>Materiales y texturas</span></h2>
+      </div>
+      <span class="cat-count-badge">6 elementos</span>
+    </div>
+    <p class="cat-intro">Describir materiales o texturas modifica la apariencia de las superficies. Útil para realismo (metal brilloso, madera rugosa) o para estilo (pintura al óleo, tela suave). El modelo reconoce términos como "metal", "glass texture" o "wooden" y aplica las reflectancias correspondientes.</p>
+    <div class="jump-row">
+      <a class="jump-chip" href="#el-37">37 Metal</a>
+      <a class="jump-chip" href="#el-38">38 Vidrio</a>
+      <a class="jump-chip" href="#el-39">39 Tela</a>
+      <a class="jump-chip" href="#el-40">40 Madera</a>
+      <a class="jump-chip" href="#el-41">41 Piedra</a>
+      <a class="jump-chip" href="#el-42">42 Piel</a>
+    </div>
+
+    <article class="spec-card" id="el-37">
+      <div class="spec-card__head"><span class="spec-num">37</span><h3 class="spec-title">Metal</h3><span class="spec-cat-tag">Materiales</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-37-metal.jpg','Metal — esfera cromada con reflejos de luces de neón')">
+          <img src="images/el-37-metal.jpg" alt="Ejemplo visual: Metal — esfera cromada con reflejos de luces de neón" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Superficies metálicas reflectantes: cromo, acero, oro.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Metallic" genera reflejos especulares, brillo intenso y puntos de luz definidos en los reflejos.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>El sujeto sean vehículos, armaduras, utensilios o formas abstractas (esferas metálicas).</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>La escena sea neutra y no lo necesite — el brillo puede distraer sin motivo.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Esfera metálica pulida en un fondo oscuro, reflejando luces de neón"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Polished metal sphere on a dark background, reflecting neon lights"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> metales que salen opacos, sin ningún brillo real.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #24 #26</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-38">
+      <div class="spec-card__head"><span class="spec-num">38</span><h3 class="spec-title">Vidrio</h3><span class="spec-cat-tag">Materiales</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-38-vidrio.jpg','Vidrio — vaso transparente con agua y reflejos de luz')">
+          <img src="images/el-38-vidrio.jpg" alt="Ejemplo visual: Vidrio — vaso transparente con agua y reflejos de luz" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Superficie transparente o translúcida, con reflejos característicos.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Glass" genera objetos con transparencia real (fondo parcialmente visible) y reflejos especulares fuertes.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>El objeto sean ventanas, frascos, o estructuras arquitectónicas modernas.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>Sea un interior sin ventanales — el fondo transparente podría verse extraño.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Vaso de cristal con líquido, reflejando luz suave y mostrando distorsiones del fondo"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Glass cup with liquid, softly lit, showing background distortions"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> colocar texto completo visible detrás del vidrio — se distorsiona.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #25 #33</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-39">
+      <div class="spec-card__head"><span class="spec-num">39</span><h3 class="spec-title">Tela</h3><span class="spec-cat-tag">Materiales</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-39-tela.jpg','Tela — vestido de seda roja con pliegues suaves')">
+          <img src="images/el-39-tela.jpg" alt="Ejemplo visual: Tela — vestido de seda roja con pliegues suaves" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Superficies blandas: algodón, seda, lana.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Fabric", "silk" o "cloth texture" generan pliegues visibles, suavidad o reflectividad según el tipo.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>El sujeto sea ropa, cortinas o fondos fotográficos con textura relevante.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>La tela no sea relevante en la escena — el modelo podría ignorarla si no aporta.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Vestido de seda roja con pliegues suaves, iluminado lateralmente para revelar textura"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Red silk dress with soft folds, lit from the side to reveal texture"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> pedir seda cuando en realidad se necesita un bordado detallado — confunde la textura.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #23 #34</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-40">
+      <div class="spec-card__head"><span class="spec-num">40</span><h3 class="spec-title">Madera</h3><span class="spec-cat-tag">Materiales</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-40-madera.jpg','Madera — superficie de tabla rústica con vetas naturales')">
+          <img src="images/el-40-madera.jpg" alt="Ejemplo visual: Madera — superficie de tabla rústica con vetas naturales" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Superficies de madera, con grano y vetas visibles.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Wood texture" produce patrones lineales de veta y tonos marrones naturales.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>El sujeto sean muebles, pisos o naturaleza — troncos, ramas.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>La iluminación sea inadecuada — los patrones de veta pueden perderse en escenas muy oscuras.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Mesa de madera rústica con vetas claras, luz natural entrando desde la izquierda"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Rustic wooden table with clear grain, natural light coming from the left"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> madera sin gravedad coherente en la imagen (flotando en el aire, por ejemplo).</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #28 #21</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-41">
+      <div class="spec-card__head"><span class="spec-num">41</span><h3 class="spec-title">Piedra</h3><span class="spec-cat-tag">Materiales</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-41-piedra.jpg','Piedra — busto de mármol con vetas grises')">
+          <img src="images/el-41-piedra.jpg" alt="Ejemplo visual: Piedra — busto de mármol con vetas grises" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Superficies pétreas: granito, mármol, rocas.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Stone" genera texturas ásperas, con vetas minerales o formas irregulares según el tipo de roca.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>El sujeto sea arquitectura clásica, estatuas o paisajes rocosos.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>Uses luces muy brillantes sobre rocas oscuras — puede parecer plástico.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Escultura de mármol blanco con luz lateral, acentuando vetas grises"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"White marble sculpture with side light, accentuating gray veins"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> pedir piedra lisa cuando se espera textura rugosa — el modelo puede suavizarla de más.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #30 #35</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-42">
+      <div class="spec-card__head"><span class="spec-num">42</span><h3 class="spec-title">Piel</h3><span class="spec-cat-tag">Materiales</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-42-piel.jpg','Piel — primer plano extremo de arrugas y poros')">
+          <img src="images/el-42-piel.jpg" alt="Ejemplo visual: Piel — primer plano extremo de arrugas y poros" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Superficie orgánica humana o animal: piel con poros, arrugas o pelaje.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Skin texture" o "wrinkled skin" detalla poros, arrugas o imperfecciones según la edad indicada.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Se trate de retratos hiperrealistas o criaturas fantásticas con textura de piel.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>Pidas texturas de piel no naturales sin dar contexto — pueden salir "fantasma".</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Primer plano de un rostro anciano, textura de piel con arrugas profundas y poros visibles"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Close-up of an elderly face, skin texture with deep wrinkles and visible pores"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> mezclar piel humana con texturas incorrectas, como piedra o metal.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #22 #17</span>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ══ ESTILO ══ -->
+  <section class="cat-section" id="estilo" style="--cat:var(--cat-est); --cat-bg:var(--cat-est-bg);">
+    <div class="cat-header">
+      <div class="cat-header-left">
+        <div class="cat-icon"><i class="fa-solid fa-paintbrush"></i></div>
+        <h2 class="cat-title">06 · <span>Estilo</span></h2>
+      </div>
+      <span class="cat-count-badge">8 elementos</span>
+    </div>
+    <p class="cat-intro">Define el género o técnica artística de la imagen. Incluir el estilo en el prompt —pintura, fotografía, anime, etc.— hace que el modelo genere resultados coherentes con esa estética específica.</p>
+    <div class="jump-row">
+      <a class="jump-chip" href="#el-43">43 Fotografía</a>
+      <a class="jump-chip" href="#el-44">44 Pintura</a>
+      <a class="jump-chip" href="#el-45">45 Anime</a>
+      <a class="jump-chip" href="#el-46">46 Ilustración</a>
+      <a class="jump-chip" href="#el-47">47 Grabado</a>
+      <a class="jump-chip" href="#el-48">48 Acuarela</a>
+      <a class="jump-chip" href="#el-49">49 Carboncillo</a>
+      <a class="jump-chip" href="#el-50">50 Concept Art</a>
+    </div>
+
+    <article class="spec-card" id="el-43">
+      <div class="spec-card__head"><span class="spec-num">43</span><h3 class="spec-title">Fotografía</h3><span class="spec-cat-tag">Estilo</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-43-fotografia.jpg','Fotografía — retrato con look de cámara profesional')">
+          <img src="images/el-43-fotografia.jpg" alt="Ejemplo visual: Fotografía — retrato con look de cámara profesional" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Indica realismo fotográfico como referencia estilística principal.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Photo", "DSLR" o "Kodak film" generan textura granulada de película o nitidez fotográfica real.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Necesites imágenes realistas: retratos, paisajes documentales.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>Combines con estilos de fantasía muy exagerados — rompe la coherencia visual.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Fotografía profesional de una modelo, Nikon D850, luz natural suave"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Professional photograph of a model, Nikon D850, with soft natural lighting"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> pedir "foto" pero incluir elementos surrealistas — incoherencia visual.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> cámara (#11–18)</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-44">
+      <div class="spec-card__head"><span class="spec-num">44</span><h3 class="spec-title">Pintura</h3><span class="spec-cat-tag">Estilo</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-44-pintura.jpg','Pintura — retrato al óleo de un marinero')">
+          <img src="images/el-44-pintura.jpg" alt="Ejemplo visual: Pintura — retrato al óleo de un marinero" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Estilo de pintura tradicional aplicado a la imagen generada.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Oil painting" o "acrylic on canvas" produce trazos y textura de pincel claramente visibles.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Quieras arte digital con textura clásica: retratos al óleo, naturaleza muerta.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>El objetivo sea fotorrealismo puro.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Retrato al óleo de un marinero, luz suave, pinceladas visibles"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Oil painting portrait of a sailor, soft light, visible brush strokes"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> mezclar con términos modernos como neón, que confunden el estilo pictórico.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #23 #39–42</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-45">
+      <div class="spec-card__head"><span class="spec-num">45</span><h3 class="spec-title">Anime</h3><span class="spec-cat-tag">Estilo</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-45-anime.jpg','Anime — samurái original bajo un cielo estrellado')">
+          <img src="images/el-45-anime.jpg" alt="Ejemplo visual: Anime — samurái original bajo un cielo estrellado" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Estilo de animación japonesa: colores planos, contornos oscuros, ojos grandes.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Anime style" genera rasgos estilizados: ojos caricaturescos y colores brillantes y planos.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>El sujeto sean personajes fantasiosos o contenido tipo cómic.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>Combines con un fondo fotográfico muy detallado — rompe la estética.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Ilustración anime de un samurái en la noche, cielo estrellado y luces de linterna"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Anime illustration of a samurai at night, starry sky and lantern lights"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> pedir realismo fotorrealista junto con "anime" — estilos contradictorios.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #29 #26</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-46">
+      <div class="spec-card__head"><span class="spec-num">46</span><h3 class="spec-title">Ilustración</h3><span class="spec-cat-tag">Estilo</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-46-ilustracion.jpg','Ilustración — dragón fantástico sobrevolando montañas')">
+          <img src="images/el-46-ilustracion.jpg" alt="Ejemplo visual: Ilustración — dragón fantástico sobrevolando montañas" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Dibujo digital o tradicional — estilo cómic, con líneas definidas.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Digital illustration" da acabados planos y detallados según referencias de artistas digitales.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Trabajes concept art o ilustraciones de fantasía.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>Describas texturas fotográficas complejas — son irrelevantes para este estilo.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Ilustración digital de un dragón volando, estilo épico, colores intensos"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Digital illustration of a dragon flying, epic style, intense colors"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> combinar con estilos incompatibles, como "film noir" junto a "ilustración infantil".</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #44 #50</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-47">
+      <div class="spec-card__head"><span class="spec-num">47</span><h3 class="spec-title">Grabado</h3><span class="spec-cat-tag">Estilo</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-47-grabado.jpg','Grabado — caballero medieval estilo xilografía')">
+          <img src="images/el-47-grabado.jpg" alt="Ejemplo visual: Grabado — caballero medieval estilo xilografía" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Estilo de grabado sobre madera o metal: alto contraste, líneas gruesas.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Woodcut" o "etching" producen texturas lineales marcadas y alto contraste blanco/negro.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Busques ilustraciones góticas, arte clásico o cómics artísticos.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>La escena requiera colores vibrantes — este estilo suele quedarse en tinta/grises.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Grabado de un caballero medieval, detalles de líneas, fondo oscuro"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Woodcut of a medieval knight, line details, dark background"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> mezclar con color vibrante — contradice la técnica de grabado.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #35 #30</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-48">
+      <div class="spec-card__head"><span class="spec-num">48</span><h3 class="spec-title">Acuarela</h3><span class="spec-cat-tag">Estilo</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-48-acuarela.jpg','Acuarela — paisaje campestre en tonos pastel difuminados')">
+          <img src="images/el-48-acuarela.jpg" alt="Ejemplo visual: Acuarela — paisaje campestre en tonos pastel difuminados" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Pinceladas difuminadas y paleta suave, con tonos pastel y degradados naturales.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Watercolor" crea contornos suaves y dispersión de color, sin bordes duros.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Trabajes paisajes suaves o retratos etéreos.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>Necesites bordes duros o texturas digitales muy marcadas.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Paisaje de campo en acuarela, cielo pastel y flores difuminadas"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Watercolor countryside landscape, pastel sky and blurred flowers"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> incluir líneas negras fuertes, que no encajan con la técnica de acuarela.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #32 #23</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-49">
+      <div class="spec-card__head"><span class="spec-num">49</span><h3 class="spec-title">Carboncillo</h3><span class="spec-cat-tag">Estilo</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-49-carboncillo.jpg','Carboncillo — boceto de un rostro anciano en trazos grises')">
+          <img src="images/el-49-carboncillo.jpg" alt="Ejemplo visual: Carboncillo — boceto de un rostro anciano en trazos grises" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Estilo de dibujo a carbón: blancos, negros y grises, con trazos visibles.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Charcoal sketch" genera una imagen monocromática con degradados rugosos y texturizados.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>El objetivo sean bocetos artísticos o retratos expresivos.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>Pidas colores intensos — el carboncillo es, por definición, monótono en tono.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Boceto en carboncillo de un rostro anciano, fondo gris texturizado"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Charcoal sketch of an elderly face, textured gray background"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> pedir claros muy nítidos — el carboncillo es inherentemente difuso.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #04 #30</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="spec-card" id="el-50">
+      <div class="spec-card__head"><span class="spec-num">50</span><h3 class="spec-title">Arte conceptual (Concept Art)</h3><span class="spec-cat-tag">Estilo</span></div>
+            <div class="spec-image">
+        <button class="lightbox-trigger" onclick="openLightbox('images/el-50-concept-art.jpg','Concept Art — paisaje espacial cinematográfico con naves futuristas')">
+          <img src="images/el-50-concept-art.jpg" alt="Ejemplo visual: Concept Art — paisaje espacial cinematográfico con naves futuristas" loading="lazy">
+        </button>
+        <span class="spec-image-tag">Ejemplo generado</span>
+      </div>
+<div class="spec-body">
+        <p class="spec-def"><strong>Qué es</strong>Estilo ilustrativo usado en cine y videojuegos: detallado, cinematográfico y muy atmosférico.</p>
+        <div class="spec-grid">
+          <div class="spec-field"><span class="spec-label">Efecto en el modelo</span><p>"Concept art, cinematic" produce imágenes épicas y muy estilizadas, con foco en la atmósfera.</p></div>
+          <div class="spec-field"><span class="spec-label">Usar cuando</span><p>Diseñes escenarios o personajes fantásticos que necesiten mucha atmósfera.</p></div>
+          <div class="spec-field"><span class="spec-label">Evitar cuando</span><p>Busques detalles fotográficos triviales — este estilo prioriza la épica visual por encima del detalle documental.</p></div>
+        </div>
+        <div class="spec-prompts">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Arte conceptual de paisaje espacial, naves futuristas y neblina cósmica"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Concept art of a space landscape, futuristic ships and cosmic fog"</code></div>
+        </div>
+        <div class="spec-footer">
+          <span class="spec-error"><strong>Error común:</strong> pedir simplemente "ilustración" sin dramatismo — falta la épica que define el estilo.</span>
+          <span class="spec-combo"><strong>Combina con:</strong> #24 #25</span>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ══ SECCIÓN PRÁCTICA ══ -->
+  <section class="cat-section" id="practica" style="--cat:var(--orange); --cat-bg:#fdece4;">
+    <div class="cat-header">
+      <div class="cat-header-left">
+        <div class="cat-icon"><i class="fa-solid fa-terminal"></i></div>
+        <h2 class="cat-title">07 · <span>Sección práctica</span></h2>
+      </div>
+      <span class="cat-count-badge">Plantillas · modelos · A/B</span>
+    </div>
+    <p class="cat-intro">Plantillas de prompt en tres niveles que integran varios elementos a la vez, consejos para adaptar la sintaxis a distintos modelos, y sugerencias concretas para hacer pruebas A/B.</p>
+
+    <div class="template-card">
+      <div class="template-head"><span class="template-level">Nivel básico</span><h4>Sujeto + estilo + encuadre</h4></div>
+      <div class="template-body">
+        <div class="spec-prompts" style="margin-bottom:0;">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Un retrato clásico en blanco y negro de una mujer, primer plano, fondo neutro"</code></div>
+        </div>
+        <p class="template-note">Ya define sujeto (retrato de mujer), estilo (<strong>#35</strong> blanco y negro), encuadre (<strong>#01</strong> primer plano) y un fondo simple.</p>
+      </div>
+    </div>
+
+    <div class="template-card">
+      <div class="template-head"><span class="template-level">Nivel intermedio</span><h4>+ composición y técnica</h4></div>
+      <div class="template-body">
+        <div class="spec-prompts" style="margin-bottom:0;">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Retrato de una joven en estudio, iluminación suave lateral, regla de los tercios, textura de piel detallada, estilo fotografía DSLR"</code></div>
+        </div>
+        <p class="template-note">Suma iluminación suave (<strong>#23</strong>), composición (<strong>#02</strong>), material (<strong>#42</strong>) y estilo fotográfico (<strong>#43</strong>).</p>
+      </div>
+    </div>
+
+    <div class="template-card">
+      <div class="template-head"><span class="template-level">Nivel avanzado</span><h4>+ atmósfera y dirección artística</h4></div>
+      <div class="template-body">
+        <div class="spec-prompts" style="margin-bottom:0;">
+          <div class="prompt-line"><span class="prompt-lang">ES</span><code>"Retrato cinematográfico de un guerrero anciano, primerísimo primer plano en regla de tercios, iluminación dorada de atardecer (golden hour) desde la derecha, enfoque en los ojos, piel arrugada hiperrealista, fondo desenfocado"</code></div>
+          <div class="prompt-line"><span class="prompt-lang">EN</span><code>"Cinematic portrait of an aged warrior, extreme close-up with rule of thirds framing, golden hour lighting from the right, sharp focus on the eyes, hyper-realistic wrinkled skin, blurred background"</code></div>
+        </div>
+        <p class="template-note">Integra sujeto, encuadre (<strong>#01</strong>), composición (<strong>#02</strong>), luz dorada (<strong>#28 #21</strong>), enfoque (<strong>#17</strong>), material (<strong>#42</strong>) y estilo fotográfico-cinematográfico.</p>
+      </div>
+    </div>
+
+    <h3 class="spec-title" style="margin: 2.5rem 0 1rem;">Consejos para adaptar a cada modelo</h3>
+    <div class="intro-callout" style="margin-top:0;">
+      En <strong>Midjourney</strong> se usan parámetros tras el prompt como <code>--ar</code> (aspect ratio) o <code>--v</code> (versión); conviene un formato breve pero preciso. En <strong>Stable Diffusion</strong> e <strong>Imagen</strong> ayuda separar conceptos con comas y, a veces, comillas. Muchos modelos responden mejor a <em>negative prompts</em> para eliminar artefactos ("no text, no watermark"). En general: vocabulario claro, sin ambigüedades — especifica "no blur" si justamente no quieres desenfoque.
+    </div>
+
+    <h3 class="spec-title" style="margin: 2.5rem 0 1rem;">Pruebas A/B sugeridas</h3>
+    <div class="tip-list">
+      <div class="tip-item"><span class="tip-num">01</span><p><strong>Con y sin un elemento:</strong> compara "foto de paisaje con cielo azul" vs. "foto de paisaje sin cielo" para ver cómo cambia el enfoque general.</p></div>
+      <div class="tip-item"><span class="tip-num">02</span><p><strong>Distintas cámaras:</strong> "wide-angle lens" vs. "telephoto lens" para observar la diferencia en distancia aparente.</p></div>
+      <div class="tip-item"><span class="tip-num">03</span><p><strong>Cambiar estilo:</strong> "oil painting" vs. "watercolor" sobre el mismo sujeto, para comparar el efecto de la técnica.</p></div>
+      <div class="tip-item"><span class="tip-num">04</span><p><strong>Iluminación:</strong> comparar "golden hour" vs. "midday" en la misma escena para observar el cambio de color.</p></div>
+      <div class="tip-item"><span class="tip-num">05</span><p><strong>Con vs. sin detalle:</strong> añadir "high detail" o no, para ver cómo mejora la nitidez del resultado.</p></div>
+    </div>
+    <p style="font-size:0.92rem; color:var(--muted); margin-top:1rem;">Estas comparaciones sistemáticas ayudan a entender qué palabras del prompt tienen mayor impacto real en tu modelo específico.</p>
+  </section>
+
+  <!-- ══ RECURSOS ══ -->
+  <section class="cat-section" id="recursos" style="--cat:var(--orange); --cat-bg:#fdece4;">
+    <div class="cat-header">
+      <div class="cat-header-left">
+        <div class="cat-icon"><i class="fa-solid fa-table-list"></i></div>
+        <h2 class="cat-title">08 · <span>Recursos</span></h2>
+      </div>
+      <span class="cat-count-badge">2 tablas</span>
+    </div>
+    <p class="cat-intro">Tabla comparativa completa de los 50 elementos (impacto, dificultad y palabra clave de referencia) y una tabla de 10 prompts listos para casos de uso comunes.</p>
+
+    <h3 class="spec-title" style="margin-bottom:1rem;">Tabla comparativa de los 50 elementos</h3>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Elemento</th><th>Impacto en el resultado</th><th>Dificultad</th><th>Palabra clave</th></tr></thead>
+        <tbody>
+          <tr><td>01 Encuadre</td><td>Define cuánto se ve del sujeto</td><td><span class="impact-tag impact-media">Media</span></td><td class="mono">"close-up", "wide shot"</td></tr>
+          <tr><td>02 Regla de los tercios</td><td>Acomoda al sujeto fuera del centro</td><td><span class="impact-tag impact-baja">Baja</span></td><td class="mono">"rule of thirds"</td></tr>
+          <tr><td>03 Simetría</td><td>Equilibrio perfecto entre lados</td><td><span class="impact-tag impact-media">Media</span></td><td class="mono">"symmetrical composition"</td></tr>
+          <tr><td>04 Espacio negativo</td><td>Enfatiza al sujeto aislado</td><td><span class="impact-tag impact-alta">Alta</span></td><td class="mono">"negative space"</td></tr>
+          <tr><td>05 Líneas guía</td><td>Dirige la mirada del espectador</td><td><span class="impact-tag impact-media">Media</span></td><td class="mono">"leading lines"</td></tr>
+          <tr><td>06 Punto focal</td><td>Acentúa un objeto clave</td><td><span class="impact-tag impact-alta">Alta</span></td><td class="mono">"focal point"</td></tr>
+          <tr><td>07 Balance visual</td><td>Equilibrio visual general</td><td><span class="impact-tag impact-alta">Alta</span></td><td class="mono">"balanced composition"</td></tr>
+          <tr><td>08 Profundidad</td><td>Aporta sensación tridimensional</td><td><span class="impact-tag impact-media">Media</span></td><td class="mono">"deep perspective"</td></tr>
+          <tr><td>09 Capas</td><td>Distribuye elementos en planos</td><td><span class="impact-tag impact-media">Media</span></td><td class="mono">"layered background"</td></tr>
+          <tr><td>10 Perspectiva</td><td>Varía el punto de vista</td><td><span class="impact-tag impact-alta">Alta</span></td><td class="mono">"bird's-eye view"</td></tr>
+          <tr><td>11 Distancia focal</td><td>Amplía o comprime la escena</td><td><span class="impact-tag impact-alta">Alta</span></td><td class="mono">"wide-angle lens"</td></tr>
+          <tr><td>12 Ángulo</td><td>Cambia la inclinación de cámara</td><td><span class="impact-tag impact-media">Media</span></td><td class="mono">"high angle shot"</td></tr>
+          <tr><td>13 Altura de cámara</td><td>Ajusta el nivel del encuadre</td><td><span class="impact-tag impact-media">Media</span></td><td class="mono">"ground level"</td></tr>
+          <tr><td>14 Tipo de lente</td><td>Efectos especiales (fisheye, macro)</td><td><span class="impact-tag impact-alta">Alta</span></td><td class="mono">"macro lens"</td></tr>
+          <tr><td>15 Apertura</td><td>Controla luz y profundidad de campo</td><td><span class="impact-tag impact-media">Media</span></td><td class="mono">"f/1.8 aperture"</td></tr>
+          <tr><td>16 Profundidad de campo</td><td>Enfoca sujeto vs. desenfoca fondo</td><td><span class="impact-tag impact-alta">Alta</span></td><td class="mono">"shallow depth of field"</td></tr>
+          <tr><td>17 Enfoque</td><td>Nítido en sujeto o zona específica</td><td><span class="impact-tag impact-media">Media</span></td><td class="mono">"sharp focus on face"</td></tr>
+          <tr><td>18 Movimiento de cámara</td><td>Dinamismo por desenfoque de movimiento</td><td><span class="impact-tag impact-alta">Alta</span></td><td class="mono">"panning shot"</td></tr>
+          <tr><td>19 Dirección (luz)</td><td>Ubicación de la fuente de luz</td><td><span class="impact-tag impact-baja">Baja</span></td><td class="mono">"side lighting"</td></tr>
+          <tr><td>20 Intensidad (luz)</td><td>Fuerte vs. suave (sombras)</td><td><span class="impact-tag impact-baja">Baja</span></td><td class="mono">"hard light"</td></tr>
+          <tr><td>21 Temperatura</td><td>Cálida vs. fría (tonos)</td><td><span class="impact-tag impact-baja">Baja</span></td><td class="mono">"warm light"</td></tr>
+          <tr><td>22 Luz dura</td><td>Sombras marcadas</td><td><span class="impact-tag impact-media">Media</span></td><td class="mono">"bright sunlight"</td></tr>
+          <tr><td>23 Luz suave</td><td>Sombras difusas</td><td><span class="impact-tag impact-media">Media</span></td><td class="mono">"diffused light"</td></tr>
+          <tr><td>24 Contraluz</td><td>Siluetas / halo en el sujeto</td><td><span class="impact-tag impact-media">Media</span></td><td class="mono">"backlight"</td></tr>
+          <tr><td>25 Luz volumétrica</td><td>Rayos visibles en la neblina</td><td><span class="impact-tag impact-alta">Alta</span></td><td class="mono">"volumetric light"</td></tr>
+          <tr><td>26 Rim light</td><td>Ilumina los contornos del sujeto</td><td><span class="impact-tag impact-media">Media</span></td><td class="mono">"rim light"</td></tr>
+          <tr><td>27 Luz práctica</td><td>Lámparas o fuentes reales visibles</td><td><span class="impact-tag impact-media">Media</span></td><td class="mono">"lamp-lit"</td></tr>
+          <tr><td>28 Hora del día</td><td>Cambia el color natural de la luz</td><td><span class="impact-tag impact-baja">Baja</span></td><td class="mono">"golden hour"</td></tr>
+          <tr><td>29 Saturación</td><td>Viveza de los colores</td><td><span class="impact-tag impact-baja">Baja</span></td><td class="mono">"high saturation"</td></tr>
+          <tr><td>30 Contraste</td><td>Rango entre claros y oscuros</td><td><span class="impact-tag impact-media">Media</span></td><td class="mono">"high contrast"</td></tr>
+          <tr><td>31 Armonía cromática</td><td>Esquema de colores coordinado</td><td><span class="impact-tag impact-alta">Alta</span></td><td class="mono">"analogous colors"</td></tr>
+          <tr><td>32 Paleta de colores</td><td>Tono general de la imagen</td><td><span class="impact-tag impact-media">Media</span></td><td class="mono">"pastel palette"</td></tr>
+          <tr><td>33 Color dominante</td><td>Color principal predominante</td><td><span class="impact-tag impact-media">Media</span></td><td class="mono">"dominant blue"</td></tr>
+          <tr><td>34 Colores complementarios</td><td>Opuestos vivos, alto contraste</td><td><span class="impact-tag impact-media">Media</span></td><td class="mono">"complementary colors"</td></tr>
+          <tr><td>35 Blanco y negro</td><td>Imagen monocroma</td><td><span class="impact-tag impact-baja">Baja</span></td><td class="mono">"black and white"</td></tr>
+          <tr><td>36 Gradación de color</td><td>Estilo cinematográfico general</td><td><span class="impact-tag impact-alta">Alta</span></td><td class="mono">"cinematic color grading"</td></tr>
+          <tr><td>37 Metal</td><td>Reflejos brillantes y especulares</td><td><span class="impact-tag impact-alta">Alta</span></td><td class="mono">"reflective metal"</td></tr>
+          <tr><td>38 Vidrio</td><td>Transparencia y reflejos</td><td><span class="impact-tag impact-alta">Alta</span></td><td class="mono">"glass material"</td></tr>
+          <tr><td>39 Tela</td><td>Pliegues suaves y caída natural</td><td><span class="impact-tag impact-media">Media</span></td><td class="mono">"silk fabric"</td></tr>
+          <tr><td>40 Madera</td><td>Vetado natural visible</td><td><span class="impact-tag impact-media">Media</span></td><td class="mono">"wood texture"</td></tr>
+          <tr><td>41 Piedra</td><td>Textura áspera, vetas minerales</td><td><span class="impact-tag impact-media">Media</span></td><td class="mono">"stone texture"</td></tr>
+          <tr><td>42 Piel</td><td>Poros y arrugas en el rostro</td><td><span class="impact-tag impact-alta">Alta</span></td><td class="mono">"skin texture"</td></tr>
+          <tr><td>43 Fotografía</td><td>Realismo fotográfico</td><td><span class="impact-tag impact-baja">Baja</span></td><td class="mono">"DSLR photo"</td></tr>
+          <tr><td>44 Pintura</td><td>Trazos de pincel visibles</td><td><span class="impact-tag impact-media">Media</span></td><td class="mono">"oil painting"</td></tr>
+          <tr><td>45 Anime</td><td>Ojos grandes, colores planos</td><td><span class="impact-tag impact-baja">Baja</span></td><td class="mono">"anime style"</td></tr>
+          <tr><td>46 Ilustración</td><td>Dibujo digital detallado</td><td><span class="impact-tag impact-media">Media</span></td><td class="mono">"digital illustration"</td></tr>
+          <tr><td>47 Grabado</td><td>Alto contraste blanco/negro</td><td><span class="impact-tag impact-alta">Alta</span></td><td class="mono">"woodcut"</td></tr>
+          <tr><td>48 Acuarela</td><td>Colores difuminados y suaves</td><td><span class="impact-tag impact-media">Media</span></td><td class="mono">"watercolor painting"</td></tr>
+          <tr><td>49 Carboncillo</td><td>Trazos grises y artísticos</td><td><span class="impact-tag impact-media">Media</span></td><td class="mono">"charcoal sketch"</td></tr>
+          <tr><td>50 Concept Art</td><td>Épico y cinematográfico</td><td><span class="impact-tag impact-alta">Alta</span></td><td class="mono">"concept art, cinematic"</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="spec-title" style="margin: 3rem 0 1rem;">10 prompts de ejemplo por caso de uso</h3>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Caso de uso</th><th>Prompt (ES)</th><th>Prompt (EN)</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Retrato</strong></td><td class="mono">"Retrato fotográfico de una mujer africana con luz suave lateral y fondo neutro desenfocado"</td><td class="mono">"Photographic portrait of an African woman with soft side lighting and a blurred neutral background"</td></tr>
+          <tr><td><strong>Paisaje</strong></td><td class="mono">"Paisaje épico de montañas nevadas al amanecer, vista panorámica, gran angular, cielo dorado"</td><td class="mono">"Epic snowy mountain landscape at sunrise, panoramic view, wide-angle lens, golden sky"</td></tr>
+          <tr><td><strong>Producto (comercial)</strong></td><td class="mono">"Foto publicitaria de un reloj de pulsera en primer plano, luz dura desde arriba, fondo negro con reflejo"</td><td class="mono">"Advertising shot of a wristwatch in close-up, hard light from above, black reflective background"</td></tr>
+          <tr><td><strong>Ilustración infantil</strong></td><td class="mono">"Dibujo de ilustración infantil de un osito en un bosque de fantasía, colores pastel y estilo acuarela"</td><td class="mono">"Children's illustration of a teddy bear in a fantasy forest, pastel colors and watercolor style"</td></tr>
+          <tr><td><strong>Concept Art</strong></td><td class="mono">"Arte conceptual de un guerrero futurista en una ciudad distópica, iluminación neón púrpura, atmósfera neblinosa"</td><td class="mono">"Concept art of a futuristic warrior in a dystopian city, purple neon lighting, foggy atmosphere"</td></tr>
+          <tr><td><strong>Fotorrealismo</strong></td><td class="mono">"Fotografía hiperrealista de un oso polar en nieve, luz natural fría, textura detallada de piel"</td><td class="mono">"Hyperrealistic photo of a polar bear in snow, cold natural lighting, detailed fur texture"</td></tr>
+          <tr><td><strong>Moda</strong></td><td class="mono">"Fotografía de moda editorial de una modelo con vestido rojo, posando en escalera, iluminación dramática y fondo industrial"</td><td class="mono">"Editorial fashion photo of a model in a red dress, posing on a staircase, dramatic lighting and an industrial background"</td></tr>
+          <tr><td><strong>Arquitectura</strong></td><td class="mono">"Foto arquitectónica de un edificio moderno de vidrio, toma frontal simétrica, iluminación suave de día nublado"</td><td class="mono">"Architectural photo of a modern glass building, symmetrical frontal shot, soft overcast daytime lighting"</td></tr>
+          <tr><td><strong>Naturaleza muerta</strong></td><td class="mono">"Bodegón clásico con manzanas y jarrón de cerámica, luz lateral suave, colores terrosos"</td><td class="mono">"Classic still life with apples and a ceramic vase, soft side lighting, earthy colors"</td></tr>
+          <tr><td><strong>Póster artístico</strong></td><td class="mono">"Póster estilo ciencia ficción con un planeta rojo en el espacio, fuente futurista, alto contraste"</td><td class="mono">"Sci-fi style poster with a red planet in space, futuristic font, high contrast"</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ══ VISUALES ADICIONALES / DIAGRAMAS ══ -->
+  <section class="cat-section" id="diagramas" style="--cat:var(--orange); --cat-bg:#fdece4;">
+    <div class="cat-header">
+      <div class="cat-header-left">
+        <div class="cat-icon"><i class="fa-solid fa-diagram-project"></i></div>
+        <h2 class="cat-title">09 · <span>Visuales adicionales</span></h2>
+      </div>
+      <span class="cat-count-badge">2 diagramas</span>
+    </div>
+    <p class="cat-intro">Dos diagramas de flujo para decidir qué elementos priorizar antes de generar la imagen, y para visualizar cómo se desglosa un prompt complejo en capas dentro del proceso interno del modelo.</p>
+
+    <div class="diagram-block">
+      <div class="mermaid">
+flowchart LR
+    sujeto["Sujeto: objeto o personaje"] --> imagen
+    iluminacion["Iluminación (tipo / hora / dirección)"] --> imagen
+    composicion["Composición (regla de tercios, ángulo)"] --> imagen
+    color["Color (paleta, saturación)"] --> imagen
+    estilo["Estilo (fotografía, pintura, etc.)"] --> imagen
+    modelo["Modelo IA genera"] -.-> imagen
+    imagen["Imagen resultante"]
+      </div>
+      <p class="diagram-caption">Diagrama de flujo para decidir qué elementos priorizar en tu prompt antes de la generación. Todos afectan al resultado final producido por el modelo.</p>
+    </div>
+
+    <div class="diagram-block">
+      <div class="mermaid">
+sequenceDiagram
+    participant User as Usuario
+    participant Model as Modelo
+    User->>Model: Prompt: [Sujeto] + [Composición] + [Cámara] + [Iluminación] + [Color] + [Textura] + [Estilo]
+    note over User,Model: Se combinan todos los elementos clave
+    Model->>Model: Proceso interno de CLIP y difusión
+    Model-->>User: Genera la imagen final
+      </div>
+      <p class="diagram-caption">Desglose de un prompt complejo en capas ("etiqueta + descripción") y el proceso de generación interna (CLIP + difusión latente). Cada capa guía un aspecto visual específico.</p>
+    </div>
+  </section>
+
+  <!-- ══ CONCLUSIÓN ══ -->
+  <div class="conclusion-block">
+    <h3>Conclusión</h3>
+    <p>Comprender estos 50 elementos visuales y su interacción permite escribir prompts precisos que aprovechan el potencial real de los modelos de imagen actuales. Al describir composición, técnica de cámara, luz, color, materiales y estilo, orientamos la semántica de la IA hacia lo que efectivamente queremos ver.</p>
+    <p>Recomendamos explorar cada elemento con ejemplos propios y ajustar los prompts de forma iterativa —pruebas A/B— para el modelo específico que estés usando. Este contenido puede seguir dividiéndose por categoría para abordar casos reales de creadores hispanohablantes, y da pie a plantillas interactivas o mini-talleres sobre cómo combinar estos elementos entre sí.</p>
+    <p>En suma: poner en práctica estos 50 conceptos ayuda a que los creadores dominen la generación de imágenes por IA de una manera más creativa, más precisa y más intencional.</p>
+    <div class="conclusion-sources">
+      Fuentes: documentación de modelos de IA y estudios técnicos de la literatura (Stable Diffusion, Midjourney, CLIP), guías de fotografía digital y recursos de arte generativo. Las definiciones técnicas se basan en estos referentes.
+    </div>
+  </div>
+
+  <!-- ══ NEXT PART (vuelta a Parte I) ══ -->
+  <div class="next-part">
+    <div>
+      <div class="next-part-label">Guía completa</div>
+      <div class="next-part-title">Parte I — Composición, Cámara e Iluminación</div>
+    </div>
+    <a href="guia-elementos-visuales-ia-parte-1.html">← Ver Parte I</a>
+  </div>
+
+</div>
+</article>
+
+<footer class="mag-footer">
+  <div class="logo">SIGNAL<span style="color:var(--orange)">.</span></div>
+  <div>Estéticas de internet y cultura digital</div>
+  <div class="mag-footer-social">
+    <a href="https://www.instagram.com/signal.ai.mag/" target="_blank" rel="noopener">Instagram</a>
+    <span style="color:#3a392f">·</span>
+    <a href="https://signalzine.rf.gd/" target="_blank" rel="noopener">Web</a>
+    <span style="color:#3a392f">·</span>
+    <a href="mailto:revista.signal@gmail.com">Email</a>
+  </div>
+</footer>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: {
+      background: '#fffdf8',
+      primaryColor: '#fdece4',
+      primaryTextColor: '#1c1b19',
+      primaryBorderColor: '#ff5a1f',
+      lineColor: '#6f6a5c',
+      secondaryColor: '#eaf3f9',
+      tertiaryColor: '#f1ecf9',
+      fontFamily: 'IBM Plex Mono, monospace',
+      fontSize: '13px'
+    }
+  });
+</script>
+<div class="lightbox-overlay" id="lightbox" onclick="closeLightbox(event)">
+  <button class="lightbox-close" onclick="closeLightbox(event)">&times;</button>
+  <figure>
+    <img id="lightbox-img" src="" alt="">
+    <figcaption id="lightbox-caption"></figcaption>
+  </figure>
+</div>
+
+<script>
+  function openLightbox(src, caption) {
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox-caption').textContent = caption || '';
+    document.getElementById('lightbox').classList.add('open');
+  }
+  function closeLightbox(e) {
+    if (e) e.stopPropagation();
+    document.getElementById('lightbox').classList.remove('open');
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeLightbox();
+  });
+</script>
+</body>
+</html>

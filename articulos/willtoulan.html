@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIGNAL — Willtoulan y el arte de construir escala</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=JetBrains+Mono:wght@300;400;500&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1814;
+    --paper: #f5f0e8;
+    --paper-dark: #ede7d9;
+    --accent: #c4873a;
+    --accent-light: #e8c88a;
+    --teal: #4a8a7c;
+    --muted: #7a7268;
+    --rule: #c8bfb0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.7;
+  }
+
+  /* ── COVER ── */
+  .cover {
+    min-height: 100vh;
+    background: var(--ink);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover-noise {
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  .cover-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 2.5rem 3rem 0;
+    border-bottom: 1px solid #3a3630;
+    padding-bottom: 1.2rem;
+  }
+
+  .masthead {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 400;
+    color: #6a6258;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    line-height: 1.8;
+  }
+
+  .cover-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 5rem;
+    font-weight: 900;
+    color: var(--paper);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    text-align: center;
+    padding: 3rem 3rem 0;
+  }
+
+  .cover-logo span {
+    color: var(--accent);
+  }
+
+  .cover-tagline {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: #5a5450;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    text-align: center;
+    margin-top: 0.5rem;
+  }
+
+  .cover-main {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 2rem 3rem 3rem;
+    position: relative;
+  }
+
+  .cover-issue {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--accent);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .cover-headline {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 700;
+    color: var(--paper);
+    line-height: 1.15;
+    max-width: 700px;
+  }
+
+  .cover-headline em {
+    color: var(--accent-light);
+    font-style: italic;
+  }
+
+  .cover-subhead {
+    margin-top: 1.2rem;
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.1rem;
+    color: #8a8278;
+    max-width: 520px;
+    line-height: 1.6;
+  }
+
+  .cover-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 3rem;
+    border-top: 1px solid #2a2620;
+  }
+
+  .cover-index {
+    display: flex;
+    gap: 2.5rem;
+  }
+
+  .cover-index-item {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    color: #5a5450;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .cover-index-item strong {
+    display: block;
+    color: #9a9288;
+    font-size: 0.65rem;
+    margin-bottom: 0.2rem;
+  }
+
+  /* ── LAYOUT ── */
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 5rem 3rem;
+  }
+
+  .page-wide {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 4rem 3rem;
+  }
+
+  /* ── INDEX PAGE ── */
+  .index-page {
+    background: var(--paper-dark);
+    border-top: 4px solid var(--ink);
+  }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  .index-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+  }
+
+  .index-item {
+    background: var(--paper-dark);
+    padding: 2rem 2.5rem;
+    position: relative;
+  }
+
+  .index-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: var(--rule);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .index-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+  }
+
+  .index-desc {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    line-height: 1.6;
+  }
+
+  /* ── ARTICLE ── */
+  .article-header {
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 3rem;
+    margin-bottom: 3rem;
+  }
+
+  .article-category {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--teal);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+
+  h1.article-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+
+  h1.article-title em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .article-deck {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1.25rem;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--muted);
+    line-height: 1.6;
+    max-width: 600px;
+    border-left: 3px solid var(--accent);
+    padding-left: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .article-meta {
+    display: flex;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+
+  .meta-item {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .meta-item strong {
+    display: block;
+    color: var(--ink);
+    margin-bottom: 0.2rem;
+  }
+
+  /* ── BODY TEXT ── */
+  .body-text p {
+    margin-bottom: 1.5rem;
+    font-size: 1.05rem;
+    color: #2a2420;
+  }
+
+  .body-text p:first-child::first-letter {
+    font-family: 'Playfair Display', serif;
+    font-size: 4.5rem;
+    font-weight: 900;
+    float: left;
+    line-height: 0.8;
+    margin: 0.1em 0.12em 0 0;
+    color: var(--accent);
+  }
+
+  h2.section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.7rem;
+    font-weight: 700;
+    margin: 3rem 0 1rem;
+    line-height: 1.2;
+  }
+
+  h3.subsection {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin: 2.5rem 0 0.8rem;
+  }
+
+  /* ── PULLQUOTE ── */
+  .pullquote {
+    margin: 3rem 0;
+    padding: 2rem 3rem;
+    background: var(--ink);
+    color: var(--paper);
+    position: relative;
+  }
+
+  .pullquote::before {
+    content: '\201C';
+    font-family: 'Playfair Display', serif;
+    font-size: 8rem;
+    color: var(--accent);
+    position: absolute;
+    top: -1rem;
+    left: 1.5rem;
+    line-height: 1;
+    opacity: 0.4;
+  }
+
+  .pullquote p {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-style: italic;
+    line-height: 1.5;
+    color: #f0ebe0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .pullquote cite {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--accent-light);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 1rem;
+    font-style: normal;
+  }
+
+  /* ── FACT BOX ── */
+  .fact-box {
+    background: var(--paper-dark);
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--teal);
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+  }
+
+  .fact-box-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--teal);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+  }
+
+  .fact-box p {
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    color: #3a3430;
+  }
+
+  /* ── CODE / PROMPT ── */
+  .prompt-block {
+    background: #1a1814;
+    border: 1px solid #3a3630;
+    padding: 2rem;
+    margin: 2rem 0;
+    position: relative;
+  }
+
+  .prompt-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--accent);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid #3a3630;
+  }
+
+  .prompt-block pre {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: #c8bfb0;
+    white-space: pre-wrap;
+    line-height: 1.7;
+  }
+
+  .prompt-block .key { color: var(--accent-light); }
+  .prompt-block .val { color: #8ab8b0; }
+  .prompt-block .str { color: #c8bfb0; }
+
+  /* ── SCALE TABLE ── */
+  .scale-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+  }
+
+  .scale-table th {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0.8rem 1rem;
+    text-align: left;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: 0.6rem;
+  }
+
+  .scale-table td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+
+  .scale-table tr:nth-child(even) td {
+    background: var(--paper-dark);
+  }
+
+  .scale-table .highlight td {
+    background: #f0e8d8;
+    border-left: 3px solid var(--accent);
+  }
+
+  .scale-table .tag {
+    display: inline-block;
+    background: var(--accent);
+    color: white;
+    font-size: 0.5rem;
+    padding: 0.1rem 0.4rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-left: 0.5rem;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 3rem 0;
+    color: var(--rule);
+  }
+
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+
+  .divider span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ── PROFILE CARD ── */
+  .profile-card {
+    display: grid;
+    grid-template-columns: 3px 1fr;
+    gap: 2rem;
+    background: var(--paper-dark);
+    padding: 2rem;
+    margin: 2.5rem 0;
+    border: 1px solid var(--rule);
+  }
+
+  .profile-stripe {
+    background: var(--accent);
+  }
+
+  .profile-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+
+  .profile-handle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--teal);
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+  }
+
+  .profile-stats {
+    display: flex;
+    gap: 2rem;
+    margin: 1rem 0;
+    padding: 1rem 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .stat {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .stat strong {
+    display: block;
+    font-size: 1.1rem;
+    color: var(--ink);
+    font-family: 'Playfair Display', serif;
+    margin-bottom: 0.2rem;
+  }
+
+  .profile-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+
+  .tool-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--paper);
+    background: var(--ink);
+    padding: 0.25rem 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ── METHODOLOGY NOTE ── */
+  .method-note {
+    background: linear-gradient(135deg, #1a1814 0%, #2a2420 100%);
+    color: var(--paper);
+    padding: 3rem;
+    margin: 3rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .method-note::before {
+    content: 'MÉTODO';
+    position: absolute;
+    top: 1rem;
+    right: 2rem;
+    font-family: 'Playfair Display', serif;
+    font-size: 5rem;
+    font-weight: 900;
+    color: #2a2420;
+    letter-spacing: -0.05em;
+    pointer-events: none;
+  }
+
+  .method-note h3 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--accent);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+
+  .method-note p {
+    font-size: 1rem;
+    color: #c8bfb0;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── CONCLUSION ── */
+  .conclusion {
+    border-top: 4px solid var(--ink);
+    padding-top: 3rem;
+    margin-top: 4rem;
+  }
+
+  /* ── FOOTER ── */
+  .mag-footer {
+    background: var(--ink);
+    color: #5a5450;
+    padding: 2rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .mag-footer .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--paper);
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  /* ── CLICKABLE INDEX ITEMS ── */
+  a.index-item {
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: background 0.2s ease, transform 0.15s ease;
+  }
+  a.index-item:hover { background: #e0d8c8; transform: translateY(-2px); }
+  a.index-item:hover .index-num { color: var(--accent); }
+
+  /* ── SOCIAL LINKS ── */
+  .social-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #2a2620;
+    flex-wrap: wrap;
+  }
+  .social-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid #3a3630;
+    color: #9a9288;
+    transition: all 0.2s ease;
+  }
+  .social-link:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── FOOTER SOCIAL ── */
+  .mag-footer-social { display: flex; gap: 1rem; align-items: center; }
+  .mag-footer-social a {
+    color: #7a7268;
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .mag-footer-social a:hover { color: var(--accent); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .cover-logo { animation: fadeUp 0.8s ease forwards; }
+  .cover-headline { animation: fadeUp 0.8s 0.2s ease forwards; opacity: 0; }
+  .cover-subhead { animation: fadeUp 0.8s 0.4s ease forwards; opacity: 0; }
+
+  @media (max-width: 680px) {
+    .cover-header { padding: 1.5rem; }
+    .cover-logo { font-size: 3.5rem; padding: 2rem 1.5rem 0; }
+    .cover-main { padding: 1.5rem; }
+    .cover-index { display: none; }
+    .page { padding: 3rem 1.5rem; }
+    .index-grid { grid-template-columns: 1fr; }
+    .profile-stats { flex-wrap: wrap; gap: 1rem; }
+    .article-meta { flex-wrap: wrap; gap: 1rem; }
+  }
+
+.instagram{
+    display:inline-flex;
+    align-items:center;
+    gap:2px;
+    padding:1px 4px;
+    border-radius:20px;
+    text-decoration:none;
+    color:#fff;
+    font-weight:600;
+    background:linear-gradient(45deg,#f09433,#e1306c,#833ab4);
+}
+
+.instagram:hover{
+    opacity:.9;
+}
+ 
+
+
+
+  /* ══ SIGNAL NAV ══ */
+  .signal-nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    background: var(--ink);
+    border-bottom: 1px solid #2a2620;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    height: 40px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .signal-nav__home {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    text-decoration: none;
+    color: var(--paper);
+  }
+  .signal-nav__logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.9rem;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    text-transform: none;
+  }
+  .signal-nav__ed {
+    color: #4a4438;
+    font-size: 0.55rem;
+  }
+  .signal-nav__home:hover .signal-nav__logo { color: var(--accent); }
+  .signal-nav__trail {
+    color: #5a5450;
+    font-size: 0.55rem;
+  }
+  .signal-nav__current { color: var(--accent); }
+  .signal-nav__arrows {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: #4a4438;
+  }
+  .signal-nav__arrows a {
+    color: #8a8278;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .signal-nav__arrows a:hover { color: var(--accent); }
+  .signal-nav__disabled { opacity: 0.25; cursor: default; }
+  .signal-nav__sep { opacity: 0.3; }
+  body { padding-top: 40px; }
+  .cover { min-height: calc(100vh - 40px); }
+  @media (max-width: 680px) {
+    .signal-nav__trail { display: none; }
+    .signal-nav { padding: 0 1rem; }
+  }
+
+</style>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+<!-- ══ SIGNAL NAV ══ -->
+<nav class="signal-nav">
+  <a class="signal-nav__home" href="../index.html">
+    <span class="signal-nav__logo">SIGNAL<span style="color:var(--accent)">.</span></span>
+    <span class="signal-nav__ed">Perfil</span>
+  </a>
+  <div class="signal-nav__trail">
+    <span class="signal-nav__current">Will Toulan</span>
+  </div>
+  <div class="signal-nav__arrows">
+    <a href="../index.html" style="border-color:#4a8a7c;color:#4a8a7c;" onmouseover="this.style.background='#4a8a7c';this.style.color='#fff'" onmouseout="this.style.background='#2e2924';this.style.color='#4a8a7c'">Índice</a>
+    <span class="signal-nav__sep">·</span>
+    <a href="arte-ia-instagram.html">← Anterior</a>
+    <span class="signal-nav__sep">·</span>
+    <a class="signal-nav__next" href="renacimiento-artificial.html">Siguiente →</a>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════ COVER -->
+<section class="cover">
+<div class="cover-noise"></div>
+<header class="cover-header">
+<div class="masthead">Revista de Arte e Inteligencia Artificial<br />2025<br />Arte · Proceso · Técnica</div>
+<div class="masthead" style="text-align: right;">Distribución digital<br />Instagram · Substack<br />Acceso libre</div>
+</header>
+<div class="cover-logo">S<span>I</span>GN<span>A</span>L
+<div class="cover-tagline">Arte generativo · Proceso · Comunidad</div>
+</div>
+<div class="cover-main">
+<div class="cover-issue">por: Gerardo Ventura <a href="https://instagram.com/gfvc1978" target="_blank" class="instagram" rel="noopener"> <i class="fa-brands fa-instagram"></i> @gfvc1978 </a>
+<div class="cover-issue">Perfil de artista</div>
+<h1 class="cover-headline">Willtoulan y el arte<br />de construir <em>escala</em><br />desde cero</h1>
+<p class="cover-subhead">Cómo un arborista de Massachusetts se convirtió en referente del sci-fi visual con 593K seguidores — y qué podemos aprender de su pipeline C4D + Midjourney.</p>
+<div class="social-bar">
+  <a href="https://www.instagram.com/signal.ai.mag/" target="_blank" rel="noopener" class="social-link">
+    <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.209-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+    @signal.ai.mag
+  </a>
+  <a href="https://signalzine.rf.gd/" target="_blank" rel="noopener" class="social-link">
+    <svg viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm-1 17.93V16h2v1.93A8.01 8.01 0 0 1 4.07 13H6v-2H4.07A8.01 8.01 0 0 1 11 4.07V6h2V4.07A8.01 8.01 0 0 1 19.93 11H18v2h1.93A8.01 8.01 0 0 1 13 19.93z"/></svg>
+    signalzine.rf.gd
+  </a>
+  <a href="https://substack.com/@signalmag" target="_blank" rel="noopener" class="social-link">
+    <svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:currentColor"><path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11 22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z"/></svg>
+    Substack
+  </a>
+  <a href="mailto:revista.signal@gmail.com" class="social-link">
+    <svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+    revista.signal@gmail.com
+  </a>
+</div>
+</div>
+<footer class="cover-footer">
+<div class="cover-index">
+<div class="cover-index-item"><strong>01</strong>Perfil del artista</div>
+<div class="cover-index-item"><strong>02</strong>El pipeline híbrido</div>
+<div class="cover-index-item"><strong>03</strong>Vocabulario de escala</div>
+<div class="cover-index-item"><strong>04</strong>Prompts comentados</div>
+</div>
+<div class="masthead" style="color: #3a3630;">signal.mag / no.01</div>
+</footer></div>
+</section>
+<!-- ══════════════════════════════════════════ INDEX -->
+<section class="index-page">
+<div class="page">
+<div class="section-label">Contenido — Perfil</div>
+<div class="index-grid">
+<a href="#seccion-01" class="index-item">
+<div class="index-num">01</div>
+<div class="index-title">El artista detrás de la escala</div>
+<div class="index-desc">Quién es Willtoulan, de dónde viene y qué lo hace distinto en el ecosistema de AI art</div>
+</a>
+<a href="#seccion-02" class="index-item">
+<div class="index-num">02</div>
+<div class="index-title">Pipeline híbrido: C4D + Midjourney</div>
+<div class="index-desc">Cómo combinar un motor 3D con IA para obtener estructura y atmósfera imposibles de lograr por separado</div>
+</a>
+<a href="#seccion-03" class="index-item">
+<div class="index-num">03</div>
+<div class="index-title">El vocabulario de la magnitud</div>
+<div class="index-desc">Por qué "continental" no es solo una palabra de tamaño — y cómo cambia lo que el modelo imagina</div>
+</a>
+<a href="#seccion-04" class="index-item">
+<div class="index-num">04</div>
+<div class="index-title">Prompts comentados + resultados reales</div>
+<div class="index-desc">Un sistema JSON documentado, los resultados obtenidos, y el análisis de por qué funcionó (y por qué a veces no)</div>
+</a>
+</div>
+</div>
+</section>
+<!-- ══════════════════════════════════════════ ARTICLE -->
+<article>
+<div class="page"><!-- Header --><header class="article-header">
+<div class="article-category">Perfil — Artista destacado No. 01</div>
+<h1 class="article-title">Willtoulan: el arte de <em>construir mundos</em> que aplastan al espectador</h1>
+<p class="article-deck">Su obra no es solo ciencia ficción — es arquitectura de civilizaciones que nunca existieron, construida con una combinación inusual de software 3D e inteligencia artificial.</p>
+<div class="article-meta">
+<div class="meta-item"><strong>Artista</strong>Will Toulan</div>
+<div class="meta-item"><strong>Plataforma</strong>Instagram · @willtoulan</div>
+<div class="meta-item"><strong>Seguidores</strong>593K</div>
+<div class="meta-item"><strong>Herramientas</strong>Cinema 4D · Midjourney</div>
+</div>
+</header><!-- Section 01 -->
+<div class="body-text">
+<h3 class="subsection" id="seccion-01">§ 01 — El artista</h3>
+<div class="profile-card">
+<div class="profile-stripe"></div>
+<div>
+<div class="profile-name">Will Toulan</div>
+<div class="profile-handle">@willtoulan · Instagram · Massachusetts, EE.UU.</div>
+<p style="font-size: 0.95rem; color: var(--muted);">Artista digital, motion designer, y arborista de profesión. Estudió pintura, grabado y video art en el Maryland Institute College of Art (MICA), graduándose en 2010. En 2016, entre trabajos, comenzó a publicar una pieza nueva en Instagram cada día — y no paró.</p>
+<div class="profile-stats">
+<div class="stat"><strong>593K</strong>Seguidores</div>
+<div class="stat"><strong>3,831</strong>Publicaciones</div>
+<div class="stat"><strong>2016</strong>Inicio en Instagram</div>
+</div>
+<div class="profile-tools"><span class="tool-tag">Cinema 4D</span> <span class="tool-tag">Midjourney</span> <span class="tool-tag">Adobe Photoshop</span> <span class="tool-tag">World Machine</span> <span class="tool-tag">RealFlow</span> <span class="tool-tag">Motion Design</span></div>
+</div>
+</div>
+
+<!-- Instagram embed -->
+<div style="margin: 2rem 0; display:flex; flex-direction:column; align-items:center;">
+  <div style="font-family:'JetBrains Mono',monospace; font-size:0.58rem; color:var(--teal); letter-spacing:0.2em; text-transform:uppercase; margin-bottom:0.8rem; align-self:flex-start;">Muestra de obra reciente</div>
+  <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="https://www.instagram.com/p/DYD6kItlkK3/" data-instgrm-version="14" style="background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15);margin:0;max-width:540px;min-width:326px;padding:0;width:99.375%;width:-webkit-calc(100% - 2px);width:calc(100% - 2px);">
+  </blockquote>
+</div>
+<script async src="//www.instagram.com/embed.js"></script>
+
+<p>Will Toulan no se describe a sí mismo como un artista de IA — y eso es precisamente lo que lo hace interesante. Antes de que Midjourney existiera, ya construía civilizaciones imposibles en Cinema 4D, ladrillo virtual por ladrillo virtual. La IA llegó después, como una capa más en un proceso que ya tenía estructura y punto de vista.</p>
+<p>Sus influencias son declaradas y reconocibles: el trabajo de Industrial Light &amp; Magic en la trilogía original de Star Wars, y la estética biomecánica de H.R. Giger en <em>Alien</em> (1979). Dos universos aparentemente opuestos — la épica espacial luminosa y el horror orgánico oscuro — que en su obra se fusionan en algo propio: estructuras que parecen haber crecido, no sido construidas.</p>
+<div class="pullquote">
+<p>Sus estructuras no parecen construidas. Parecen geológicas — como si la civilización que las levantó llevara tanto tiempo que sus edificios se volvieron paisaje.</p>
+<cite>Observación editorial — Signal No. 01</cite></div>
+<!-- Section 02 -->
+<h2 class="section-title" id="seccion-02">El pipeline híbrido: por qué C4D + Midjourney</h2>
+<h3 class="subsection">§ 02 — Estructura más atmósfera</h3>
+<p>La pregunta que todo entusiasta del AI art se hace al ver el trabajo de Toulan es inevitable: ¿cómo lo hace? La respuesta no está solo en el prompt — está en entender que Cinema 4D y Midjourney no son herramientas competidoras. Son complementarias, y cada una resuelve lo que la otra no puede.</p>
+<div class="fact-box">
+<div class="fact-box-label">¿Cómo funciona el pipeline?</div>
+<p><strong>Cinema 4D → Render base:</strong> Construye la escena en 3D. Geometría, proporciones, iluminación técnica, ángulo de cámara. No tiene que ser perfecto — tiene que ser estructuralmente correcto.</p>
+<p><strong>Render base → Midjourney (image prompt):</strong> El render se sube como imagen de referencia. Midjourney toma esa estructura y le aplica el estilo, la textura orgánica, la atmósfera — todo lo que tarda horas lograr manualmente.</p>
+<p><strong>Resultado:</strong> Perspectiva creíble con detalle imposible. La combinación que define visualmente su trabajo.</p>
+</div>
+<p>Lo que Cinema 4D aporta es control. Perspectiva exacta, proporciones consistentes entre publicaciones, iluminación técnica (HDRI, luces de área) que el ojo reconoce como "real" aunque la escena sea fantástica. Lo que Midjourney aporta es lo que ningún artista puede hacer manualmente en tiempo razonable: texturas orgánico-mecánicas complejas, atmósfera volumétrica, el "peso visual" cinematográfico que convierte un render limpio en algo que parece capturado, no fabricado.</p>
+<p>El prompt de texto en este workflow no describe formas — las formas ya vienen del render. El prompt describe <em>cómo se siente</em> la imagen: estilo, atmósfera, referencias estéticas. Más dirección artística que instrucción técnica.</p>
+<!-- Section 03 -->
+<h2 class="section-title" id="seccion-03">El vocabulario de la magnitud</h2>
+<h3 class="subsection">§ 03 — Cuando una palabra cambia la civilización que el modelo imagina</h3>
+<p>Aquí llegamos a uno de los hallazgos más interesantes que surgieron investigando cómo replicar el impacto visual de Toulan con herramientas más accesibles. Existe, en los modelos de generación de imagen actuales, lo que podríamos llamar una <strong>jerarquía de magnitud</strong> — y no es solo semántica.</p>
+<p>Cuando cambias la palabra que describe el tamaño de una estructura o escena, no solo cambias cuán grande aparece en la imagen. Cambias el <em>tipo de civilización</em> que el modelo infiere. El contexto histórico implícito. La escala de tiempo. El tipo de fotografía que ese mundo requeriría para ser capturado.</p>
+<table class="scale-table">
+<thead>
+<tr>
+<th>Palabra</th>
+<th>Lo que el modelo infiere</th>
+<th>Estética resultante</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Gigantesco</strong></td>
+<td>Grande para estándares humanos. El modelo piensa en edificios altos, naves grandes.</td>
+<td>Arquitectura épica reconocible. Blade Runner, Star Wars.</td>
+</tr>
+<tr>
+<td><strong>Monumental</strong></td>
+<td>Diseñado para impresionar. Implica intención humana de grandeza.</td>
+<td>Más ceremonial, más simétrico. Tiende a lo imperial.</td>
+</tr>
+<tr>
+<td><strong>Sobreescalado</strong></td>
+<td>Excede la escala humana sin justificación aparente. Algo salió de control.</td>
+<td>Más caótico, más orgánico. Menos orden, más crecimiento.</td>
+</tr>
+<tr class="highlight">
+<td><strong>Continental</strong> <span class="tag">★ clave</span></td>
+<td>La civilización ya no construye edificios — construye geografía. El tiempo implicado es geológico.</td>
+<td>Las estructuras parecen terreno natural. Fotografía satelital. Civilización post-humana.</td>
+</tr>
+</tbody>
+</table>
+<p>"Continental" activa en el modelo un conjunto de asociaciones muy específico: fotografía aérea, escala geológica, tiempo profundo. No es solo que las estructuras sean más grandes — es que el modelo asume que llevan tanto tiempo existiendo que se han vuelto parte del planeta. Eso es exactamente lo que se siente en el trabajo de Toulan.</p>
+<div class="method-note">
+<h3>Nota de metodología</h3>
+<p>Este hallazgo surgió de un proceso de ingeniería inversa sistemática: analizar las imágenes de Toulan, intentar replicar el impacto visual con prompts progresivos, documentar qué cambiaba con cada variación de vocabulario, y registrar los resultados.</p>
+<p>La hipótesis de que los modelos actuales han sido entrenados con suficiente obra de Toulan como para que ciertos descriptores activen patrones asociados a su estética es plausible y consistente con lo observado en las generaciones. No es replicación directa — es influencia de entrenamiento, como ocurre con cualquier artista con presencia masiva y firma visual definida.</p>
+</div>
+<!-- Section 04 -->
+<h2 class="section-title" id="seccion-04">Prompts comentados: el sistema JSON</h2>
+<h3 class="subsection">§ 04 — Una metodología propia para mantener coherencia visual</h3>
+<p>En lugar de prompts lineales ("una nave enorme sobre una ciudad en la niebla"), existe una aproximación más sofisticada: estructurar el prompt como un documento JSON con capas semánticas separadas. El resultado es menos prompt y más <em>brief de dirección artística</em>.</p>
+<p>La lógica es sencilla: los modelos como GPT-4o procesan el prompt como razonamiento antes de generar. Darle una estructura jerárquica — sujeto, ambiente, arquitectura, atmósfera, composición, vibe — le permite al modelo entender qué es central y qué es contextual, en lugar de tratar todas las palabras con el mismo peso.</p>
+<div class="prompt-block">
+<div class="prompt-label">Estructura del sistema — fragmento comentado</div>
+<pre><span class="key">"subject"</span>: {
+  <span class="key">"description"</span>: <span class="str">"Vast agricultural landscape from a high terrace"</span>,
+  <span class="key">"scale"</span>: <span class="str">"Continental scale"</span>,       <span style="color: #5a5450;">// ← la palabra clave</span>
+  <span class="key">"presence"</span>: <span class="str">"Quiet, immense and awe-inspiring"</span>
+},
+
+<span class="key">"atmosphere"</span>: {
+  <span class="key">"celestial_body"</span>: {
+    <span class="key">"type"</span>: <span class="str">"Rocky moon"</span>,
+    <span class="key">"scale"</span>: <span class="str">"Enormous apparent size in the sky"</span>,
+    <span class="key">"presence"</span>: <span class="str">"Ancient and majestic"</span>  <span style="color: #5a5450;">// contexto temporal implícito</span>
+  }
+},
+
+<span class="key">"the_vibe"</span>: {
+  <span class="key">"story"</span>: <span class="str">"A future civilization cultivated entire
+           continents into geometric ecosystems
+           beneath impossible skies"</span>,   <span style="color: #5a5450;">// ← narrativa, no descripción</span>
+  <span class="key">"aesthetic"</span>: <span class="str">"Far-future architectural sci-fi artbook"</span>
+},
+
+<span class="key">"constraints"</span>: {
+  <span class="key">"must_keep"</span>: [<span class="str">"continental scale feeling"</span>, <span class="str">"gigantic moon"</span>],
+  <span class="key">"avoid"</span>: [<span class="str">"cyberpunk neon"</span>, <span class="str">"urban city skyline"</span>]
+}</pre>
+</div>
+<p>El campo <code style="font-family: 'JetBrains Mono'; font-size: 0.85em; background: var(--paper-dark); padding: 0.1rem 0.4rem;">the_vibe.story</code> es probablemente el más poderoso de todo el sistema. No describe lo que hay en la imagen — describe lo que <em>pasó</em> en ese mundo para que esa imagen exista. El modelo usa esa narrativa como contexto para todas las demás decisiones visuales.</p>
+<div class="divider"><span>Resultado</span></div>
+<p><img src="images/image (3).jpg" width="100%" height="100%" /></p>
+<p>El resultado más exitoso con este sistema produjo exactamente lo que el JSON describía: campos agrícolas geométricos infinitos vistos desde una terraza elevada, una luna rocosa de escala imposible, nubes estratocúmulus monumentales, paleta desaturada en verdes y beige, y una figura humana solitaria que ancla toda la escala. Sin ella, "continental" sería abstracto. Con ella, el cerebro calcula la proporción instintivamente — y la imagen se vuelve abrumadora.</p>
+<p>Un detalle que el modelo añadió sin instrucción explícita: una etiqueta técnica ("A5-01") en la columna de la terraza. Le dio autenticidad de concept art real — como si esa imagen existiera en el archivo de diseño de una civilización que realmente construyó eso.</p>
+<div class="fact-box">
+<div class="fact-box-label">Para replicar en GPT-4o — puntos clave</div>
+<p>1. Usa <strong>"Continental scale"</strong> como descriptor de magnitud, no "gigantesco" ni "monumental".</p>
+<p>2. Separa el prompt en capas semánticas (subject / atmosphere / the_vibe) aunque sea en texto plano.</p>
+<p>3. El campo <strong>"story"</strong> en the_vibe es el más importante — dale al modelo una narrativa, no solo una descripción.</p>
+<p>4. Los <strong>"constraints"</strong> con avoid son importantes pero GPT-4o los respeta de forma inconsistente — reforzar con negativos explícitos ayuda.</p>
+</div>
+<!-- Conclusion -->
+<div class="conclusion">
+<h3 class="subsection">§ Cierre</h3>
+<h2 class="section-title">Lo que Toulan realmente enseña</h2>
+<p>La lección más valiosa del trabajo de Will Toulan no es técnica — es filosófica. La escala no es un parámetro que ajustas al final. Es la <em>premisa</em> desde la que construyes todo. Cuando decides que tu civilización es continental, todo lo demás — la arquitectura, la luz, la atmósfera, la paleta — se alinea a esa decisión.</p>
+<p>Y eso es exactamente lo que el sistema JSON intenta capturar: no un prompt, sino un punto de vista. Una serie de decisiones sobre qué mundo existe detrás de esa imagen, antes de que el modelo genere un solo píxel.</p>
+<p>Toulan lo hace con Cinema 4D y años de oficio. Tú puedes empezar a hacerlo con GPT-4o y un JSON bien pensado. La brecha es más pequeña de lo que parece — y los resultados lo demuestran.</p>
+</div>
+</div>
+</div>
+</article>
+<!-- ══════════════════════════════════════════ FOOTER --><footer class="mag-footer">
+<div class="logo">SIGNAL</div>
+<div>Arte generativo e inteligencia artificial</div>
+<div class="mag-footer-social">
+  <a href="https://www.instagram.com/signal.ai.mag/" target="_blank" rel="noopener">Instagram</a>
+  <span style="color:#3a3630">·</span>
+  <a href="https://substack.com/@signalmag" target="_blank" rel="noopener">Substack</a>
+  <span style="color:#3a3630">·</span>
+  <a href="https://signalzine.rf.gd/" target="_blank" rel="noopener">Web</a>
+  <span style="color:#3a3630">·</span>
+  <a href="mailto:revista.signal@gmail.com">Email</a>
+</div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acerca de — SIGNAL</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=JetBrains+Mono:wght@300;400;500&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:        #1a1814;
+    --bg:         #1a1814;
+    --bg2:        #222018;
+    --paper:      #f5f0e8;
+    --paper-dark: #ede7d9;
+    --accent:     #c4873a;
+    --accent2:    #e8c88a;
+    --teal:       #4a8a7c;
+    --muted:      #7a7268;
+    --rule:       #2a2620;
+    --rule-light: #c8bfb0;
+    --white:      #f0ece4;
+  }
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--ink);
+    color: var(--white);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.4;
+  }
+
+  /* HEADER */
+  header {
+    border-bottom: 1px solid var(--rule);
+    padding: 0 3rem;
+    position: sticky;
+    top: 0;
+    background: rgba(26,24,20,0.97);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 48px;
+  }
+  .header-tags {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .header-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    color: var(--white);
+    text-decoration: none;
+  }
+  .header-logo span { color: var(--accent); }
+  .header-site {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+
+  /* PAGE HERO */
+  .page-hero {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 6rem 3rem 4rem;
+    border-bottom: 1px solid var(--rule);
+  }
+  .page-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+  .page-title {
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-size: clamp(3rem, 8vw, 6rem);
+    line-height: 0.95;
+    color: var(--white);
+    letter-spacing: -0.02em;
+  }
+  .page-title span { color: var(--accent); }
+
+  /* CONTENT */
+  .content-wrap {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 5rem 3rem;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 6rem;
+    align-items: start;
+  }
+  .content-sidebar {
+    position: sticky;
+    top: 80px;
+  }
+  .sidebar-nav {
+    list-style: none;
+    border-left: 1px solid var(--rule);
+    padding-left: 1.5rem;
+  }
+  .sidebar-nav li {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+    cursor: default;
+    transition: color 0.2s;
+  }
+  .sidebar-nav li a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .sidebar-nav li a:hover { color: var(--accent); }
+  .sidebar-nav li.active { color: var(--accent); }
+
+  .content-body h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 1.2rem;
+    margin-top: 3rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--rule);
+  }
+  .content-body h2:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+  .content-body p {
+    font-size: 1.1rem;
+    color: #9a9080;
+    line-height: 1.85;
+    margin-bottom: 1.2rem;
+  }
+  .content-body p strong { color: var(--accent2); font-weight: 400; }
+
+  .team-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+  }
+  .team-card {
+    background: var(--bg2);
+    border: 1px solid var(--rule);
+    padding: 2rem;
+  }
+  .team-card-role {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .team-card-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 0.6rem;
+  }
+  .team-card-bio {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .values-list {
+    list-style: none;
+    margin-top: 1.5rem;
+  }
+  .values-list li {
+    border-top: 1px solid var(--rule);
+    padding: 1.2rem 0;
+    display: flex;
+    gap: 1.5rem;
+    align-items: baseline;
+  }
+  .values-list li:last-child { border-bottom: 1px solid var(--rule); }
+  .val-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    min-width: 2rem;
+  }
+  .val-text {
+    font-size: 1rem;
+    color: #9a9080;
+    line-height: 1.7;
+  }
+  .val-text strong { color: var(--white); font-weight: 700; display: block; margin-bottom: 0.2rem; }
+
+  /* FOOTER */
+  .site-footer {
+    background: var(--ink);
+    padding: 3rem;
+    border-top: 1px solid #2a2418;
+  }
+  .footer-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: var(--paper);
+    letter-spacing: -0.02em;
+  }
+  .footer-logo span { color: var(--accent); }
+  .footer-links {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  .footer-links a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #4a4438;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--accent); }
+  .footer-copy {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.5rem;
+    color: #2a2418;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 768px) {
+    header { padding: 0 1.5rem; }
+    .header-tags, .header-site { display: none; }
+    .page-hero { padding: 4rem 1.5rem 3rem; }
+    .content-wrap { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 1.5rem; }
+    .content-sidebar { position: static; }
+    .team-grid { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; padding: 2rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-tags">IA GENERATIVA · ARTE DIGITAL · CULTURA VISUAL · FUTURO</div>
+  <a href="index.html" class="header-logo">S<span>I</span>GN<span>A</span>L<span>.</span></a>
+  <div class="header-site">SIGNALZINE.RF.GD</div>
+</header>
+
+<div class="page-hero">
+  <div class="page-label">QUIÉNES SOMOS · 2026</div>
+  <h1 class="page-title">ACERCA<br>DE <span>NOSOTROS</span></h1>
+</div>
+
+<div class="content-wrap">
+  <aside class="content-sidebar">
+    <ul class="sidebar-nav">
+      <li class="active">La Publicación</li>
+      <li>Nuestro Equipo</li>
+      <li>Valores</li>
+      <li>Misión</li>
+    </ul>
+  </aside>
+
+  <div class="content-body">
+
+    <h2>La Publicación</h2>
+    <p>
+      <strong>SIGNAL</strong> es una revista digital independiente dedicada al arte que nace en el cruce entre la inteligencia artificial y la imaginación humana. Cada edición es un artefacto cultural: una exploración de creadores, narrativas y señales del futuro visual.
+    </p>
+    <p>
+      Nació en 2026 con una premisa sencilla pero urgente: el arte generativo ya no es un experimento. Es cultura. Y como toda cultura que emerge, necesita voces que la documenten, la celebren y la cuestionen.
+    </p>
+    <p>
+      No somos neutrales. Creemos que la IA generativa representa uno de los cambios más profundos en la historia de la expresión visual, y queremos estar en ese umbral —no como espectadores, sino como participantes activos.
+    </p>
+
+    <h2>Nuestro Equipo</h2>
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="team-card-role">Fundador &amp; Director Editorial</div>
+        <div class="team-card-name">Gerardo Ventura</div>
+        <div class="team-card-bio">Escritor y editor apasionado por la intersección entre tecnología y arte. Lleva la voz editorial de cada número de SIGNAL.</div>
+      </div>
+      <div class="team-card">
+        <div class="team-card-role">Artista Colaborador</div>
+        <div class="team-card-name">WillToulan</div>
+        <div class="team-card-bio">Creador visual que explora la construcción de audiencias y el arte a escala. Protagonista de la Edición 01.</div>
+      </div>
+    </div>
+
+    <h2>Misión</h2>
+    <p>
+      Documentar, celebrar y analizar el arte generativo con la misma seriedad con que la crítica tradicional trata la pintura o el cine. Porque este momento —este umbral— merece ser registrado con cuidado y ambición.
+    </p>
+    <p>
+      Cada transmisión de SIGNAL es una afirmación: <strong>las herramientas cambian, pero el impulso humano de crear es eterno.</strong>
+    </p>
+
+    <h2>Valores</h2>
+    <ul class="values-list">
+      <li>
+        <span class="val-num">01</span>
+        <span class="val-text"><strong>Independencia</strong>Sin anunciantes que dicten agenda. SIGNAL existe por y para su comunidad.</span>
+      </li>
+      <li>
+        <span class="val-num">02</span>
+        <span class="val-text"><strong>Rigor creativo</strong>Cada edición es revisada con el mismo cuidado editorial que una publicación impresa.</span>
+      </li>
+      <li>
+        <span class="val-num">03</span>
+        <span class="val-text"><strong>Acceso abierto</strong>Todo el contenido es de acceso libre. El conocimiento sobre el arte generativo debe circular sin barreras.</span>
+      </li>
+      <li>
+        <span class="val-num">04</span>
+        <span class="val-text"><strong>Comunidad</strong>Los artistas que cubrimos son nuestros colaboradores, no nuestros objetos de estudio.</span>
+      </li>
+    </ul>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-logo">S<span>I</span>GN<span>A</span>L</div>
+    <div class="footer-links">
+      <a href="https://www.instagram.com/signal.ai.mag/" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://substack.com/@signalmag" target="_blank" rel="noopener">Substack</a>
+      <a href="mailto:revista.signal@gmail.com">Email</a>
+      <a href="acerca-de.html">Acerca de</a>
+      <a href="contacto.html">Contacto</a>
+      <a href="privacidad.html">Privacidad</a>
+      <a href="terminos.html">Términos</a>
+    </div>
+    <div class="footer-copy">Signal · Arte generativo · Acceso libre</div>
+  </div>
+</footer>
+
+</body>
+</html>

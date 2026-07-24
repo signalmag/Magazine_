@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Términos y Condiciones — SIGNAL</title>
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=JetBrains+Mono:wght@300;400;500&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:        #1a1814;
+    --bg2:        #222018;
+    --paper:      #f5f0e8;
+    --accent:     #c4873a;
+    --accent2:    #e8c88a;
+    --muted:      #7a7268;
+    --rule:       #2a2620;
+    --white:      #f0ece4;
+  }
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--ink);
+    color: var(--white);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.4;
+  }
+
+  header {
+    border-bottom: 1px solid var(--rule);
+    padding: 0 3rem;
+    position: sticky;
+    top: 0;
+    background: rgba(26,24,20,0.97);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 48px;
+  }
+  .header-tags { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; }
+  .header-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 900; letter-spacing: 0.05em; color: var(--white); text-decoration: none; }
+  .header-logo span { color: var(--accent); }
+  .header-site { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; letter-spacing: 0.1em; color: var(--muted); }
+
+  .page-hero {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 6rem 3rem 4rem;
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+  .page-label { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.25em; color: var(--accent); text-transform: uppercase; margin-bottom: 1.5rem; }
+  .page-title { font-family: 'Playfair Display', serif; font-weight: 900; font-size: clamp(2.2rem, 5.5vw, 4.5rem); line-height: 0.95; color: var(--white); letter-spacing: -0.02em; }
+  .page-title span { color: var(--accent); }
+  .page-date { font-family: 'JetBrains Mono', monospace; font-size: 0.55rem; letter-spacing: 0.15em; color: var(--muted); text-transform: uppercase; text-align: right; }
+
+  .doc-wrap {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 5rem 3rem;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 5rem;
+    align-items: start;
+  }
+
+  .toc {
+    position: sticky;
+    top: 80px;
+    border-left: 1px solid var(--rule);
+    padding-left: 1.5rem;
+  }
+  .toc-title { font-family: 'JetBrains Mono', monospace; font-size: 0.55rem; letter-spacing: 0.2em; color: var(--accent); text-transform: uppercase; margin-bottom: 1.2rem; }
+  .toc a { display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.55rem; letter-spacing: 0.1em; color: var(--muted); text-decoration: none; text-transform: uppercase; margin-bottom: 0.8rem; transition: color 0.2s; line-height: 1.5; }
+  .toc a:hover { color: var(--accent); }
+
+  .doc-body h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 1.2rem;
+    margin-top: 3.5rem;
+    padding-top: 3.5rem;
+    border-top: 1px solid var(--rule);
+    scroll-margin-top: 80px;
+  }
+  .doc-body h2:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+  .doc-body p { font-size: 1.05rem; color: #9a9080; line-height: 1.85; margin-bottom: 1.2rem; }
+  .doc-body p strong { color: var(--accent2); font-weight: 400; }
+  .doc-body ul { list-style: none; margin: 1rem 0 1.5rem 0; }
+  .doc-body ul li { font-size: 1rem; color: #9a9080; line-height: 1.7; padding: 0.5rem 0 0.5rem 1.2rem; border-bottom: 1px solid var(--rule); position: relative; }
+  .doc-body ul li::before { content: '—'; position: absolute; left: 0; color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; }
+
+  .highlight-box { background: var(--bg2); border-left: 2px solid var(--accent); padding: 1.5rem 2rem; margin: 2rem 0; }
+  .highlight-box p { font-size: 0.95rem; margin-bottom: 0; }
+
+  /* FOOTER */
+  .site-footer { background: var(--ink); padding: 3rem; border-top: 1px solid #2a2418; }
+  .footer-inner { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem; }
+  .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 900; color: var(--paper); letter-spacing: -0.02em; }
+  .footer-logo span { color: var(--accent); }
+  .footer-links { display: flex; gap: 2rem; flex-wrap: wrap; }
+  .footer-links a { font-family: 'JetBrains Mono', monospace; font-size: 0.55rem; letter-spacing: 0.1em; text-transform: uppercase; color: #4a4438; text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--accent); }
+  .footer-copy { font-family: 'JetBrains Mono', monospace; font-size: 0.5rem; color: #2a2418; letter-spacing: 0.1em; text-transform: uppercase; }
+
+  @media (max-width: 768px) {
+    header { padding: 0 1.5rem; }
+    .header-tags, .header-site { display: none; }
+    .page-hero { padding: 4rem 1.5rem 3rem; }
+    .doc-wrap { grid-template-columns: 1fr; gap: 2rem; padding: 3rem 1.5rem; }
+    .toc { position: static; }
+    .site-footer { padding: 2rem 1.5rem; }
+    .footer-inner { flex-direction: column; gap: 1rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-tags">IA GENERATIVA · ARTE DIGITAL · CULTURA VISUAL · FUTURO</div>
+  <a href="index.html" class="header-logo">S<span>I</span>GN<span>A</span>L<span>.</span></a>
+  <div class="header-site">SIGNALZINE.RF.GD</div>
+</header>
+
+<div class="page-hero">
+  <div>
+    <div class="page-label">DOCUMENTO LEGAL</div>
+    <h1 class="page-title">TÉRMINOS Y<br><span>CONDICIONES</span></h1>
+  </div>
+  <div class="page-date">
+    Última actualización<br>Junio 2026
+  </div>
+</div>
+
+<div class="doc-wrap">
+
+  <nav class="toc">
+    <div class="toc-title">Contenido</div>
+    <a href="#aceptacion">Aceptación</a>
+    <a href="#contenido">Contenido y propiedad</a>
+    <a href="#uso">Uso permitido</a>
+    <a href="#suscripcion">Suscripción</a>
+    <a href="#limitaciones">Limitaciones</a>
+    <a href="#cambios">Cambios</a>
+    <a href="#contacto">Contacto</a>
+  </nav>
+
+  <div class="doc-body">
+
+    <div class="highlight-box">
+      <p>Al acceder y utilizar SIGNAL (signalzine.rf.gd), aceptas los presentes términos y condiciones. Si no estás de acuerdo, te pedimos que no utilices este sitio.</p>
+    </div>
+
+    <h2 id="aceptacion">Aceptación de los términos</h2>
+    <p>El acceso y uso de SIGNAL implica la aceptación plena de estos Términos y Condiciones. SIGNAL se reserva el derecho de modificarlos en cualquier momento. Los cambios entrarán en vigor desde su publicación en esta página, con indicación de la fecha de actualización.</p>
+    <p>El uso continuado del sitio tras la publicación de cambios constituye la aceptación de los nuevos términos.</p>
+
+    <h2 id="contenido">Contenido y propiedad intelectual</h2>
+    <p>Todo el contenido publicado en SIGNAL —textos editoriales, imágenes generadas con IA, diseño y elementos gráficos— es propiedad de SIGNAL y sus respectivos autores o colaboradores, salvo que se indique lo contrario.</p>
+    <ul>
+      <li>Queda permitida la reproducción parcial de contenidos con fines informativos o educativos, siempre que se cite a SIGNAL como fuente y se incluya un enlace al contenido original.</li>
+      <li>Queda prohibida la reproducción total de cualquier edición o artículo sin autorización expresa por escrito.</li>
+      <li>Las imágenes generadas con inteligencia artificial que aparecen en SIGNAL pertenecen a sus creadores; su uso fuera de la plataforma requiere autorización del autor correspondiente.</li>
+    </ul>
+
+    <h2 id="uso">Uso permitido del sitio</h2>
+    <p>Puedes usar SIGNAL para leer, explorar y compartir el contenido editorial. Queda expresamente prohibido:</p>
+    <ul>
+      <li>Reproducir o redistribuir el contenido de forma masiva o automatizada.</li>
+      <li>Usar el sitio con fines comerciales sin autorización previa.</li>
+      <li>Intentar acceder a partes del sistema no destinadas al público.</li>
+      <li>Transmitir contenido malicioso, spam o que vulnere derechos de terceros a través de los formularios del sitio.</li>
+    </ul>
+
+    <h2 id="suscripcion">Suscripción y comunicaciones</h2>
+    <p>SIGNAL gestiona sus suscripciones a través de <strong>Substack</strong>. Al suscribirte, aceptas que tus datos sean procesados por dicha plataforma de acuerdo con sus propios términos de servicio.</p>
+    <p>Puedes darte de baja de las comunicaciones de SIGNAL en cualquier momento haciendo clic en el enlace de cancelación incluido en cada correo, o contactándonos directamente.</p>
+    <p>La suscripción a SIGNAL es actualmente <strong>gratuita</strong>. Si en el futuro se introduce algún modelo de pago, se comunicará con antelación suficiente.</p>
+
+    <h2 id="limitaciones">Limitación de responsabilidad</h2>
+    <p>SIGNAL se esfuerza por ofrecer información precisa y de calidad, pero no garantiza la exactitud absoluta, completitud o actualización de todos los contenidos publicados.</p>
+    <p>SIGNAL no será responsable de daños directos, indirectos o consecuentes derivados del uso o la imposibilidad de acceso al sitio, incluyendo interrupciones técnicas o errores en el contenido.</p>
+    <p>Los enlaces a sitios externos son proporcionados como referencia; SIGNAL no controla ni se responsabiliza del contenido de dichos sitios.</p>
+
+    <h2 id="cambios">Cambios en el servicio</h2>
+    <p>SIGNAL puede modificar, suspender o interrumpir el acceso a cualquier parte del sitio en cualquier momento, con o sin previo aviso. También puede actualizar el diseño, los contenidos o la estructura editorial sin que esto constituya incumplimiento de ninguna obligación.</p>
+
+    <h2 id="contacto">Contacto</h2>
+    <p>Para cualquier duda relacionada con estos Términos y Condiciones, puedes contactarnos en:</p>
+    <p><strong>revista.signal@gmail.com</strong></p>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-logo">S<span>I</span>GN<span>A</span>L</div>
+    <div class="footer-links">
+      <a href="https://www.instagram.com/signal.ai.mag/" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://substack.com/@signalmag" target="_blank" rel="noopener">Substack</a>
+      <a href="mailto:revista.signal@gmail.com">Email</a>
+      <a href="acerca-de.html">Acerca de</a>
+      <a href="contacto.html">Contacto</a>
+      <a href="privacidad.html">Privacidad</a>
+      <a href="terminos.html">Términos</a>
+    </div>
+    <div class="footer-copy">Signal · Arte generativo · Acceso libre</div>
+  </div>
+</footer>
+
+</body>
+</html>
